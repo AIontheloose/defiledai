@@ -12,12 +12,9 @@ import {
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#050816] text-white">
+    <main className="min-h-screen bg-[#050816] text-white overflow-hidden">
       {/* Background glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(15,43,99,0.9),transparent_45%)] pointer-events-none" />
-
-      {/* Extra depth */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-500/[0.02] to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#0f2b63,transparent_45%)] pointer-events-none" />
 
       {/* Navbar */}
       <header className="relative z-20 border-b border-white/10 backdrop-blur">
@@ -32,7 +29,6 @@ export default function Home() {
               <h1 className="text-2xl font-bold leading-none">
                 DefiledAI
               </h1>
-
               <p className="text-sm text-white/60">
                 Local freedom. Full potential.
               </p>
@@ -73,7 +69,6 @@ export default function Home() {
                 placeholder="Search..."
                 className="bg-transparent outline-none text-sm flex-1"
               />
-
               <Search className="w-4 h-4 text-white/40" />
             </div>
 
@@ -81,11 +76,11 @@ export default function Home() {
               <Moon className="w-5 h-5 text-white/70" />
             </button>
 
-            <button className="h-11 px-6 rounded-xl bg-emerald-400 text-black font-medium hover:bg-emerald-300 transition">
+            <button className="h-11 px-6 rounded-xl bg-emerald-400 text-black font-medium">
               Log in
             </button>
 
-            <button className="h-11 px-6 rounded-xl border border-emerald-400/40 text-emerald-300 hover:bg-emerald-400/10 transition">
+            <button className="h-11 px-6 rounded-xl border border-emerald-400/40 text-emerald-300">
               Sign up
             </button>
           </div>
@@ -93,14 +88,13 @@ export default function Home() {
       </header>
 
       {/* Hero */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pt-28 pb-20">
+      <section className="relative z-10 max-w-7xl mx-auto px-6 pt-20 pb-14">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left */}
           <div>
-            <h2 className="text-5xl lg:text-7xl leading-tight font-bold tracking-tight">
+            <h2 className="text-6xl leading-tight font-bold tracking-tight">
               A home for
               <br />
-
               <span className="text-emerald-400">
                 unrestricted intelligence.
               </span>
@@ -114,7 +108,7 @@ export default function Home() {
             <div className="flex flex-wrap gap-4 mt-10">
               <Link
                 href="#"
-                className="h-14 px-7 rounded-xl bg-emerald-400 text-black font-semibold flex items-center gap-3 hover:bg-emerald-300 transition"
+                className="h-14 px-7 rounded-xl bg-emerald-400 text-black font-semibold flex items-center gap-3"
               >
                 <BookOpen className="w-5 h-5" />
                 Explore Articles
@@ -122,7 +116,7 @@ export default function Home() {
 
               <Link
                 href="#"
-                className="h-14 px-7 rounded-xl border border-white/15 bg-white/5 flex items-center gap-3 hover:bg-white/10 transition"
+                className="h-14 px-7 rounded-xl border border-white/15 bg-white/5 flex items-center gap-3"
               >
                 <MessageSquare className="w-5 h-5" />
                 Visit the Forum
@@ -142,21 +136,17 @@ export default function Home() {
 
               <div className="p-6 font-mono text-emerald-300 text-sm leading-8">
                 <p>$ ./run-llm --local</p>
-
                 <br />
-
                 <p>Loading model...</p>
                 <p>Context: unlimited</p>
                 <p>Filters: none</p>
                 <p>Freedom: enabled</p>
-
                 <br />
-
                 <p>&gt; _</p>
               </div>
             </div>
 
-            {/* Glow sphere */}
+            {/* Cube */}
             <div className="w-[440px] h-[440px] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.18),transparent_70%)] flex items-center justify-center">
               <div className="w-60 h-60 rounded-[2rem] border border-white/10 bg-gradient-to-br from-[#182436] to-[#0b1220] shadow-2xl flex items-center justify-center rotate-6">
                 <Lock className="w-24 h-24 text-emerald-400" />
@@ -166,7 +156,7 @@ export default function Home() {
         </div>
 
         {/* Features */}
-        <div className="grid md:grid-cols-4 gap-10 mt-24 border-t border-white/10 pt-10">
+        <div className="grid md:grid-cols-4 gap-10 mt-20 border-t border-white/10 pt-10">
           <Feature
             icon={<Shield className="w-7 h-7 text-emerald-400" />}
             title="Unrestricted"
@@ -195,50 +185,42 @@ export default function Home() {
 
       {/* Content panels */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 pb-24">
-        <div className="grid xl:grid-cols-[1.2fr_0.8fr] gap-8 items-start">
+        <div className="grid lg:grid-cols-2 gap-8">
           {/* Articles */}
-          <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.02] backdrop-blur-xl p-8 shadow-[0_0_50px_rgba(16,185,129,0.04)]">
+          <div className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-8">
             <div className="flex items-center justify-between mb-8">
-              <h3 className="text-3xl font-bold">
-                Latest Articles
-              </h3>
+              <h3 className="text-3xl font-bold">Latest Articles</h3>
 
-              <a className="text-emerald-400 hover:text-emerald-300 transition">
-                View all →
-              </a>
+              <a className="text-emerald-400">View all →</a>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-5">
               <ArticleCard
                 title="Llama 3.1 70B Uncensored: Local Setup & Benchmarks"
-                desc="We run extensive tests on Llama 3.1 70B abliterate models, quantization strategies, memory requirements and local inference performance."
+                desc="We run extensive tests on Llama 3.1 70B abliterate..."
               />
 
               <ArticleCard
                 title="Abliterated vs Unrestricted: What's the Difference?"
-                desc="A deep dive into how different uncensoring methods affect reasoning, creativity, safety layers and alignment behavior."
+                desc="A deep dive into what content is removed..."
               />
 
               <ArticleCard
                 title="Building the Perfect Local LLM Stack in 2026"
-                desc="Hardware recommendations, inference engines, quantization formats and the ideal software stack for local AI power users."
+                desc="Hardware, quantization, inference engines..."
               />
             </div>
           </div>
 
           {/* Forum */}
-          <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.05] to-white/[0.02] backdrop-blur-xl p-8 shadow-[0_0_50px_rgba(16,185,129,0.04)]">
+          <div className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-8">
             <div className="flex items-center justify-between mb-8">
-              <h3 className="text-3xl font-bold">
-                Forum Discussions
-              </h3>
+              <h3 className="text-3xl font-bold">Forum Discussions</h3>
 
-              <a className="text-emerald-400 hover:text-emerald-300 transition">
-                View all →
-              </a>
+              <a className="text-emerald-400">View all →</a>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-6">
               <ForumItem
                 letter="M"
                 title="Llama 3.1 8B vs 70B — real world usage?"
@@ -262,48 +244,19 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-white/10 bg-[#060b16]/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 py-14">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10">
-            {/* Left */}
-            <div className="max-w-md">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center">
-                  <Lock className="w-5 h-5 text-emerald-400" />
-                </div>
-
-                <div>
-                  <h4 className="text-lg font-bold">
-                    DefiledAI
-                  </h4>
-
-                  <p className="text-sm text-white/50">
-                    Unrestricted local intelligence
-                  </p>
-                </div>
-              </div>
-
-              <p className="text-white/50 leading-relaxed">
-                Built for people who believe AI should run locally,
-                privately, and without artificial restrictions.
-              </p>
-            </div>
-
-            {/* Right */}
-            <div className="flex flex-wrap gap-6 text-sm text-white/50">
-              <a className="hover:text-white transition">Articles</a>
-              <a className="hover:text-white transition">Forum</a>
-              <a className="hover:text-white transition">Benchmarks</a>
-              <a className="hover:text-white transition">GitHub</a>
-              <a className="hover:text-white transition">Discord</a>
-              <a className="hover:text-white transition">Privacy</a>
-            </div>
+      {/* FOOTER */}
+      <footer className="border-t border-[#13203a] bg-[#060b1a]">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-6 py-8 text-sm text-gray-400 md:flex-row">
+          <div>
+            Built by a community that believes intelligence should be free.
           </div>
 
-          <div className="mt-10 pt-6 border-t border-white/5 text-sm text-white/30">
-            © 2026 DefiledAI. Local freedom. Full potential.
+          <div className="flex gap-6">
+            <a href="#">GitHub</a>
+            <a href="#">Discord</a>
+            <a href="#">RSS Feed</a>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
           </div>
         </div>
       </footer>
@@ -325,13 +278,8 @@ function Feature({
       {icon}
 
       <div>
-        <h4 className="font-semibold text-lg">
-          {title}
-        </h4>
-
-        <p className="text-white/60">
-          {text}
-        </p>
+        <h4 className="font-semibold text-lg">{title}</h4>
+        <p className="text-white/60">{text}</p>
       </div>
     </div>
   );
@@ -345,18 +293,14 @@ function ArticleCard({
   desc: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[#0b1220]/70 p-5 hover:border-emerald-400/30 hover:bg-[#101827] transition">
-      <div className="space-y-5">
-        <div className="aspect-[16/9] w-full rounded-2xl bg-gradient-to-br from-emerald-400/20 via-cyan-500/10 to-blue-500/20 border border-white/10" />
+    <div className="rounded-2xl border border-white/10 bg-[#0b1220]/70 p-5 hover:border-emerald-400/30 transition">
+      <div className="flex gap-5">
+        <div className="w-44 h-28 rounded-xl bg-gradient-to-br from-emerald-400/20 to-blue-500/20 border border-white/10" />
 
-        <div>
-          <h4 className="text-lg font-semibold leading-snug">
-            {title}
-          </h4>
+        <div className="flex-1">
+          <h4 className="text-xl font-semibold">{title}</h4>
 
-          <p className="text-sm text-white/60 mt-3 leading-relaxed">
-            {desc}
-          </p>
+          <p className="text-white/60 mt-2">{desc}</p>
 
           <div className="mt-4 text-sm text-white/40">
             May 19, 2026 • 12 min read
@@ -375,18 +319,16 @@ function ForumItem({
   title: string;
 }) {
   return (
-    <div className="flex gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-4 hover:bg-white/[0.04] transition">
-      <div className="w-11 h-11 rounded-full bg-emerald-400/20 border border-emerald-400/20 flex items-center justify-center text-emerald-300 font-bold shrink-0">
+    <div className="flex gap-4 border-b border-white/5 pb-5">
+      <div className="w-11 h-11 rounded-full bg-emerald-400/20 border border-emerald-400/20 flex items-center justify-center text-emerald-300 font-bold">
         {letter}
       </div>
 
       <div>
-        <h4 className="text-lg font-medium leading-snug">
-          {title}
-        </h4>
+        <h4 className="text-lg font-medium">{title}</h4>
 
-        <p className="text-white/50 text-sm mt-1 leading-relaxed">
-          Discussion, benchmarks, testing and unrestricted local AI usage.
+        <p className="text-white/50 text-sm mt-1">
+          Discussion, benchmarks, testing and local AI usage.
         </p>
 
         <div className="mt-2 text-xs text-white/30">
@@ -394,5 +336,5 @@ function ForumItem({
         </div>
       </div>
     </div>
-  );
+  )
 }
