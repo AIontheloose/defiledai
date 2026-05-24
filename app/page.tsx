@@ -72,13 +72,6 @@ export default function Home() {
             >
               Resources
             </Link>
-
-            <Link
-              href="/about"
-              className="text-white/80 hover:text-white transition"
-            >
-              About
-            </Link>
           </nav>
 
           {/* Right side */}
