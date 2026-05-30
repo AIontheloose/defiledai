@@ -8,11 +8,12 @@ const withMDX = createMDX({
 const nextConfig = {
   pageExtensions: ["ts", "tsx", "md", "mdx"],
 
-  webpack: (config, { dev }) => {
-    if (!dev) {
-      config.cache = false;
-    }
+  images: {
+    unoptimized: true,
+  },
 
+  webpack: (config, { dev }) => {
+    if (!dev) config.cache = false;
     return config;
   },
 };
