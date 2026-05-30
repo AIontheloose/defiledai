@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 
-export const metadata = undefined; // client component
 
 const QUANT_MULTIPLIERS: Record<string, { mult: number; label: string; quality: number }> = {
   F16:    { mult: 2.00, label: "F16 — Full precision",        quality: 100 },
