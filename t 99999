@@ -1,7 +1,5 @@
 import Link from "next/link";
-<div className="fixed top-0 left-0 z-[9999] bg-red-600 text-white p-4 text-4xl font-black">
-  BUILD TEST 99999
-</div>
+
 const researchFeed = [
   {
     category: "MODEL ANALYSIS",
