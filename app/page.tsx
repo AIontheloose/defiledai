@@ -217,9 +217,17 @@ export default function Home() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <span>DEFILEDAI © {new Date().getFullYear()} — OPEN-WEIGHT AI RESEARCH</span>
           <div className="flex flex-wrap gap-6 justify-center">
-            {["/uncensored","UNCENSORED"],["/leaderboard","LEADERBOARD"],["/articles","ARTICLES"],["/benchmarks","BENCHMARKS"],["/tools/vram-calculator","VRAM CALC"],["/forum","FORUM"],["/feed.xml","RSS"]].map(([href,label]) => (
-              <Link key={href} href={href} className="hover:text-[var(--fg)] transition-colors">{label}</Link>
-            ))}
+           {[
+  ["/uncensored", "UNCENSORED"],
+  ["/leaderboard", "LEADERBOARD"],
+  ["/articles", "ARTICLES"],
+  ["/benchmarks", "BENCHMARKS"],
+  ["/tools/vram-calculator", "VRAM CALC"],
+  ["/forum", "FORUM"],
+  ["/feed.xml", "RSS"],
+].map(([href, label]) => (
+  <Link key={href} href={href} className="hover:text-[var(--fg)] transition-colors">{label}</Link>
+))}
           </div>
         </div>
       </footer>
