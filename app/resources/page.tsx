@@ -113,12 +113,12 @@ const tagColors: Record<string, string> = {
 
 export default function ResourcesPage() {
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
+    <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="mb-12">
           <div className="text-cyan-400 text-xs uppercase tracking-widest mb-3">DefiledAI</div>
           <h1 className="text-4xl font-black font-mono mb-4">RESOURCES</h1>
-          <p className="text-zinc-400 max-w-2xl">
+          <p className="text-[var(--muted2)] max-w-2xl">
             Guides, references, and tools for running AI locally. From first setup to multi-GPU
             optimization.
           </p>
@@ -129,25 +129,25 @@ export default function ResourcesPage() {
           {guides.map((section) => (
             <div key={section.category}>
               <div className="flex items-center gap-4 mb-6">
-                <span className="text-xs tracking-widest uppercase text-zinc-400">{section.category}</span>
+                <span className="text-xs tracking-widest uppercase text-[var(--muted2)]">{section.category}</span>
                 <div className="flex-1 h-px bg-zinc-800" />
               </div>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {section.items.map((item, i) => (
                   <Link key={i} href={item.link}
-                    className="group border border-zinc-800 hover:border-cyan-500/30 p-6 transition-all hover:bg-cyan-500/[0.02]">
+                    className="group border border-[var(--border)] hover:border-cyan-500/30 p-6 transition-all hover:bg-cyan-500/[0.02]">
                     <div className="flex flex-wrap gap-1 mb-3">
                       {item.tags.map((tag) => (
                         <span key={tag}
-                          className={`text-xs border px-1.5 py-0.5 ${tagColors[tag] ?? "text-zinc-400 border-zinc-700"}`}>
+                          className={`text-xs border px-1.5 py-0.5 ${tagColors[tag] ?? "text-[var(--muted2)] border-zinc-700"}`}>
                           {tag}
                         </span>
                       ))}
                     </div>
-                    <div className="font-mono font-bold text-white mb-2 group-hover:text-cyan-100 transition-colors leading-snug">
+                    <div className="font-mono font-bold text-[var(--fg)] mb-2 group-hover:text-cyan-100 transition-colors leading-snug">
                       {item.title}
                     </div>
-                    <div className="text-zinc-500 text-sm leading-relaxed">{item.desc}</div>
+                    <div className="text-[var(--muted)] text-sm leading-relaxed">{item.desc}</div>
                   </Link>
                 ))}
               </div>
@@ -156,20 +156,20 @@ export default function ResourcesPage() {
         </div>
 
         {/* External links */}
-        <div className="border-t border-zinc-800 pt-12">
+        <div className="border-t border-[var(--border)] pt-12">
           <div className="flex items-center gap-4 mb-6">
-            <span className="text-xs tracking-widest uppercase text-zinc-400">External Tools</span>
+            <span className="text-xs tracking-widest uppercase text-[var(--muted2)]">External Tools</span>
             <div className="flex-1 h-px bg-zinc-800" />
           </div>
           <div className="grid md:grid-cols-3 gap-4">
             {external.map((e, i) => (
               <a key={i} href={e.url} target="_blank" rel="noopener noreferrer"
-                className="group border border-zinc-800 hover:border-zinc-600 p-5 transition-all hover:bg-zinc-900/30">
+                className="group border border-[var(--border)] hover:border-zinc-600 p-5 transition-all hover:bg-[var(--surface)]/30">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="font-mono font-bold text-white group-hover:text-cyan-100 transition-colors">{e.name}</span>
-                  <span className="text-zinc-600 text-xs">↗</span>
+                  <span className="font-mono font-bold text-[var(--fg)] group-hover:text-cyan-100 transition-colors">{e.name}</span>
+                  <span className="text-[var(--muted)] text-xs">↗</span>
                 </div>
-                <div className="text-zinc-500 text-sm">{e.desc}</div>
+                <div className="text-[var(--muted)] text-sm">{e.desc}</div>
               </a>
             ))}
           </div>

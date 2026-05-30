@@ -32,19 +32,19 @@ export default function ArticlesPage() {
   }>;
 
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
+    <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="mb-12">
           <div className="text-cyan-400 text-xs uppercase tracking-widest mb-3">DefiledAI Research</div>
           <h1 className="text-4xl font-black font-mono mb-4">RESEARCH ARCHIVE</h1>
-          <p className="text-zinc-400 max-w-2xl">
+          <p className="text-[var(--muted2)] max-w-2xl">
             In-depth analysis on open-weight models, quantization, inference infrastructure,
             and local AI deployment.
           </p>
         </div>
 
         {articles.length === 0 ? (
-          <div className="border border-zinc-800 p-12 text-center text-zinc-600">
+          <div className="border border-[var(--border)] p-12 text-center text-[var(--muted)]">
             <div className="font-mono text-lg mb-2">NO ARTICLES YET</div>
             <div className="text-sm">Add .mdx files to content/articles/ to publish here.</div>
           </div>
@@ -52,21 +52,21 @@ export default function ArticlesPage() {
           <div className="space-y-4">
             {articles.map((article) => (
               <Link key={article.slug} href={`/articles/${article.slug}`}
-                className="group block border border-zinc-800 hover:border-cyan-500/30 p-6 transition-all hover:bg-cyan-500/[0.02]">
+                className="group block border border-[var(--border)] hover:border-cyan-500/30 p-6 transition-all hover:bg-cyan-500/[0.02]">
                 <div className="flex items-start justify-between gap-6">
                   <div className="flex-1">
                     <div className="text-cyan-400 text-xs uppercase tracking-widest mb-2">
                       {article.category || "Article"}
                     </div>
-                    <h2 className="font-mono font-bold text-xl text-white group-hover:text-cyan-100 transition-colors mb-2">
+                    <h2 className="font-mono font-bold text-xl text-[var(--fg)] group-hover:text-cyan-100 transition-colors mb-2">
                       {article.title || article.slug}
                     </h2>
                     {article.excerpt && (
-                      <p className="text-zinc-400 text-sm leading-relaxed">{article.excerpt}</p>
+                      <p className="text-[var(--muted2)] text-sm leading-relaxed">{article.excerpt}</p>
                     )}
                   </div>
                   <div className="text-right shrink-0">
-                    <div className="text-xs text-zinc-600 font-mono">{article.date}</div>
+                    <div className="text-xs text-[var(--muted)] font-mono">{article.date}</div>
                     <div className="text-cyan-400 text-xs mt-3 group-hover:text-cyan-300 transition-colors">READ →</div>
                   </div>
                 </div>

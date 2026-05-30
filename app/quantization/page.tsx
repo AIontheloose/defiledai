@@ -27,7 +27,7 @@ function Bar({ value }: { value: number }) {
   const color = value >= 90 ? "#22d3ee" : value >= 75 ? "#86efac" : value >= 60 ? "#fbbf24" : "#f87171";
   return (
     <div className="flex items-center gap-3">
-      <div className="flex-1 bg-zinc-900 h-1.5">
+      <div className="flex-1 bg-[var(--surface)] h-1.5">
         <div style={{ width: `${value}%`, background: color, height: "100%" }} />
       </div>
       <span className="text-xs w-8 text-right" style={{ color }}>{value}</span>
@@ -37,12 +37,12 @@ function Bar({ value }: { value: number }) {
 
 export default function QuantizationPage() {
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
+    <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="mb-12">
           <div className="text-cyan-400 text-xs uppercase tracking-widest mb-3">DefiledAI Research</div>
           <h1 className="text-4xl font-black font-mono mb-4">QUANTIZATION GUIDE</h1>
-          <p className="text-zinc-400 max-w-2xl leading-relaxed">
+          <p className="text-[var(--muted2)] max-w-2xl leading-relaxed">
             GGUF quantization lets you run large models on consumer hardware by reducing
             weight precision. This guide covers every major format, their quality tradeoffs,
             and how to choose the right one for your hardware.
@@ -50,14 +50,14 @@ export default function QuantizationPage() {
         </div>
 
         {/* What is quantization */}
-        <div className="border border-zinc-800 p-8 mb-10 bg-zinc-900/10">
+        <div className="border border-[var(--border)] p-8 mb-10 bg-[var(--surface)]/10">
           <h2 className="font-mono font-bold text-xl mb-4 text-cyan-400">WHAT IS QUANTIZATION?</h2>
-          <p className="text-zinc-400 leading-relaxed mb-4">
+          <p className="text-[var(--muted2)] leading-relaxed mb-4">
             Neural network weights are typically stored as 16-bit or 32-bit floating point numbers.
             Quantization reduces each weight to fewer bits — trading a small amount of model quality
             for dramatically lower VRAM usage and faster inference.
           </p>
-          <p className="text-zinc-400 leading-relaxed">
+          <p className="text-[var(--muted2)] leading-relaxed">
             The GGUF format (used by llama.cpp, Ollama, LM Studio, and ExLlamaV2) supports a wide
             range of quantization levels. K-quants (Q4_K_M, Q5_K_M etc.) use a mixed-precision
             approach that preserves quality in the most important layers.
@@ -65,14 +65,14 @@ export default function QuantizationPage() {
         </div>
 
         {/* Format table */}
-        <div className="border border-zinc-800 mb-10">
-          <div className="px-6 py-4 border-b border-zinc-800">
+        <div className="border border-[var(--border)] mb-10">
+          <div className="px-6 py-4 border-b border-[var(--border)]">
             <span className="text-sm font-mono tracking-widest uppercase">Format Comparison</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm font-mono">
               <thead>
-                <tr className="border-b border-zinc-800 text-zinc-500 text-xs tracking-widest uppercase">
+                <tr className="border-b border-[var(--border)] text-[var(--muted)] text-xs tracking-widest uppercase">
                   <th className="text-left px-6 py-3">Format</th>
                   <th className="text-left px-6 py-3">Bits</th>
                   <th className="text-left px-6 py-3">VRAM vs F16</th>
@@ -83,13 +83,13 @@ export default function QuantizationPage() {
               </thead>
               <tbody>
                 {formats.map((f, i) => (
-                  <tr key={i} className="border-b border-zinc-900 hover:bg-zinc-900/40 transition-colors align-top">
+                  <tr key={i} className="border-b border-zinc-900 hover:bg-[var(--surface)]/40 transition-colors align-top">
                     <td className="px-6 py-4 text-cyan-400 font-bold">{f.name}</td>
-                    <td className="px-6 py-4 text-zinc-300">{f.bits}</td>
-                    <td className="px-6 py-4 text-zinc-300">{f.vramMult}</td>
+                    <td className="px-6 py-4 text-[var(--fg2)]">{f.bits}</td>
+                    <td className="px-6 py-4 text-[var(--fg2)]">{f.vramMult}</td>
                     <td className="px-6 py-4"><Bar value={f.quality} /></td>
                     <td className="px-6 py-4"><Bar value={f.speed} /></td>
-                    <td className="px-6 py-4 text-zinc-500 text-xs leading-relaxed max-w-xs">{f.use}</td>
+                    <td className="px-6 py-4 text-[var(--muted)] text-xs leading-relaxed max-w-xs">{f.use}</td>
                   </tr>
                 ))}
               </tbody>
@@ -98,14 +98,14 @@ export default function QuantizationPage() {
         </div>
 
         {/* VRAM table */}
-        <div className="border border-zinc-800 mb-10">
-          <div className="px-6 py-4 border-b border-zinc-800">
+        <div className="border border-[var(--border)] mb-10">
+          <div className="px-6 py-4 border-b border-[var(--border)]">
             <span className="text-sm font-mono tracking-widest uppercase">VRAM Requirements by Model Size</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm font-mono">
               <thead>
-                <tr className="border-b border-zinc-800 text-zinc-500 text-xs tracking-widest uppercase">
+                <tr className="border-b border-[var(--border)] text-[var(--muted)] text-xs tracking-widest uppercase">
                   <th className="text-left px-6 py-3">Model</th>
                   <th className="text-left px-6 py-3">F16</th>
                   <th className="text-left px-6 py-3">Q8_0</th>
@@ -116,13 +116,13 @@ export default function QuantizationPage() {
               </thead>
               <tbody>
                 {vramTable.map((row, i) => (
-                  <tr key={i} className="border-b border-zinc-900 hover:bg-zinc-900/40 transition-colors">
-                    <td className="px-6 py-4 text-white font-bold">{row.model}</td>
-                    <td className="px-6 py-4 text-zinc-500">{row.f16}</td>
-                    <td className="px-6 py-4 text-zinc-400">{row.q8}</td>
-                    <td className="px-6 py-4 text-zinc-300">{row.q5}</td>
+                  <tr key={i} className="border-b border-zinc-900 hover:bg-[var(--surface)]/40 transition-colors">
+                    <td className="px-6 py-4 text-[var(--fg)] font-bold">{row.model}</td>
+                    <td className="px-6 py-4 text-[var(--muted)]">{row.f16}</td>
+                    <td className="px-6 py-4 text-[var(--muted2)]">{row.q8}</td>
+                    <td className="px-6 py-4 text-[var(--fg2)]">{row.q5}</td>
                     <td className="px-6 py-4 text-cyan-400">{row.q4}</td>
-                    <td className="px-6 py-4 text-zinc-500">{row.q2}</td>
+                    <td className="px-6 py-4 text-[var(--muted)]">{row.q2}</td>
                   </tr>
                 ))}
               </tbody>
@@ -134,17 +134,17 @@ export default function QuantizationPage() {
         <div className="border border-cyan-500/20 p-8 bg-cyan-500/[0.03]">
           <h2 className="font-mono font-bold text-lg mb-5 text-cyan-400">QUICK RECOMMENDATION</h2>
           <div className="grid md:grid-cols-3 gap-6 text-sm">
-            <div className="border border-zinc-800 p-4">
-              <div className="text-white font-bold mb-2">Consumer GPU (≤24GB)</div>
-              <div className="text-zinc-400">Use <span className="text-cyan-400">Q4_K_M</span> for 7-13B models. For 70B you&apos;ll need dual GPUs or NVLink.</div>
+            <div className="border border-[var(--border)] p-4">
+              <div className="text-[var(--fg)] font-bold mb-2">Consumer GPU (≤24GB)</div>
+              <div className="text-[var(--muted2)]">Use <span className="text-cyan-400">Q4_K_M</span> for 7-13B models. For 70B you&apos;ll need dual GPUs or NVLink.</div>
             </div>
-            <div className="border border-zinc-800 p-4">
-              <div className="text-white font-bold mb-2">Dual GPU (48GB)</div>
-              <div className="text-zinc-400">Run 70B at <span className="text-cyan-400">Q4_K_M</span> comfortably. Q5_K_M if you want better quality at 56GB.</div>
+            <div className="border border-[var(--border)] p-4">
+              <div className="text-[var(--fg)] font-bold mb-2">Dual GPU (48GB)</div>
+              <div className="text-[var(--muted2)]">Run 70B at <span className="text-cyan-400">Q4_K_M</span> comfortably. Q5_K_M if you want better quality at 56GB.</div>
             </div>
-            <div className="border border-zinc-800 p-4">
-              <div className="text-white font-bold mb-2">Quality Priority</div>
-              <div className="text-zinc-400">Always use the highest quant that fits. <span className="text-cyan-400">Q6_K or Q8_0</span> for smaller models if VRAM allows.</div>
+            <div className="border border-[var(--border)] p-4">
+              <div className="text-[var(--fg)] font-bold mb-2">Quality Priority</div>
+              <div className="text-[var(--muted2)]">Always use the highest quant that fits. <span className="text-cyan-400">Q6_K or Q8_0</span> for smaller models if VRAM allows.</div>
             </div>
           </div>
         </div>

@@ -72,12 +72,12 @@ const gpus = [
 
 export default function HardwarePage() {
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
+    <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="mb-12">
           <div className="text-cyan-400 text-xs uppercase tracking-widest mb-3">DefiledAI Research</div>
           <h1 className="text-4xl font-black font-mono mb-4">HARDWARE CONFIGS</h1>
-          <p className="text-zinc-400 max-w-2xl leading-relaxed">
+          <p className="text-[var(--muted2)] max-w-2xl leading-relaxed">
             Curated build recommendations for local AI inference at every budget tier,
             plus a GPU reference matrix sorted by inference performance.
           </p>
@@ -86,40 +86,40 @@ export default function HardwarePage() {
         {/* Build tiers */}
         <div className="grid md:grid-cols-2 gap-6 mb-16">
           {builds.map((b, i) => (
-            <div key={i} className="border border-zinc-800 hover:border-zinc-700 transition-colors p-6">
+            <div key={i} className="border border-[var(--border)] hover:border-zinc-700 transition-colors p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <div className="font-mono font-black text-white text-lg">{b.name}</div>
+                  <div className="font-mono font-black text-[var(--fg)] text-lg">{b.name}</div>
                   <div className="text-cyan-400 text-sm mt-1">{b.budget}</div>
                 </div>
-                <div className="text-right text-xs text-zinc-500 font-mono">
+                <div className="text-right text-xs text-[var(--muted)] font-mono">
                   <div>MAX</div>
-                  <div className="text-zinc-300">{b.maxModel}</div>
+                  <div className="text-[var(--fg2)]">{b.maxModel}</div>
                 </div>
               </div>
               <div className="space-y-2 text-sm font-mono mb-4">
                 <div className="flex gap-3">
-                  <span className="text-zinc-600 w-20 shrink-0">GPU</span>
+                  <span className="text-[var(--muted)] w-20 shrink-0">GPU</span>
                   <span className="text-zinc-200">{b.gpu}</span>
                 </div>
                 <div className="flex gap-3">
-                  <span className="text-zinc-600 w-20 shrink-0">CPU</span>
+                  <span className="text-[var(--muted)] w-20 shrink-0">CPU</span>
                   <span className="text-zinc-200">{b.cpu}</span>
                 </div>
                 <div className="flex gap-3">
-                  <span className="text-zinc-600 w-20 shrink-0">RAM</span>
+                  <span className="text-[var(--muted)] w-20 shrink-0">RAM</span>
                   <span className="text-zinc-200">{b.ram}</span>
                 </div>
                 <div className="flex gap-3">
-                  <span className="text-zinc-600 w-20 shrink-0">Storage</span>
+                  <span className="text-[var(--muted)] w-20 shrink-0">Storage</span>
                   <span className="text-zinc-200">{b.storage}</span>
                 </div>
                 <div className="flex gap-3">
-                  <span className="text-zinc-600 w-20 shrink-0">Speed</span>
+                  <span className="text-[var(--muted)] w-20 shrink-0">Speed</span>
                   <span className="text-green-400">{b.toks}</span>
                 </div>
               </div>
-              <div className="border-t border-zinc-800 pt-4 text-xs text-zinc-500 leading-relaxed">
+              <div className="border-t border-[var(--border)] pt-4 text-xs text-[var(--muted)] leading-relaxed">
                 {b.notes}
               </div>
             </div>
@@ -133,11 +133,11 @@ export default function HardwarePage() {
             <div className="flex-1 h-px bg-cyan-500/10" />
           </div>
         </div>
-        <div className="border border-zinc-800">
+        <div className="border border-[var(--border)]">
           <div className="overflow-x-auto">
             <table className="w-full text-sm font-mono">
               <thead>
-                <tr className="border-b border-zinc-800 text-zinc-500 text-xs tracking-widest uppercase">
+                <tr className="border-b border-[var(--border)] text-[var(--muted)] text-xs tracking-widest uppercase">
                   <th className="text-left px-6 py-3">GPU</th>
                   <th className="text-left px-6 py-3">VRAM</th>
                   <th className="text-left px-6 py-3">Bandwidth</th>
@@ -149,16 +149,16 @@ export default function HardwarePage() {
               </thead>
               <tbody>
                 {gpus.map((g, i) => (
-                  <tr key={i} className="border-b border-zinc-900 hover:bg-zinc-900/40 transition-colors">
-                    <td className="px-6 py-4 text-white font-bold">{g.name}</td>
+                  <tr key={i} className="border-b border-zinc-900 hover:bg-[var(--surface)]/40 transition-colors">
+                    <td className="px-6 py-4 text-[var(--fg)] font-bold">{g.name}</td>
                     <td className="px-6 py-4 text-cyan-400">{g.vram}</td>
-                    <td className="px-6 py-4 text-zinc-300">{g.bandwidth}</td>
-                    <td className="px-6 py-4 text-zinc-300">{g.tflops}</td>
-                    <td className="px-6 py-4 text-zinc-400">{g.tdp}</td>
-                    <td className="px-6 py-4 text-zinc-500">{g.pcie}</td>
+                    <td className="px-6 py-4 text-[var(--fg2)]">{g.bandwidth}</td>
+                    <td className="px-6 py-4 text-[var(--fg2)]">{g.tflops}</td>
+                    <td className="px-6 py-4 text-[var(--muted2)]">{g.tdp}</td>
+                    <td className="px-6 py-4 text-[var(--muted)]">{g.pcie}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 bg-zinc-900 h-1.5">
+                        <div className="flex-1 bg-[var(--surface)] h-1.5">
                           <div style={{ width: `${g.score}%`, background: "#22d3ee", height: "100%" }} />
                         </div>
                         <span className="text-xs text-cyan-400 w-8 text-right">{g.score}</span>
@@ -170,7 +170,7 @@ export default function HardwarePage() {
             </table>
           </div>
         </div>
-        <p className="text-xs text-zinc-600 mt-3 font-mono">* Inference score weighted toward memory bandwidth (primary bottleneck for LLM token generation).</p>
+        <p className="text-xs text-[var(--muted)] mt-3 font-mono">* Inference score weighted toward memory bandwidth (primary bottleneck for LLM token generation).</p>
       </div>
     </main>
   );

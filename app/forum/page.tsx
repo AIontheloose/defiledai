@@ -83,12 +83,12 @@ const recentPosts = [
 
 export default function ForumPage() {
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
+    <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="mb-12">
           <div className="text-cyan-400 text-xs uppercase tracking-widest mb-3">DefiledAI Community</div>
           <h1 className="text-4xl font-black font-mono mb-4">FORUM</h1>
-          <p className="text-zinc-400 max-w-2xl">
+          <p className="text-[var(--muted2)] max-w-2xl">
             Community discussion on local AI inference, hardware, models, and research.
             Sign up to post — reading is always free.
           </p>
@@ -102,9 +102,9 @@ export default function ForumPage() {
             { label: "Members", value: "312" },
             { label: "Online", value: "14" },
           ].map((s) => (
-            <div key={s.label} className="border border-zinc-800 p-4 text-center">
+            <div key={s.label} className="border border-[var(--border)] p-4 text-center">
               <div className="text-2xl font-black font-mono text-cyan-400">{s.value}</div>
-              <div className="text-xs text-zinc-600 tracking-widest uppercase mt-1">{s.label}</div>
+              <div className="text-xs text-[var(--muted)] tracking-widest uppercase mt-1">{s.label}</div>
             </div>
           ))}
         </div>
@@ -112,31 +112,31 @@ export default function ForumPage() {
         {/* Categories */}
         <div className="mb-12">
           <div className="flex items-center gap-4 mb-6">
-            <span className="text-xs tracking-widest uppercase text-zinc-400">Categories</span>
+            <span className="text-xs tracking-widest uppercase text-[var(--muted2)]">Categories</span>
             <div className="flex-1 h-px bg-zinc-800" />
           </div>
           <div className="space-y-2">
             {categories.map((cat) => (
               <div key={cat.name}
-                className="border border-zinc-800 hover:border-zinc-700 p-5 transition-all hover:bg-zinc-900/20 cursor-pointer">
+                className="border border-[var(--border)] hover:border-zinc-700 p-5 transition-all hover:bg-[var(--surface)]/20 cursor-pointer">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-4 flex-1">
                     <span className="text-cyan-400 text-xl mt-0.5 font-mono">{cat.icon}</span>
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
-                        <span className="font-mono font-bold text-white">{cat.name}</span>
+                        <span className="font-mono font-bold text-[var(--fg)]">{cat.name}</span>
                         {cat.hot && <span className="text-xs text-orange-400 border border-orange-400/20 px-1.5 py-0.5">HOT</span>}
                       </div>
-                      <div className="text-zinc-500 text-xs mb-3">{cat.description}</div>
-                      <div className="text-xs text-zinc-600">
-                        Latest: <span className="text-zinc-400">{cat.latest}</span>
-                        <span className="ml-2 text-zinc-600">— {cat.latestDate}</span>
+                      <div className="text-[var(--muted)] text-xs mb-3">{cat.description}</div>
+                      <div className="text-xs text-[var(--muted)]">
+                        Latest: <span className="text-[var(--muted2)]">{cat.latest}</span>
+                        <span className="ml-2 text-[var(--muted)]">— {cat.latestDate}</span>
                       </div>
                     </div>
                   </div>
                   <div className="text-right shrink-0">
-                    <div className="text-lg font-mono font-bold text-zinc-300">{cat.threads}</div>
-                    <div className="text-xs text-zinc-600">threads</div>
+                    <div className="text-lg font-mono font-bold text-[var(--fg2)]">{cat.threads}</div>
+                    <div className="text-xs text-[var(--muted)]">threads</div>
                   </div>
                 </div>
               </div>
@@ -147,14 +147,14 @@ export default function ForumPage() {
         {/* Recent posts */}
         <div>
           <div className="flex items-center gap-4 mb-6">
-            <span className="text-xs tracking-widest uppercase text-zinc-400">Recent Posts</span>
+            <span className="text-xs tracking-widest uppercase text-[var(--muted2)]">Recent Posts</span>
             <div className="flex-1 h-px bg-zinc-800" />
           </div>
-          <div className="border border-zinc-800">
+          <div className="border border-[var(--border)]">
             <div className="overflow-x-auto">
               <table className="w-full text-sm font-mono">
                 <thead>
-                  <tr className="border-b border-zinc-800 text-zinc-600 text-xs tracking-widest uppercase">
+                  <tr className="border-b border-[var(--border)] text-[var(--muted)] text-xs tracking-widest uppercase">
                     <th className="text-left px-6 py-3">Thread</th>
                     <th className="text-left px-6 py-3">Category</th>
                     <th className="text-left px-6 py-3">Replies</th>
@@ -165,18 +165,18 @@ export default function ForumPage() {
                 </thead>
                 <tbody>
                   {recentPosts.map((p, i) => (
-                    <tr key={i} className="border-b border-zinc-900 hover:bg-zinc-900/40 transition-colors">
+                    <tr key={i} className="border-b border-zinc-900 hover:bg-[var(--surface)]/40 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           {p.hot && <span className="text-orange-400 text-xs">🔥</span>}
-                          <span className="text-zinc-200 hover:text-white cursor-pointer transition-colors">{p.title}</span>
+                          <span className="text-zinc-200 hover:text-[var(--fg)] cursor-pointer transition-colors">{p.title}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-cyan-400 text-xs">{p.category}</td>
-                      <td className="px-6 py-4 text-zinc-400">{p.replies}</td>
-                      <td className="px-6 py-4 text-zinc-500">{p.views}</td>
-                      <td className="px-6 py-4 text-zinc-400">{p.author}</td>
-                      <td className="px-6 py-4 text-zinc-600">{p.date}</td>
+                      <td className="px-6 py-4 text-[var(--muted2)]">{p.replies}</td>
+                      <td className="px-6 py-4 text-[var(--muted)]">{p.views}</td>
+                      <td className="px-6 py-4 text-[var(--muted2)]">{p.author}</td>
+                      <td className="px-6 py-4 text-[var(--muted)]">{p.date}</td>
                     </tr>
                   ))}
                 </tbody>

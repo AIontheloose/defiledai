@@ -26,38 +26,38 @@ const gpuComparison = [
 
 export default function BenchmarksPage() {
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
+    <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="mb-12">
           <div className="text-cyan-400 text-xs uppercase tracking-widest mb-3">DefiledAI Research</div>
           <h1 className="text-4xl font-black font-mono mb-4">BENCHMARK MATRIX</h1>
-          <p className="text-zinc-400 max-w-2xl">
+          <p className="text-[var(--muted2)] max-w-2xl">
             Real-world inference benchmarks measured on consumer and prosumer hardware.
             All results are first-token-excluded sustained throughput at default sampling settings.
           </p>
         </div>
 
         {/* Methodology */}
-        <div className="border border-zinc-800 p-6 mb-10 bg-zinc-900/20">
+        <div className="border border-[var(--border)] p-6 mb-10 bg-[var(--surface)]/20">
           <div className="text-xs text-cyan-400 tracking-widest uppercase mb-3">Methodology</div>
-          <div className="grid md:grid-cols-4 gap-6 text-sm text-zinc-400">
-            <div><span className="text-white block mb-1">Metric</span>Sustained tok/s, excluding first token (TTFT)</div>
-            <div><span className="text-white block mb-1">Prompt</span>512-token fixed input, 256-token output</div>
-            <div><span className="text-white block mb-1">Runs</span>5 iterations, median reported</div>
-            <div><span className="text-white block mb-1">Driver</span>CUDA 12.4 / ROCm 6.1</div>
+          <div className="grid md:grid-cols-4 gap-6 text-sm text-[var(--muted2)]">
+            <div><span className="text-[var(--fg)] block mb-1">Metric</span>Sustained tok/s, excluding first token (TTFT)</div>
+            <div><span className="text-[var(--fg)] block mb-1">Prompt</span>512-token fixed input, 256-token output</div>
+            <div><span className="text-[var(--fg)] block mb-1">Runs</span>5 iterations, median reported</div>
+            <div><span className="text-[var(--fg)] block mb-1">Driver</span>CUDA 12.4 / ROCm 6.1</div>
           </div>
         </div>
 
         {/* Main table */}
-        <div className="border border-zinc-800 mb-10">
-          <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
+        <div className="border border-[var(--border)] mb-10">
+          <div className="px-6 py-4 border-b border-[var(--border)] flex items-center justify-between">
             <span className="text-sm font-mono tracking-widest uppercase">Inference Results</span>
-            <span className="text-xs text-zinc-500">Last updated: 2026-05-28</span>
+            <span className="text-xs text-[var(--muted)]">Last updated: 2026-05-28</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm font-mono">
               <thead>
-                <tr className="border-b border-zinc-800 text-zinc-500 text-xs tracking-widest uppercase">
+                <tr className="border-b border-[var(--border)] text-[var(--muted)] text-xs tracking-widest uppercase">
                   <th className="text-left px-6 py-3">Model</th>
                   <th className="text-left px-6 py-3">Quant</th>
                   <th className="text-left px-6 py-3">VRAM</th>
@@ -69,14 +69,14 @@ export default function BenchmarksPage() {
               </thead>
               <tbody>
                 {results.map((r, i) => (
-                  <tr key={i} className="border-b border-zinc-900 hover:bg-zinc-900/40 transition-colors">
-                    <td className="px-6 py-4 text-white">{r.model}</td>
+                  <tr key={i} className="border-b border-zinc-900 hover:bg-[var(--surface)]/40 transition-colors">
+                    <td className="px-6 py-4 text-[var(--fg)]">{r.model}</td>
                     <td className="px-6 py-4 text-cyan-400">{r.quant}</td>
-                    <td className="px-6 py-4 text-zinc-300">{r.vram}</td>
-                    <td className="px-6 py-4 text-zinc-400">{r.backend}</td>
-                    <td className="px-6 py-4 text-zinc-400">{r.gpu}</td>
+                    <td className="px-6 py-4 text-[var(--fg2)]">{r.vram}</td>
+                    <td className="px-6 py-4 text-[var(--muted2)]">{r.backend}</td>
+                    <td className="px-6 py-4 text-[var(--muted2)]">{r.gpu}</td>
                     <td className="px-6 py-4 text-green-400 font-bold">{r.toks}</td>
-                    <td className="px-6 py-4 text-zinc-600">{r.date}</td>
+                    <td className="px-6 py-4 text-[var(--muted)]">{r.date}</td>
                   </tr>
                 ))}
               </tbody>
@@ -85,14 +85,14 @@ export default function BenchmarksPage() {
         </div>
 
         {/* GPU Comparison */}
-        <div className="border border-zinc-800 mb-10">
-          <div className="px-6 py-4 border-b border-zinc-800">
+        <div className="border border-[var(--border)] mb-10">
+          <div className="px-6 py-4 border-b border-[var(--border)]">
             <span className="text-sm font-mono tracking-widest uppercase">GPU Comparison — Llama Family (tok/s)</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm font-mono">
               <thead>
-                <tr className="border-b border-zinc-800 text-zinc-500 text-xs tracking-widest uppercase">
+                <tr className="border-b border-[var(--border)] text-[var(--muted)] text-xs tracking-widest uppercase">
                   <th className="text-left px-6 py-3">GPU</th>
                   <th className="text-left px-6 py-3">VRAM</th>
                   <th className="text-left px-6 py-3">7B Q4</th>
@@ -103,13 +103,13 @@ export default function BenchmarksPage() {
               </thead>
               <tbody>
                 {gpuComparison.map((g, i) => (
-                  <tr key={i} className="border-b border-zinc-900 hover:bg-zinc-900/40 transition-colors">
-                    <td className="px-6 py-4 text-white">{g.gpu}</td>
-                    <td className="px-6 py-4 text-zinc-400">{g.vram}</td>
+                  <tr key={i} className="border-b border-zinc-900 hover:bg-[var(--surface)]/40 transition-colors">
+                    <td className="px-6 py-4 text-[var(--fg)]">{g.gpu}</td>
+                    <td className="px-6 py-4 text-[var(--muted2)]">{g.vram}</td>
                     <td className="px-6 py-4 text-green-400">{g.llama7b}</td>
                     <td className="px-6 py-4 text-green-400">{g.llama13b}</td>
                     <td className={`px-6 py-4 ${g.llama70b === "OOM" ? "text-red-500" : "text-green-400"}`}>{g.llama70b}</td>
-                    <td className="px-6 py-4 text-zinc-400">{g.price}</td>
+                    <td className="px-6 py-4 text-[var(--muted2)]">{g.price}</td>
                   </tr>
                 ))}
               </tbody>
@@ -117,7 +117,7 @@ export default function BenchmarksPage() {
           </div>
         </div>
 
-        <div className="text-center text-zinc-600 text-sm">
+        <div className="text-center text-[var(--muted)] text-sm">
           Submit your benchmark results to the{" "}
           <Link href="/forum" className="text-cyan-400 hover:text-cyan-300">forum</Link>.
         </div>
