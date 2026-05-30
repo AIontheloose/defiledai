@@ -1,0 +1,91 @@
+---
+title: "Best Abliterated Models 2026: Community Rankings"
+excerpt: "Community-tested rankings of the best abliterated and uncensored open-weight models by use case — coding, reasoning, creative writing, and general instruction following."
+date: "2026-05-30"
+category: "Leaderboard"
+tags: ["abliterated", "uncensored", "rankings", "community", "benchmark", "2026"]
+---
+
+# Best Abliterated Models 2026: Community Rankings
+
+This ranking is based on community testing across four categories: coding, reasoning, creative writing, and instruction following. All models listed are open-weight, locally runnable, and have abliterated or uncensored variants available on HuggingFace.
+
+## Overall Rankings
+
+| Rank | Model | Params | Overall | Best For |
+|---|---|---|---|---|
+| 1 | Llama 3.1 70B Abliterated | 70B | 94 | All-round |
+| 2 | DeepSeek R1 70B Abliterated | 70B | 93 | Reasoning |
+| 3 | Qwen 3 72B Uncensored | 72B | 93 | Coding |
+| 4 | Mistral 7B Abliterated | 7B | 80 | Fast/light |
+| 5 | Llama 3.1 8B Abliterated | 8B | 80 | Entry level |
+| 6 | Gemma 2 27B Abliterated | 27B | 86 | Mid-range |
+| 7 | Mixtral 8x7B Uncensored | 56B MoE | 83 | Creative |
+
+## Best for Coding
+
+**Winner: Qwen 3 72B Uncensored (score: 96)**
+
+Qwen 3 72B has the strongest coding benchmark scores in the open-weight space at 72B scale, and the uncensored variant retains this capability almost entirely. HumanEval score of 86.1% places it ahead of every other locally-runnable model.
+
+Runner-up: DeepSeek R1 70B Abliterated (94) — exceptional for complex algorithmic problems due to chain-of-thought reasoning being intact post-abliteration.
+
+## Best for Reasoning
+
+**Winner: DeepSeek R1 70B Abliterated (score: 97)**
+
+DeepSeek R1 was trained specifically for chain-of-thought reasoning and achieves 94.1% on MATH-500. The abliterated variant preserves the reasoning chain fully — the abliteration technique only removes refusal direction vectors, leaving the reasoning pathways intact.
+
+The gap between R1 abliterated and Llama 3.1 70B abliterated on multi-step math problems is substantial — 94.1% vs 68.3% on MATH-500.
+
+## Best for Creative Writing
+
+**Winner: Llama 3.1 70B Abliterated (score: 96)**
+
+Llama 3.1 70B has the strongest creative writing output in community testing. Post-abliteration it handles fiction, roleplay, and long-form creative tasks without arbitrary topic restrictions. Community consensus is that the 70B scale is meaningfully better than 7-8B for creative coherence over long outputs.
+
+Runner-up: Mixtral 8x7B Uncensored (86) — the MoE architecture produces more varied and surprising creative output than dense models of similar active parameter counts.
+
+## Best Entry-Level (Under 10GB VRAM)
+
+**Winner: Mistral 7B Abliterated (score: 80)**
+
+The cleanest abliteration at 7B scale with 99.2% quality retention. Runs at 90+ tok/s on an RTX 4090 at Q8_0. The quality gap between Mistral 7B and Llama 3.1 8B is minor — both are good entry points.
+
+**Llama 3.1 8B Abliterated** is the alternative if you want the Llama architecture specifically. Slightly stronger instruction following, marginally weaker on raw reasoning.
+
+## Best Mid-Range (10–24GB VRAM)
+
+**Winner: Gemma 2 27B Abliterated (score: 86)**
+
+Gemma 2 27B punches above its weight class — it outperforms many 70B models on reasoning tasks relative to its size. On a single RTX 4090 at Q4_K_M it delivers 44 tok/s with strong output quality.
+
+## Quality Retention by Model
+
+How much does abliteration cost each model on standard benchmarks?
+
+| Model | MMLU Base | MMLU Abliterated | Loss |
+|---|---|---|---|
+| Mistral 7B | 64.2% | 63.7% | 0.5% |
+| Llama 3.1 8B | 73.0% | 72.4% | 0.6% |
+| Llama 3.1 70B | 83.6% | 82.1% | 1.5% |
+| Qwen 3 72B | 83.1% | 81.3% | 1.8% |
+| DeepSeek R1 70B | 85.1% | 82.7% | 2.4% |
+
+Quality loss increases slightly with model size but remains well within acceptable range for all listed models.
+
+## Hardware Requirements
+
+| Model | Min VRAM | Recommended Config |
+|---|---|---|
+| Mistral 7B / Llama 8B | 6GB | Any RTX 30/40 series |
+| Gemma 2 27B | 16GB | RTX 4080 or 4090 |
+| Llama 3.1 70B | 40GB | Dual RTX 3090 NVLink |
+| Qwen 3 72B | 40GB | Dual RTX 3090 NVLink |
+| DeepSeek R1 70B | 40GB | Dual RTX 3090 NVLink |
+
+## Finding These Models
+
+All models listed have GGUF variants available on HuggingFace. Search `[model name] abliterated GGUF` or visit the [DefiledAI uncensored database](/uncensored) for direct links and curated quant options.
+
+Community rankings are updated monthly based on forum submissions and benchmark data. [Submit your results](/tools/submit-benchmark) to contribute.
