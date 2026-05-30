@@ -2,44 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  box-sizing: border-box;
+/* ── Theme variables ── */
+:root,
+[data-theme="dark"] {
+  --bg: #050816;
+  --bg2: #0a0f1e;
+  --surface: #0d1117;
+  --surface2: #111827;
+  --border: #1e293b;
+  --fg: #ffffff;
+  --fg2: #e2e8f0;
+  --muted: #64748b;
+  --muted2: #94a3b8;
+  --accent: #22d3ee;
+  --accent2: #818cf8;
 }
 
-html {
-  scroll-behavior: smooth;
+[data-theme="light"] {
+  --bg: #f8fafc;
+  --bg2: #f1f5f9;
+  --surface: #ffffff;
+  --surface2: #e2e8f0;
+  --border: #cbd5e1;
+  --fg: #0f172a;
+  --fg2: #1e293b;
+  --muted: #64748b;
+  --muted2: #475569;
+  --accent: #0891b2;
+  --accent2: #4f46e5;
 }
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
 body {
-  background: #050816;
-  color: #fff;
+  background: var(--bg);
+  color: var(--fg);
   font-family: 'Courier New', Courier, monospace;
+  transition: background 0.2s, color 0.2s;
 }
 
-@keyframes pulse-slow {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 3s ease-in-out infinite;
-}
-
-/* Prose overrides for article pages */
+/* ── Prose overrides ── */
 .prose pre {
-  background: #0d1117;
-  border: 1px solid #1e293b;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 0;
 }
-
 .prose code {
-  color: #22d3ee;
-  background: rgba(34, 211, 238, 0.08);
+  color: var(--accent);
+  background: rgba(34,211,238,0.08);
   padding: 0.1em 0.3em;
   font-family: 'Courier New', monospace;
 }
-
 .prose blockquote {
-  border-left-color: #22d3ee;
-  color: #94a3b8;
+  border-left-color: var(--accent);
+  color: var(--muted2);
 }
+.prose h1,.prose h2,.prose h3 { color: var(--fg); }
+.prose p,.prose li { color: var(--fg2); }
+.prose a { color: var(--accent); }
+
+/* ── Animations ── */
+@keyframes pulse-slow {
+  0%,100% { opacity:1; } 50% { opacity:0.4; }
+}
+.animate-pulse-slow { animation: pulse-slow 3s ease-in-out infinite; }
+
+@keyframes fade-in {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.animate-fade-in { animation: fade-in 0.4s ease forwards; }

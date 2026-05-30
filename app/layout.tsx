@@ -1,86 +1,154 @@
-import type { Metadata } from "next";
+"use client";
 import "./globals.css";
+import Link from "next/link";
+import { useState, useEffect } from "react";
 
-export const metadata: Metadata = {
-  title: "DefiledAI — Local AI Intelligence",
-  description: "Local AI research, quantization analysis, benchmarks, and open-weight model intelligence.",
-  openGraph: {
-    title: "DefiledAI — Local AI Intelligence",
-    description: "Benchmarking, quantization analysis, open-weight model research, inference infrastructure, and local AI systems engineering.",
-    url: "https://defiledai.com",
-    siteName: "DefiledAI",
-    type: "website",
-    images: [
-      {
-        url: "https://defiledai.com/og.png",
-        width: 1200,
-        height: 630,
-        alt: "DefiledAI Research Network",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "DefiledAI — Local AI Intelligence",
-    description: "Benchmarking, quantization analysis, open-weight model research.",
-  },
-  icons: {
-    icon: "/favicon.svg",
-  },
-};
+const navLinks = [
+  { href: "/articles", label: "Articles" },
+  { href: "/benchmarks", label: "Benchmarks" },
+  { href: "/models", label: "Models" },
+  { href: "/quantization", label: "Quantization" },
+  { href: "/hardware", label: "Hardware" },
+  { href: "/forum", label: "Forum" },
+  { href: "/resources", label: "Resources" },
+];
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function Nav() {
+  const [open, setOpen] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("theme") as "dark" | "light" | null;
+    if (saved) {
+      setTheme(saved);
+      document.documentElement.setAttribute("data-theme", saved);
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    localStorage.setItem("theme", next);
+    document.documentElement.setAttribute("data-theme", next);
+  };
+
   return (
-    <html lang="en">
-      <body className="bg-[#050816] text-white antialiased">
+    <>
+      <nav className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--bg)]/90 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
+          <Link href="/" className="font-black tracking-tighter text-lg font-mono">
+            <span className="text-[var(--fg)]">Defiled</span>
+            <span className="text-cyan-400">AI</span>
+          </Link>
+
+          {/* Desktop links */}
+          <div className="hidden md:flex items-center gap-1">
+            {navLinks.map((l) => (
+              <Link key={l.href} href={l.href}
+                className="px-3 py-1.5 text-xs tracking-widest uppercase text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--surface)] transition-all">
+                {l.label}
+              </Link>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* Search icon */}
+            <Link href="/search" aria-label="Search"
+              className="p-2 text-[var(--muted)] hover:text-[var(--fg)] transition-colors">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <circle cx="6.5" cy="6.5" r="4.5" /><path d="M10.5 10.5L14 14" strokeLinecap="round" />
+              </svg>
+            </Link>
+
+            {/* Theme toggle */}
+            <button onClick={toggleTheme} aria-label="Toggle theme"
+              className="p-2 text-[var(--muted)] hover:text-[var(--fg)] transition-colors text-xs font-mono tracking-widest">
+              {theme === "dark" ? "LIGHT" : "DARK"}
+            </button>
+
+            <Link href="/login"
+              className="hidden md:block text-xs tracking-widest uppercase text-[var(--muted)] hover:text-[var(--fg)] transition-colors px-3 py-1.5">
+              Login
+            </Link>
+            <Link href="/signup"
+              className="hidden md:block text-xs tracking-widest uppercase bg-cyan-500 text-black font-bold px-4 py-1.5 hover:bg-cyan-400 transition-colors">
+              Sign Up
+            </Link>
+
+            {/* Hamburger */}
+            <button onClick={() => setOpen(!open)} aria-label="Menu"
+              className="md:hidden p-2 text-[var(--muted)] hover:text-[var(--fg)] transition-colors">
+              {open ? (
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M2 2l14 14M16 2L2 16" strokeLinecap="round" />
+                </svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M2 4h14M2 9h14M2 14h14" strokeLinecap="round" />
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile menu */}
+      {open && (
+        <div className="md:hidden fixed inset-0 top-14 z-40 bg-[var(--bg)]/95 backdrop-blur-md border-t border-[var(--border)]">
+          <div className="flex flex-col p-6 gap-1">
+            {navLinks.map((l) => (
+              <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
+                className="px-4 py-3 text-sm tracking-widest uppercase text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--surface)] transition-all border-b border-[var(--border)]">
+                {l.label}
+              </Link>
+            ))}
+            <div className="flex gap-3 mt-6">
+              <Link href="/login" onClick={() => setOpen(false)}
+                className="flex-1 text-center py-3 text-xs tracking-widest uppercase border border-[var(--border)] text-[var(--muted)] hover:text-[var(--fg)] transition-colors">
+                Login
+              </Link>
+              <Link href="/signup" onClick={() => setOpen(false)}
+                className="flex-1 text-center py-3 text-xs tracking-widest uppercase bg-cyan-500 text-black font-bold hover:bg-cyan-400 transition-colors">
+                Sign Up
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" data-theme="dark">
+      <head>
+        {/* Google tag */}
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HTL8W4GT7L"></script>
+  <script dangerouslySetInnerHTML={{ __html: `
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-HTL8W4GT7L');
+  `}} />
+        <title>DefiledAI — Local AI Intelligence</title>
+        <meta name="description" content="Local AI research, quantization analysis, benchmarks, and open-weight model intelligence." />
+        <meta property="og:title" content="DefiledAI — Local AI Intelligence" />
+        <meta property="og:description" content="Benchmarking, quantization analysis, open-weight model research, inference infrastructure, and local AI systems engineering." />
+        <meta property="og:url" content="https://defiledai.com" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://defiledai.com/og.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="DefiledAI — Local AI Intelligence" />
+        <meta name="twitter:description" content="Benchmarking, quantization analysis, open-weight model research." />
+        <meta name="twitter:image" content="https://defiledai.com/og.png" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="alternate" type="application/rss+xml" title="DefiledAI Articles" href="/feed.xml" />
+      </head>
+      <body className="bg-[var(--bg)] text-[var(--fg)] antialiased">
         <Nav />
         {children}
       </body>
     </html>
-  );
-}
-
-function Nav() {
-  const links = [
-    { href: "/articles", label: "Articles" },
-    { href: "/benchmarks", label: "Benchmarks" },
-    { href: "/models", label: "Models" },
-    { href: "/quantization", label: "Quantization" },
-    { href: "/hardware", label: "Hardware" },
-    { href: "/forum", label: "Forum" },
-    { href: "/resources", label: "Resources" },
-  ];
-
-  return (
-    <nav className="sticky top-0 z-50 border-b border-zinc-800 bg-[#050816]/90 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
-        <a href="/" className="font-black tracking-tighter text-lg font-mono">
-          <span className="text-white">Defiled</span>
-          <span className="text-cyan-400">AI</span>
-        </a>
-        <div className="hidden md:flex items-center gap-1">
-          {links.map((l) => (
-            <a key={l.href} href={l.href}
-              className="px-3 py-1.5 text-xs tracking-widest uppercase text-zinc-400 hover:text-white hover:bg-zinc-800/60 transition-all">
-              {l.label}
-            </a>
-          ))}
-        </div>
-        <div className="flex items-center gap-3">
-          <a href="/login"
-            className="text-xs tracking-widest uppercase text-zinc-400 hover:text-white transition-colors px-3 py-1.5">
-            Login
-          </a>
-          <a href="/signup"
-            className="text-xs tracking-widest uppercase bg-cyan-500 text-black font-bold px-4 py-1.5 hover:bg-cyan-400 transition-colors">
-            Sign Up
-          </a>
-        </div>
-      </div>
-    </nav>
   );
 }
