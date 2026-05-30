@@ -4,6 +4,17 @@ import matter from "gray-matter";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+export async function generateStaticParams() {
+  const articlesDir = path.join(process.cwd(), "content/articles");
+  const files = fs.readdirSync(articlesDir);
+
+  return files
+    .filter((f) => f.endsWith(".mdx") || f.endsWith(".md"))
+    .map((f) => ({
+      slug: f.replace(/\.mdx?$/, ""),
+    }));
+}
+
 export default async function ArticlePage({
   params,
 }: {
