@@ -6,10 +6,12 @@ const withMDX = createMDX({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "export", // 👈 add this
+
   pageExtensions: ["ts", "tsx", "md", "mdx"],
 
   images: {
-    unoptimized: true,
+    unoptimized: true, // already set — required for static export
   },
 
   webpack: (config, { dev }) => {
