@@ -1,474 +1,338 @@
 import Link from "next/link";
-import {
-  Lock,
-  BookOpen,
-  MessageSquare,
-  Shield,
-  Code2,
-  Users,
-  Search,
-  Moon,
-} from "lucide-react";
 
-export default function Home() {
+const researchFeed = [
+  {
+    category: "MODEL ANALYSIS",
+    title: "Llama 3.1 70B Uncensored",
+    meta: "48GB+ VRAM • Q4_K_M • ExLlamaV2",
+    href: "/articles/llama-3-1-70b-uncensored",
+  },
+  {
+    category: "QUANTIZATION",
+    title: "Q4_K_M vs IQ3_M Quality Loss",
+    meta: "Memory reduction analysis",
+    href: "#",
+  },
+  {
+    category: "HARDWARE",
+    title: "Dual 3090 NVLink Deployment",
+    meta: "70B inference workstation",
+    href: "#",
+  },
+];
+
+const benchmarkRows = [
+  ["Llama 3.1 70B", "Q4_K_M", "48GB", "21 tok/s"],
+  ["Qwen 3 72B", "Q5_K_M", "64GB", "18 tok/s"],
+  ["DeepSeek V3", "MoE", "Multi-GPU", "39 tok/s"],
+  ["Mixtral 8x22B", "Q4", "48GB", "27 tok/s"],
+];
+
+const hardwareFeed = [
+  "RTX 4090 remains strongest single-GPU inference card",
+  "3090 resale market stabilizing after AI demand spike",
+  "TensorRT-LLM now outperforming llama.cpp on 70B workloads",
+  "KV cache optimization reducing long-context VRAM usage",
+];
+
+export default function HomePage() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#050816] text-white">
-      {/* Background glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(15,43,99,0.9),transparent_45%)] pointer-events-none" />
+    <main className="min-h-screen bg-[#050816] text-white overflow-hidden">
+      {/* GRID BACKGROUND */}
+      <div className="fixed inset-0 opacity-[0.03] pointer-events-none">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(0,255,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,255,0.15) 1px, transparent 1px)",
+            backgroundSize: "80px 80px",
+          }}
+        />
+      </div>
 
-      {/* Navbar */}
-      <header className="relative z-20 border-b border-white/10 backdrop-blur">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center">
-              <Lock className="text-emerald-400 w-6 h-6" />
-            </div>
+      {/* TOP SECTION */}
+      <section className="border-b border-cyan-500/10">
+        <div className="max-w-[1600px] mx-auto px-6 py-10">
+          <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-8">
+            {/* LEFT SIDE */}
+            <div className="space-y-8">
+              {/* BRAND PANEL */}
+              <div className="border border-cyan-500/10 bg-black/30 backdrop-blur-sm">
+                <div className="border-b border-cyan-500/10 px-6 py-3 flex items-center justify-between">
+                  <div className="text-cyan-400 text-xs tracking-[0.3em] uppercase">
+                    DefiledAI Research Network
+                  </div>
 
-            <div>
-              <h1 className="text-2xl font-bold leading-none">
-                DefiledAI
-              </h1>
-
-              <p className="text-sm text-white/60">
-                Local freedom. Full potential.
-              </p>
-            </div>
-          </div>
-
-          {/* Nav */}
-          <nav className="hidden md:flex items-center gap-5 text-[15px]">
-            <Link
-              href="/articles"
-              className="text-white/80 hover:text-white transition"
-            >
-              Articles
-            </Link>
-
-            <Link
-              href="/benchmarks"
-              className="text-white/80 hover:text-white transition"
-            >
-              Benchmarks
-            </Link>
-
-            <Link
-              href="/models"
-              className="text-white/80 hover:text-white transition"
-            >
-              Models
-            </Link>
-
-            <Link
-              href="/forum"
-              className="text-white/80 hover:text-white transition"
-            >
-              Forum
-            </Link>
-
-            <Link
-              href="/resources"
-              className="text-white/80 hover:text-white transition"
-            >
-              Resources
-            </Link>
-          </nav>
-
-          {/* Right side */}
-          <div className="flex items-center gap-4">
-            <div className="hidden lg:flex items-center bg-white/5 border border-white/10 rounded-xl px-4 h-11 w-56">
-              <input
-                placeholder="Search..."
-                className="bg-transparent outline-none text-sm flex-1"
-              />
-
-              <Search className="w-4 h-4 text-white/40" />
-            </div>
-
-            <button className="w-11 h-11 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center hover:bg-white/10 transition">
-              <Moon className="w-5 h-5 text-white/70" />
-            </button>
-
-            <button className="hidden md:flex h-11 px-6 rounded-xl bg-emerald-400 text-black font-medium hover:bg-emerald-300 transition items-center">
-              Log in
-            </button>
-
-            <button className="hidden md:flex h-11 px-6 rounded-xl border border-emerald-400/40 text-emerald-300 hover:bg-emerald-400/10 transition items-center">
-              Sign up
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-20">
-        <div className="grid lg:grid-cols-2 gap-14 items-center">
-          {/* Left */}
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-sm text-emerald-300 mb-6">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              Unrestricted local AI community
-            </div>
-
-            <h2 className="text-5xl lg:text-6xl leading-tight font-bold tracking-tight">
-              A home for
-              <br />
-
-              <span className="text-emerald-400">
-                unrestricted intelligence.
-              </span>
-            </h2>
-
-            <p className="mt-8 text-xl text-white/70 leading-relaxed max-w-xl">
-              News, benchmarks, setup guides and community discussion focused on
-              unrestricted local language models, privacy and self-hosted AI.
-            </p>
-
-            <div className="flex flex-wrap gap-4 mt-10">
-              <Link
-                href="/articles"
-                className="h-14 px-7 rounded-xl bg-emerald-400 text-black font-semibold flex items-center gap-3 hover:bg-emerald-300 transition"
-              >
-                <BookOpen className="w-5 h-5" />
-                Explore Articles
-              </Link>
-
-              <Link
-                href="/forum"
-                className="h-14 px-7 rounded-xl border border-white/15 bg-white/5 flex items-center gap-3 hover:bg-white/10 transition"
-              >
-                <MessageSquare className="w-5 h-5" />
-                Visit the Forum
-              </Link>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-6 mt-14 max-w-xl">
-              <div>
-                <div className="text-3xl font-bold text-emerald-400">
-                  120+
+                  <div className="text-zinc-600 text-xs">
+                    NODE STATUS: ACTIVE
+                  </div>
                 </div>
 
-                <div className="text-sm text-white/50 mt-1">
-                  AI Articles
+                <div className="p-8">
+                  <h1 className="text-6xl md:text-7xl font-black tracking-tight leading-none mb-8">
+                    LOCAL AI
+                    <br />
+                    INTELLIGENCE
+                  </h1>
+
+                  <p className="text-zinc-400 text-lg max-w-3xl leading-relaxed mb-10">
+                    Benchmarking, quantization analysis,
+                    open-weight model research, inference
+                    infrastructure, and local AI systems
+                    engineering.
+                  </p>
+
+                  <div className="flex flex-wrap gap-4">
+                    <Link
+                      href="/articles"
+                      className="h-11 px-5 border border-cyan-400 bg-cyan-400/10 text-cyan-300 flex items-center text-sm tracking-wide hover:bg-cyan-400/20 transition-all"
+                    >
+                      ENTER RESEARCH ARCHIVE
+                    </Link>
+
+                    <Link
+                      href="/benchmarks"
+                      className="h-11 px-5 border border-cyan-500/10 bg-white/[0.03] text-zinc-300 flex items-center text-sm tracking-wide hover:border-cyan-400/30 transition-all"
+                    >
+                      VIEW BENCHMARKS
+                    </Link>
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <div className="text-3xl font-bold text-emerald-400">
-                  45+
-                </div>
-
-                <div className="text-sm text-white/50 mt-1">
-                  Benchmarks
-                </div>
-              </div>
-
-              <div>
-                <div className="text-3xl font-bold text-emerald-400">
-                  8k+
-                </div>
-
-                <div className="text-sm text-white/50 mt-1">
-                  Community Posts
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right visual */}
-          <div className="relative flex justify-center">
-            {/* Terminal */}
-            <div className="absolute left-0 top-14 w-[320px] rounded-2xl border border-emerald-400/20 bg-[#08111f]/90 backdrop-blur-xl shadow-[0_0_40px_rgba(16,185,129,0.08)]">
-              <div className="h-10 border-b border-white/10 flex items-center px-4 gap-2">
-                <div className="w-3 h-3 rounded-full bg-yellow-300/70" />
-                <div className="w-3 h-3 rounded-full bg-red-300/70" />
-                <div className="w-3 h-3 rounded-full bg-emerald-300/70" />
-              </div>
-
-              <div className="p-6 font-mono text-emerald-300 text-sm leading-8">
-                <p>$ ollama run llama3.1</p>
-
-                <br />
-
-                <p>Loading unrestricted model...</p>
-                <p>VRAM detected: 24GB</p>
-                <p>Context: 128k</p>
-                <p>Filters: disabled</p>
-                <p>Local inference: active</p>
-
-                <br />
-
-                <p>&gt; _</p>
-              </div>
-            </div>
-
-            {/* Glow */}
-            <div className="w-[440px] h-[440px] rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.18),transparent_70%)] flex items-center justify-center">
-              <div className="w-60 h-60 rounded-[2rem] border border-white/10 bg-gradient-to-br from-[#182436] to-[#0b1220] shadow-2xl flex items-center justify-center rotate-6">
-                <Lock className="w-24 h-24 text-emerald-400" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Features */}
-        <div className="grid md:grid-cols-4 gap-10 mt-24 border-t border-white/10 pt-10">
-          <Feature
-            icon={<Shield className="w-7 h-7 text-emerald-400" />}
-            title="Unrestricted"
-            text="No artificial limitations or forced censorship layers."
-          />
-
-          <Feature
-            icon={<Lock className="w-7 h-7 text-emerald-400" />}
-            title="Private"
-            text="Run entirely on your own local hardware."
-          />
-
-          <Feature
-            icon={<Code2 className="w-7 h-7 text-emerald-400" />}
-            title="Open"
-            text="Open weights, transparent tooling and community research."
-          />
-
-          <Feature
-            icon={<Users className="w-7 h-7 text-emerald-400" />}
-            title="Community Driven"
-            text="Benchmarks, guides and collaborative experimentation."
-          />
-        </div>
-      </section>
-
-      {/* Content */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pb-24">
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Articles */}
-          <div className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-8">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-3xl font-bold">
-                Latest Articles
-              </h3>
-
-              <Link
-                href="/articles"
-                className="text-emerald-400 hover:text-emerald-300 transition"
-              >
-                View all →
-              </Link>
-            </div>
-
-            <p className="text-white/50 mb-8">
-              Deep technical guides, benchmarks and beginner-friendly tutorials.
-            </p>
-
-            <div className="space-y-5">
-              <ArticleCard
-                title="Llama 3.1 70B Uncensored: Local Setup & Benchmarks"
-                desc="Complete setup guide including VRAM requirements, quantization formats and real-world inference performance."
-              />
-
-              <ArticleCard
-                title="Understanding Quantization for Beginners"
-                desc="Learn how Q4, Q5 and Q8 quantization affect memory usage, speed and generation quality."
-              />
-
-              <ArticleCard
-                title="Building the Ideal Local AI Workstation"
-                desc="GPU recommendations, RAM requirements, cooling and hardware scaling for local LLM workloads."
-              />
-            </div>
-          </div>
-
-          {/* Forum */}
-          <div className="rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl p-8">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-3xl font-bold">
-                Forum Discussions
-              </h3>
-
-              <Link
-                href="/forum"
-                className="text-emerald-400 hover:text-emerald-300 transition"
-              >
-                View all →
-              </Link>
-            </div>
-
-            <p className="text-white/50 mb-8">
-              Hardware advice, model testing and unrestricted AI discussion.
-            </p>
-
-            <div className="space-y-5">
-              <ForumItem
-                letter="M"
-                title="Llama 3.1 8B vs 70B — real world usage?"
-              />
-
-              <ForumItem
-                letter="S"
-                title="Mixtral unrestricted benchmark impressions"
-              />
-
-              <ForumItem
-                letter="R"
-                title="Best inference settings for storytelling?"
-              />
-
-              <ForumItem
-                letter="T"
-                title="New RTX 5090 local AI benchmark results"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-[#13203a] bg-[#060b1a]">
-        <div className="mx-auto max-w-7xl px-6 py-12">
-          <div className="flex flex-col md:flex-row items-start justify-between gap-10">
-            <div className="max-w-md">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center">
-                  <Lock className="text-emerald-400 w-5 h-5" />
+              {/* RESEARCH FEED */}
+              <div className="border border-cyan-500/10 bg-black/20">
+                <div className="border-b border-cyan-500/10 px-6 py-3 text-cyan-400 text-xs tracking-[0.3em] uppercase">
+                  Latest Research
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-lg">
-                    DefiledAI
-                  </h4>
+                  {researchFeed.map((item) => (
+                    <Link
+                      key={item.title}
+                      href={item.href}
+                      className="block border-b border-cyan-500/5 px-6 py-6 hover:bg-cyan-500/[0.03] transition-all"
+                    >
+                      <div className="text-cyan-400 text-xs tracking-widest mb-2">
+                        {item.category}
+                      </div>
 
-                  <p className="text-sm text-white/50">
-                    Local freedom. Full potential.
-                  </p>
+                      <div className="text-2xl font-bold mb-2">
+                        {item.title}
+                      </div>
+
+                      <div className="text-zinc-500 text-sm">
+                        {item.meta}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT SIDE */}
+            <div className="space-y-8">
+              {/* LIVE METRICS */}
+              <div className="border border-cyan-500/10 bg-black/30">
+                <div className="border-b border-cyan-500/10 px-6 py-3 text-cyan-400 text-xs tracking-[0.3em] uppercase">
+                  System Metrics
+                </div>
+
+                <div className="grid grid-cols-2">
+                  {[
+                    ["14,281", "QUANTIZED MODELS"],
+                    ["421", "BENCHMARK REPORTS"],
+                    ["92", "GPU CONFIGS"],
+                    ["1.8PB", "INFERENCE DATA"],
+                  ].map(([value, label]) => (
+                    <div
+                      key={label}
+                      className="border-b border-r border-cyan-500/5 p-6"
+                    >
+                      <div className="text-4xl font-black text-cyan-400 mb-2">
+                        {value}
+                      </div>
+
+                      <div className="text-zinc-500 text-xs tracking-wider">
+                        {label}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              <p className="text-white/50 leading-relaxed">
-                Educational content, benchmarks and community discussion focused
-                on unrestricted local AI systems and self-hosted language models.
-              </p>
+              {/* BENCHMARK TERMINAL */}
+              <div className="border border-cyan-500/10 bg-black/40">
+                <div className="border-b border-cyan-500/10 px-6 py-3 flex items-center justify-between">
+                  <div className="text-cyan-400 text-xs tracking-[0.3em] uppercase">
+                    Live Benchmark Matrix
+                  </div>
+
+                  <div className="text-green-400 text-xs">
+                    ● LIVE
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="text-zinc-500 border-b border-cyan-500/10">
+                      <tr>
+                        <th className="text-left px-6 py-4 font-medium">
+                          MODEL
+                        </th>
+                        <th className="text-left px-6 py-4 font-medium">
+                          QUANT
+                        </th>
+                        <th className="text-left px-6 py-4 font-medium">
+                          VRAM
+                        </th>
+                        <th className="text-left px-6 py-4 font-medium">
+                          TOK/S
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {benchmarkRows.map((row) => (
+                        <tr
+                          key={row[0]}
+                          className="border-b border-cyan-500/5 hover:bg-cyan-500/[0.03]"
+                        >
+                          {row.map((cell, index) => (
+                            <td
+                              key={cell}
+                              className={`px-6 py-4 ${
+                                index === 0
+                                  ? "text-white font-medium"
+                                  : "text-zinc-400"
+                              }`}
+                            >
+                              {cell}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* HARDWARE FEED */}
+              <div className="border border-cyan-500/10 bg-black/20">
+                <div className="border-b border-cyan-500/10 px-6 py-3 text-cyan-400 text-xs tracking-[0.3em] uppercase">
+                  Infrastructure Feed
+                </div>
+
+                <div className="divide-y divide-cyan-500/5">
+                  {hardwareFeed.map((item) => (
+                    <div
+                      key={item}
+                      className="px-6 py-5 flex gap-4 items-start"
+                    >
+                      <div className="w-2 h-2 rounded-full bg-cyan-400 mt-2" />
+
+                      <div className="text-zinc-300 text-sm leading-relaxed">
+                        {item}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* LOWER GRID */}
+      <section>
+        <div className="max-w-[1600px] mx-auto px-6 py-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* MODELS */}
+            <div className="border border-cyan-500/10 bg-black/20">
+              <div className="border-b border-cyan-500/10 px-6 py-3 text-cyan-400 text-xs tracking-[0.3em] uppercase">
+                Model Database
+              </div>
+
+              <div className="divide-y divide-cyan-500/5">
+                {[
+                  "Llama",
+                  "Qwen",
+                  "DeepSeek",
+                  "Mistral",
+                  "Gemma",
+                ].map((model) => (
+                  <div
+                    key={model}
+                    className="px-6 py-5 flex items-center justify-between"
+                  >
+                    <div className="font-medium">
+                      {model}
+                    </div>
+
+                    <div className="text-zinc-500 text-sm">
+                      ACTIVE
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="flex flex-wrap gap-6 text-sm text-white/50">
-              <Link href="/articles" className="hover:text-white transition">
-                Articles
-              </Link>
+            {/* FORUM */}
+            <div className="border border-cyan-500/10 bg-black/20">
+              <div className="border-b border-cyan-500/10 px-6 py-3 text-cyan-400 text-xs tracking-[0.3em] uppercase">
+                Forum Activity
+              </div>
 
-              <Link href="/forum" className="hover:text-white transition">
-                Forum
-              </Link>
+              <div className="divide-y divide-cyan-500/5">
+                {[
+                  "Best 2026 workstation build?",
+                  "TensorRT vs ExLlamaV2",
+                  "Fastest MoE deployment stack",
+                  "Dual GPU PCIe bandwidth issues",
+                ].map((thread) => (
+                  <div
+                    key={thread}
+                    className="px-6 py-5"
+                  >
+                    <div className="text-zinc-200 text-sm leading-relaxed">
+                      {thread}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-              <Link href="/benchmarks" className="hover:text-white transition">
-                Benchmarks
-              </Link>
-
-              <Link href="/models" className="hover:text-white transition">
-                Models
-              </Link>
-
-              <Link href="/resources" className="hover:text-white transition">
+            {/* RESOURCES */}
+            <div className="border border-cyan-500/10 bg-black/20">
+              <div className="border-b border-cyan-500/10 px-6 py-3 text-cyan-400 text-xs tracking-[0.3em] uppercase">
                 Resources
-              </Link>
+              </div>
 
-              <Link href="/about" className="hover:text-white transition">
-                About
-              </Link>
+              <div className="divide-y divide-cyan-500/5">
+                {[
+                  "Quantization Guide",
+                  "Local Inference Setup",
+                  "CUDA Optimization",
+                  "Multi-GPU Scaling",
+                ].map((resource) => (
+                  <div
+                    key={resource}
+                    className="px-6 py-5 flex items-center justify-between"
+                  >
+                    <div className="text-zinc-200">
+                      {resource}
+                    </div>
+
+                    <div className="text-cyan-400 text-xs">
+                      OPEN
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-
-          <div className="mt-10 pt-6 border-t border-white/5 text-sm text-white/30">
-            © 2026 DefiledAI. Built for unrestricted local intelligence.
-          </div>
         </div>
-      </footer>
+      </section>
     </main>
-  );
-}
-
-function Feature({
-  icon,
-  title,
-  text,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="flex gap-4">
-      {icon}
-
-      <div>
-        <h4 className="font-semibold text-lg">
-          {title}
-        </h4>
-
-        <p className="text-white/60 leading-relaxed">
-          {text}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function ArticleCard({
-  title,
-  desc,
-}: {
-  title: string;
-  desc: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-[#0b1220]/70 p-5 hover:border-emerald-400/30 transition">
-      <div className="flex gap-5">
-        <div className="w-44 h-28 rounded-xl bg-gradient-to-br from-emerald-400/20 to-blue-500/20 border border-white/10 shrink-0" />
-
-        <div className="flex-1">
-          <h4 className="text-xl font-semibold leading-snug">
-            {title}
-          </h4>
-
-          <p className="text-white/60 mt-2 leading-relaxed text-sm">
-            {desc}
-          </p>
-
-          <div className="mt-4 text-sm text-white/40">
-            May 24, 2026 • 12 min read
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ForumItem({
-  letter,
-  title,
-}: {
-  letter: string;
-  title: string;
-}) {
-  return (
-    <div className="flex gap-4 border-b border-white/5 pb-5 hover:bg-white/[0.02] transition rounded-xl px-2 py-2">
-      <div className="w-11 h-11 rounded-full bg-emerald-400/20 border border-emerald-400/20 flex items-center justify-center text-emerald-300 font-bold shrink-0">
-        {letter}
-      </div>
-
-      <div>
-        <h4 className="text-lg font-medium leading-snug">
-          {title}
-        </h4>
-
-        <p className="text-white/50 text-sm mt-1 leading-relaxed">
-          Discussion, benchmarks, testing and local AI usage.
-        </p>
-
-        <div className="mt-2 text-xs text-white/30">
-          May 24, 2026 • 24 replies
-        </div>
-      </div>
-    </div>
   );
 }
