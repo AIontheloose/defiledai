@@ -1,0 +1,189 @@
+---
+title: "Ollama: The Complete Setup and Optimization Guide"
+excerpt: "Install, configure, and optimize Ollama for maximum inference performance — environment variables, multi-GPU setup, API usage, and tips most guides miss."
+date: "2026-05-22"
+category: "Guide"
+tags: ["ollama", "setup", "optimization", "api", "multi-gpu", "configuration"]
+---
+
+# Ollama: The Complete Setup and Optimization Guide
+
+Ollama is the most accessible entry point to local AI inference. It wraps llama.cpp with automatic VRAM detection, a model registry, and a clean CLI. This guide goes beyond the basics — covering environment variables, multi-GPU configuration, API usage, and the settings that most tutorials skip.
+
+## Installation
+
+**Windows:** Download and run the installer from ollama.com. Ollama installs as a background service that starts automatically.
+
+**Linux:**
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+systemctl enable ollama
+systemctl start ollama
+```
+
+**macOS:** Download the .dmg from ollama.com or:
+```bash
+brew install ollama
+```
+
+## Key Environment Variables
+
+These are the settings that matter most and are rarely documented clearly:
+
+```bash
+# Number of GPU layers to offload (99 = maximum, forces full GPU)
+OLLAMA_NUM_GPU=99
+
+# Keep model loaded between requests (seconds, 0 = unload immediately)
+OLLAMA_KEEP_ALIVE=300
+
+# Maximum number of models loaded simultaneously
+OLLAMA_MAX_LOADED_MODELS=1
+
+# Increase for high-throughput API usage
+OLLAMA_NUM_PARALLEL=4
+
+# Bind to all interfaces (for network access)
+OLLAMA_HOST=0.0.0.0:11434
+```
+
+**Windows** — set these in System Environment Variables or in a .env file in `%USERPROFILE%\.ollama\`.
+
+**Linux** — add to `/etc/systemd/system/ollama.service.d/override.conf`:
+```ini
+[Service]
+Environment="OLLAMA_KEEP_ALIVE=300"
+Environment="OLLAMA_MAX_LOADED_MODELS=1"
+```
+
+## Multi-GPU Setup
+
+Ollama detects multiple GPUs automatically and distributes model layers across them. For NVLink systems, this gives you the full unified VRAM pool. For non-NVLink multi-GPU, it still works but with PCIe bandwidth limitations.
+
+To verify Ollama sees all your GPUs:
+```bash
+ollama run llama3.1:8b
+# In a second terminal while model is running:
+nvidia-smi
+# Both GPUs should show memory usage
+```
+
+To force a specific GPU (single GPU only):
+```bash
+CUDA_VISIBLE_DEVICES=0 ollama serve
+```
+
+## The Ollama API
+
+Ollama exposes an OpenAI-compatible REST API at `http://localhost:11434`. You can use it with any OpenAI SDK by changing the base URL:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:11434/v1",
+    api_key="ollama",  # required by SDK, value ignored
+)
+
+response = client.chat.completions.create(
+    model="llama3.1:8b",
+    messages=[{"role": "user", content": "Explain quantization"}]
+)
+print(response.choices[0].message.content)
+```
+
+**Direct API call:**
+```bash
+curl http://localhost:11434/api/generate -d '{
+  "model": "llama3.1:8b",
+  "prompt": "Explain Q4_K_M quantization",
+  "stream": false
+}'
+```
+
+## Modelfile: Custom System Prompts
+
+Create a custom model variant with a persistent system prompt:
+
+```
+# Modelfile
+FROM llama3.1:8b
+
+SYSTEM """
+You are a local AI inference expert. Answer questions about models,
+quantization, hardware, and inference backends with technical precision.
+"""
+
+PARAMETER temperature 0.7
+PARAMETER num_ctx 8192
+```
+
+```bash
+ollama create defiledai-assistant -f ./Modelfile
+ollama run defiledai-assistant
+```
+
+## Performance Optimization Tips
+
+**1. Set OLLAMA_KEEP_ALIVE**
+By default, Ollama unloads models after 5 minutes of inactivity. For development work, set it higher:
+```bash
+OLLAMA_KEEP_ALIVE=3600  # 1 hour
+```
+
+**2. Reduce context if you do not need it**
+Default context is 2048 tokens. Many use cases need far less. Smaller context = less KV cache = more speed:
+```bash
+ollama run llama3.1:8b --ctx-size 1024
+```
+
+**3. Disable mmap for repeated inference**
+On Windows, memory-mapped file loading can cause inconsistent performance. Disable it in the Modelfile:
+```
+PARAMETER use_mmap false
+```
+
+**4. Pin model to GPU layers**
+If inference is slower than expected, verify all layers are on GPU:
+```bash
+ollama run llama3.1:8b
+# Check the output — it should report "offloading X layers to GPU"
+# X should equal total layers
+```
+
+## Choosing Models from the Ollama Registry
+
+```bash
+# List available models
+ollama list
+
+# Search (on ollama.com) or pull directly
+ollama pull qwen2.5:7b
+ollama pull deepseek-r1:7b
+ollama pull mistral:7b
+
+# Pull a specific quantization
+ollama pull llama3.1:70b-instruct-q4_K_M
+```
+
+Ollama's registry includes most major open-weight models and updates within days of new releases. For models not in the registry, you can import any GGUF file directly:
+
+```bash
+ollama create mymodel -f Modelfile
+# Where Modelfile contains: FROM /path/to/model.gguf
+```
+
+## Monitoring
+
+```bash
+# Check loaded models and VRAM usage
+ollama ps
+
+# View logs (Linux)
+journalctl -u ollama -f
+
+# View logs (Windows)
+Get-Content "$env:LOCALAPPDATA\Ollama\server.log" -Wait
+```
+
+Ollama is the right tool for most local AI users. Its simplicity does not come at a major performance cost — on NVIDIA hardware it runs within 15-20% of a tuned ExLlamaV2 setup, and for AMD and Apple Silicon it remains the best option available.

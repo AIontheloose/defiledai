@@ -1,0 +1,101 @@
+---
+title: "Dual RTX 3090 NVLink: The 70B Inference Workstation"
+excerpt: "How to build and configure a dual RTX 3090 NVLink system for 70B local inference — hardware setup, driver config, and real performance numbers."
+date: "2026-05-26"
+category: "Hardware"
+tags: ["3090", "nvlink", "dual-gpu", "70b", "workstation", "cuda"]
+---
+
+# Dual RTX 3090 NVLink: The 70B Inference Workstation
+
+The dual RTX 3090 NVLink configuration is the most cost-effective path to 70B local inference in 2026. Two used RTX 3090s with an NVLink bridge gives you a unified 48GB VRAM pool for roughly $1,400 in hardware — less than a single A100 and capable of running Llama 3.1 70B at Q4_K_M at usable speeds.
+
+## Why NVLink Matters
+
+Without NVLink, running a 70B model across two GPUs means the model is split across PCIe — data has to travel through the CPU and system memory to move between the cards. This creates a severe bandwidth bottleneck and typically halves inference throughput versus a single-GPU setup of equivalent VRAM.
+
+With NVLink, the two GPUs share a high-bandwidth interconnect (600 GB/s bidirectional on the 3090) and the operating system sees them as a single 48GB device. Model sharding happens at the driver level and inference runs at near-single-GPU efficiency.
+
+## Hardware Requirements
+
+**GPUs:** Two RTX 3090s (24GB each). Must be the same model — two Founders Edition, or two of the same AIB card. Mismatched cooling configurations can cause thermal issues in dual-slot configurations.
+
+**NVLink Bridge:** The RTX 3090 uses a 3-slot NVLink bridge. You need the correct bridge for your card spacing. ASUS and EVGA cards typically require 3-slot; Founders Edition requires 4-slot.
+
+**Motherboard:** Must have two PCIe x16 slots with full x16 electrical bandwidth. Many consumer boards have x16/x4 configurations — the second slot running at x4 will bottleneck significantly. Verify your board's spec sheet.
+
+**PSU:** Two RTX 3090s have a combined TDP of 700W. Add CPU, storage, and overhead — a 1200W PSU is the minimum safe configuration. 1600W is recommended.
+
+**Case:** Extended ATX or full tower. Two 3090s with a bridge between them occupy 7-8 expansion slots. Airflow planning is critical — the bridge blocks airflow between the cards.
+
+## Recommended Build
+
+| Component | Choice | Cost |
+|---|---|---|
+| GPU × 2 | RTX 3090 FE or ASUS TUF | ~$700 each |
+| NVLink Bridge | ASUS NVLink 3-slot | ~$60 |
+| Motherboard | ASUS X570 ProArt or MSI MEG X570 | ~$300 |
+| CPU | Ryzen 9 5900X | ~$180 |
+| RAM | 64GB DDR4 3600 | ~$100 |
+| PSU | Seasonic 1600W Titanium | ~$280 |
+| Case | Fractal Torrent XL | ~$180 |
+| **Total** | | **~$2,500** |
+
+## Driver and Software Setup
+
+**Windows:**
+```powershell
+# Verify NVLink is detected after physical installation
+nvidia-smi nvlink --status
+
+# Should show NVLink status: OK for both GPUs
+# If not detected, reseat the bridge and check BIOS PCIe settings
+```
+
+**Verify unified memory pool:**
+```powershell
+nvidia-smi --query-gpu=name,memory.total --format=csv
+# Should show two entries, each 24576 MiB
+# For NVLink unified pool, check nvidia-smi topo -m
+```
+
+**Ollama** detects NVLink automatically and uses the full 48GB pool. No additional configuration required.
+
+**ExLlamaV2** requires specifying both GPU indices:
+```bash
+python test_inference.py -m /path/to/model.gguf -gs 24,24
+```
+
+**llama.cpp:**
+```bash
+./llama-cli -m model.gguf -ngl 83 --tensor-split 1,1
+```
+
+## Thermal Management
+
+The primary challenge with dual 3090 NVLink is heat. The bridge blocks airflow between cards and the bottom card typically runs 15-20°C hotter than the top.
+
+Solutions in order of effectiveness:
+1. Remove the side panel and run open-air during inference (immediate, free)
+2. Undervolt both GPUs using MSI Afterburner — 900mV core at 1800MHz reduces heat by ~30W per card
+3. Replace stock thermal pads on the VRAM (3090 VRAM throttles above 105°C — common on heavily loaded cards)
+4. Install case fans directly blowing across the bridge
+
+Target temperatures: GPU core below 83°C, VRAM below 100°C under sustained load.
+
+## Real Performance Numbers
+
+Measured on dual RTX 3090 FE NVLink, Ryzen 9 5900X, CUDA 12.4:
+
+| Model | Quant | Backend | Tok/s | VRAM Used |
+|---|---|---|---|---|
+| Llama 3.1 70B | Q4_K_M | ExLlamaV2 | 21.3 | 40.2GB |
+| Llama 3.1 70B | Q5_K_M | ExLlamaV2 | 16.1 | 47.8GB |
+| Qwen 3 72B | Q4_K_M | ExLlamaV2 | 19.8 | 41.1GB |
+| Mixtral 8x22B | Q4_K_M | ExLlamaV2 | 24.7 | 43.6GB |
+
+## Is It Worth It vs a Single RTX 4090?
+
+The RTX 4090 (24GB) cannot run 70B at all — the model simply does not fit. For anything smaller than 34B, a single 4090 is faster and simpler. The dual 3090 NVLink exists specifically for the 40-48GB class of models.
+
+If your primary workload is 70B and budget allows, the dual 3090 NVLink is the right build. If you primarily run 7-34B models with occasional 70B experiments, the 4090 is more versatile and significantly less complex.

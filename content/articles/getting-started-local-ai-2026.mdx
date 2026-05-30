@@ -1,0 +1,95 @@
+---
+title: "Getting Started with Local AI: Consumer Hardware Guide 2026"
+excerpt: "Everything a beginner needs to run AI models locally in 2026 — hardware minimums, software stack, first model recommendations, and common mistakes."
+date: "2026-05-23"
+category: "Guide"
+tags: ["beginner", "ollama", "setup", "consumer", "gpu", "getting-started"]
+---
+
+# Getting Started with Local AI: Consumer Hardware Guide 2026
+
+Running AI models locally has never been more accessible. A mid-range gaming GPU from the last three years is enough to run capable 7-13B models that match or exceed GPT-3.5 on most tasks. This guide covers everything you need to go from zero to running local inference.
+
+## Minimum Hardware
+
+You do not need cutting-edge hardware to get started. The minimum viable setup for useful local AI:
+
+- **GPU:** Any NVIDIA or AMD card with 6GB+ VRAM
+- **RAM:** 16GB system RAM (32GB recommended)
+- **Storage:** 20-50GB free for model files
+- **OS:** Windows 11, Ubuntu 22.04+, or macOS (Apple Silicon works excellently)
+
+A GTX 1080 Ti (11GB), RTX 2080 (8GB), or RX 6700 XT (12GB) from 2018-2021 are all capable of running 7B models well.
+
+## Recommended Models by VRAM
+
+| VRAM | Best Model | Quant | Expect |
+|---|---|---|---|
+| 4GB | Phi-3 Mini 3.8B | Q4_K_M | Basic chat, simple code |
+| 6GB | Llama 3.1 8B | Q4_K_M | Strong chat, good code |
+| 8GB | Llama 3.1 8B | Q8_0 | Near-full quality 8B |
+| 12GB | Gemma 2 9B | Q8_0 | Excellent all-rounder |
+| 16GB | Gemma 2 27B | Q4_K_M | Strong reasoning |
+| 24GB | Gemma 2 27B | Q8_0 | Near-lossless 27B |
+
+## Step 1: Install Ollama
+
+Ollama is the fastest way to get running. It handles model downloads, VRAM detection, and quantization selection automatically.
+
+**Windows / macOS:** Download from [ollama.com](https://ollama.com) and run the installer.
+
+**Linux:**
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+## Step 2: Pull Your First Model
+
+```bash
+# For 6-8GB VRAM
+ollama pull llama3.1:8b
+
+# For 12GB+ VRAM
+ollama pull gemma2:9b
+
+# Run it
+ollama run llama3.1:8b
+```
+
+Ollama automatically downloads the best quantization for your VRAM. The first pull takes a few minutes depending on your connection — model files are 4-8GB.
+
+## Step 3: Open WebUI (Optional but Recommended)
+
+Open WebUI gives you a ChatGPT-style browser interface for Ollama:
+
+```bash
+docker run -d -p 3000:8080 \
+  --add-host=host.docker.internal:host-gateway \
+  -v open-webui:/app/backend/data \
+  --name open-webui \
+  ghcr.io/open-webui/open-webui:main
+```
+
+Then open `http://localhost:3000` in your browser.
+
+## Common Mistakes
+
+**Mistake 1: Picking a model too large for your VRAM**
+The model file size is approximately the VRAM you need. A 4.5GB Q4_K_M file needs about 5GB VRAM including overhead. If it does not fit, Ollama offloads layers to system RAM — inference becomes 10-50× slower.
+
+**Mistake 2: Using Q8_0 when VRAM is tight**
+Q8_0 is twice the size of Q4_K_M for a very small quality gain. If you are near your VRAM limit, use Q4_K_M or Q5_K_M.
+
+**Mistake 3: Ignoring context length settings**
+Every token of context consumes VRAM for KV cache. Long conversations gradually use more VRAM and can cause the model to slow down or fail. Set a reasonable context limit in your client.
+
+**Mistake 4: Running other GPU workloads simultaneously**
+Games, video editing software, and other GPU applications compete for VRAM. Close them before running inference.
+
+## What to Expect
+
+A 7-8B model at Q4_K_M on a 3080 Ti will generate 60-90 tokens per second — fast enough that it feels instant for most tasks. Quality is noticeably below GPT-4 but comfortably above GPT-3.5 on most benchmarks.
+
+A 27B model on a 24GB GPU drops to 40-60 tok/s but delivers meaningfully better reasoning, longer coherent outputs, and stronger code generation.
+
+The local inference experience in 2026 is genuinely usable for daily work. The gap to frontier closed models has narrowed significantly and for many tasks — writing, coding assistance, research summaries — a well-configured local model is more than sufficient.

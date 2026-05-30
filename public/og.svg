@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="glow1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#050816" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="80%" cy="80%" r="40%">
+      <stop offset="0%" stop-color="#818cf8" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#050816" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#050816"/>
+
+  <!-- Grid lines -->
+  <g stroke="#22d3ee" stroke-opacity="0.04" stroke-width="1">
+    <line x1="0" y1="63" x2="1200" y2="63"/>
+    <line x1="0" y1="126" x2="1200" y2="126"/>
+    <line x1="0" y1="189" x2="1200" y2="189"/>
+    <line x1="0" y1="252" x2="1200" y2="252"/>
+    <line x1="0" y1="315" x2="1200" y2="315"/>
+    <line x1="0" y1="378" x2="1200" y2="378"/>
+    <line x1="0" y1="441" x2="1200" y2="441"/>
+    <line x1="0" y1="504" x2="1200" y2="504"/>
+    <line x1="0" y1="567" x2="1200" y2="567"/>
+    <line x1="96" y1="0" x2="96" y2="630"/>
+    <line x1="192" y1="0" x2="192" y2="630"/>
+    <line x1="288" y1="0" x2="288" y2="630"/>
+    <line x1="384" y1="0" x2="384" y2="630"/>
+    <line x1="480" y1="0" x2="480" y2="630"/>
+    <line x1="576" y1="0" x2="576" y2="630"/>
+    <line x1="672" y1="0" x2="672" y2="630"/>
+    <line x1="768" y1="0" x2="768" y2="630"/>
+    <line x1="864" y1="0" x2="864" y2="630"/>
+    <line x1="960" y1="0" x2="960" y2="630"/>
+    <line x1="1056" y1="0" x2="1056" y2="630"/>
+    <line x1="1152" y1="0" x2="1152" y2="630"/>
+  </g>
+
+  <!-- Glow -->
+  <rect width="1200" height="630" fill="url(#glow1)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+
+  <!-- Border -->
+  <rect x="40" y="40" width="1120" height="550" fill="none" stroke="#22d3ee" stroke-opacity="0.15" stroke-width="1"/>
+
+  <!-- Top label -->
+  <text x="80" y="115" font-family="Courier New, monospace" font-size="13" fill="#22d3ee" letter-spacing="4" opacity="0.8">DEFILEDAI RESEARCH NETWORK</text>
+
+  <!-- Main title -->
+  <text x="80" y="290" font-family="Courier New, monospace" font-size="96" font-weight="900" fill="white" letter-spacing="-2">LOCAL AI</text>
+  <text x="80" y="400" font-family="Courier New, monospace" font-size="96" font-weight="900" fill="#22d3ee" letter-spacing="-2">INTELLIGENCE</text>
+
+  <!-- Tagline -->
+  <text x="80" y="460" font-family="Courier New, monospace" font-size="18" fill="#64748b" letter-spacing="1">Benchmarks · Quantization · Models · Hardware · Inference</text>
+
+  <!-- URL -->
+  <text x="80" y="545" font-family="Courier New, monospace" font-size="14" fill="#22d3ee" opacity="0.6" letter-spacing="2">defiledai.com</text>
+
+  <!-- Corner accent -->
+  <line x1="1060" y1="80" x2="1120" y2="80" stroke="#22d3ee" stroke-opacity="0.4" stroke-width="1"/>
+  <line x1="1120" y1="80" x2="1120" y2="140" stroke="#22d3ee" stroke-opacity="0.4" stroke-width="1"/>
+  <line x1="80" y1="550" x2="140" y2="550" stroke="#22d3ee" stroke-opacity="0.4" stroke-width="1"/>
+</svg>
