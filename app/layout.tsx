@@ -44,18 +44,18 @@ function Nav() {
           </Link>
 
           {/* Desktop links */}
-          <div className="hidden lg:flex items-center gap-0.5 overflow-x-auto">
-            {navLinks.map((l) => (
-              <Link key={l.href} href={l.href}
-                className={`px-3 py-1.5 text-xs tracking-widest uppercase transition-all whitespace-nowrap ${
-                  (l as any).highlight
-                    ? "text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/5"
-                    : "text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--surface)]"
-                }`}>
-                {(l as any).highlight ? `⬡ ${l.label}` : l.label}
-              </Link>
-            ))}
-          </div>
+<div className="hidden lg:flex items-center gap-0.5">
+  {navLinks.map((l) => (
+    <Link key={l.href} href={l.href}
+      className={`px-2.5 py-1.5 text-xs tracking-widest uppercase transition-all whitespace-nowrap ${
+        (l as any).highlight
+          ? "text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/5"
+          : "text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--surface)]"
+      }`}>
+      {(l as any).highlight ? `⬡ ${l.label}` : l.label}
+    </Link>
+  ))}
+</div>
 
           <div className="flex items-center gap-1 shrink-0">
             <Link href="/search" aria-label="Search"
@@ -77,7 +77,7 @@ function Nav() {
               Sign Up
             </Link>
             <button onClick={() => setOpen(!open)} aria-label="Menu"
-              className="lg:hidden p-2 text-[var(--muted)] hover:text-[var(--fg)] transition-colors">
+  className="lg:hidden p-2 text-[var(--muted)] hover:text-[var(--fg)] transition-colors">
               {open ? (
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M2 2l14 14M16 2L2 16" strokeLinecap="round" />
