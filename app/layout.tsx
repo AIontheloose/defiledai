@@ -6,13 +6,12 @@ import { useState, useEffect } from "react";
 const navLinks = [
   { href: "/uncensored", label: "Uncensored", highlight: true },
   { href: "/leaderboard", label: "Leaderboard", highlight: false },
-  { href: "/articles", label: "Articles" },
-  { href: "/benchmarks", label: "Benchmarks" },
-  { href: "/models", label: "Models" },
-  { href: "/quantization", label: "Quantization" },
-  { href: "/hardware", label: "Hardware" },
-  { href: "/forum", label: "Forum" },
-  { href: "/resources", label: "Resources" },
+  { href: "/tools", label: "Tools", highlight: false },
+  { href: "/articles", label: "Articles", highlight: false },
+  { href: "/benchmarks", label: "Benchmarks", highlight: false },
+  { href: "/models", label: "Models", highlight: false },
+  { href: "/hardware", label: "Hardware", highlight: false },
+  { href: "/forum", label: "Forum", highlight: false },
 ];
 
 function Nav() {
@@ -43,19 +42,18 @@ function Nav() {
             <span className="text-cyan-400">AI</span>
           </Link>
 
-          {/* Desktop links */}
-<div className="hidden lg:flex items-center gap-0.5">
-  {navLinks.map((l) => (
-    <Link key={l.href} href={l.href}
-      className={`px-2.5 py-1.5 text-xs tracking-widest uppercase transition-all whitespace-nowrap ${
-        (l as any).highlight
-          ? "text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/5"
-          : "text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--surface)]"
-      }`}>
-      {(l as any).highlight ? `⬡ ${l.label}` : l.label}
-    </Link>
-  ))}
-</div>
+          <div className="hidden lg:flex items-center gap-0.5">
+            {navLinks.map((l) => (
+              <Link key={l.href} href={l.href}
+                className={`px-3 py-1.5 text-xs tracking-widest uppercase transition-all whitespace-nowrap ${
+                  l.highlight
+                    ? "text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/5"
+                    : "text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--surface)]"
+                }`}>
+                {l.highlight ? `⬡ ${l.label}` : l.label}
+              </Link>
+            ))}
+          </div>
 
           <div className="flex items-center gap-1 shrink-0">
             <Link href="/search" aria-label="Search"
@@ -65,19 +63,15 @@ function Nav() {
               </svg>
             </Link>
             <button onClick={toggleTheme}
-              className="p-2 text-[var(--muted)] hover:text-[var(--fg)] transition-colors text-xs font-mono tracking-widest hidden md:block">
+              className="hidden md:block p-2 text-[var(--muted)] hover:text-[var(--fg)] transition-colors text-xs font-mono tracking-widest">
               {theme === "dark" ? "LIGHT" : "DARK"}
             </button>
-            <Link href="/login"
-              className="hidden md:block text-xs tracking-widest uppercase text-[var(--muted)] hover:text-[var(--fg)] transition-colors px-3 py-1.5">
-              Login
-            </Link>
             <Link href="/signup"
-              className="hidden md:block text-xs tracking-widest uppercase bg-cyan-500 text-black font-bold px-4 py-1.5 hover:bg-cyan-400 transition-colors">
+              className="hidden md:block text-xs tracking-widest uppercase bg-cyan-500 text-black font-bold px-4 py-1.5 hover:bg-cyan-400 transition-colors ml-1">
               Sign Up
             </Link>
             <button onClick={() => setOpen(!open)} aria-label="Menu"
-  className="lg:hidden p-2 text-[var(--muted)] hover:text-[var(--fg)] transition-colors">
+              className="lg:hidden p-2 text-[var(--muted)] hover:text-[var(--fg)] transition-colors">
               {open ? (
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M2 2l14 14M16 2L2 16" strokeLinecap="round" />
@@ -92,18 +86,17 @@ function Nav() {
         </div>
       </nav>
 
-      {/* Mobile menu */}
       {open && (
-        <div className="lg:hidden fixed inset-0 top-14 z-40 bg-[var(--bg)]/95 backdrop-blur-md border-t border-[var(--border)]">
+        <div className="lg:hidden fixed inset-0 top-14 z-40 bg-[var(--bg)]/95 backdrop-blur-md border-t border-[var(--border)] overflow-y-auto">
           <div className="flex flex-col p-6 gap-1">
             {navLinks.map((l) => (
               <Link key={l.href} href={l.href} onClick={() => setOpen(false)}
                 className={`px-4 py-3 text-sm tracking-widest uppercase border-b border-[var(--border)] transition-all ${
-                  (l as any).highlight
+                  l.highlight
                     ? "text-cyan-400 hover:bg-cyan-500/5"
                     : "text-[var(--muted)] hover:text-[var(--fg)] hover:bg-[var(--surface)]"
                 }`}>
-                {(l as any).highlight ? `⬡ ${l.label}` : l.label}
+                {l.highlight ? `⬡ ${l.label}` : l.label}
               </Link>
             ))}
             <div className="flex gap-3 mt-6">
@@ -128,19 +121,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" data-theme="dark">
       <head>
         <title>DefiledAI — Unrestricted Local AI Research</title>
-        <meta name="description" content="The research hub for open-weight, abliterated, and uncensored AI models. Benchmarks, community leaderboards, hardware guides." />
+        <meta name="description" content="The research hub for open-weight, abliterated, and uncensored AI models. Benchmarks, tools, community leaderboards, and hardware guides." />
         <meta property="og:title" content="DefiledAI — Unrestricted Local AI Research" />
-        <meta property="og:description" content="Uncensored model database, community leaderboard, benchmarks, and hardware guides for local AI." />
+        <meta property="og:description" content="Uncensored model database, community leaderboard, 5 interactive tools, benchmarks and hardware guides for local AI." />
         <meta property="og:url" content="https://defiledai.com" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://defiledai.com/og.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="DefiledAI — Unrestricted Local AI" />
-        <meta name="twitter:description" content="Abliterated model database, community leaderboard, local AI benchmarks." />
+        <meta name="twitter:description" content="Abliterated model database, 5 tools, community leaderboard, local AI benchmarks." />
         <meta name="twitter:image" content="https://defiledai.com/og.png" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="alternate" type="application/rss+xml" title="DefiledAI Articles" href="/feed.xml" />
-        {/* Google Analytics */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-HTL8W4GT7L"></script>
         <script dangerouslySetInnerHTML={{ __html: `
           window.dataLayer = window.dataLayer || [];
