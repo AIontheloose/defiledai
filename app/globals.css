@@ -16,6 +16,7 @@
   --muted2: #94a3b8;
   --accent: #22d3ee;
   --accent2: #818cf8;
+  --nav-bg: #07091a;
 }
 
 [data-theme="light"] {
@@ -30,6 +31,7 @@
   --muted2: #475569;
   --accent: #0891b2;
   --accent2: #4f46e5;
+  --nav-bg: #ffffff;
 }
 
 * { box-sizing: border-box; }
@@ -40,6 +42,17 @@ body {
   color: var(--fg);
   font-family: 'Courier New', Courier, monospace;
   transition: background 0.2s, color 0.2s;
+}
+
+/* ── Nav — solid background, no transparency ── */
+nav {
+  background: var(--nav-bg) !important;
+}
+
+/* ── Mega menu dropdown — fully opaque ── */
+.mega-menu-dropdown {
+  background: var(--nav-bg) !important;
+  backdrop-filter: none !important;
 }
 
 /* ── Prose overrides ── */

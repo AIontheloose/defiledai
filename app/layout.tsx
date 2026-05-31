@@ -132,7 +132,8 @@ const MEGA_MENU = [
 
 function MegaMenu({ item, onClose }: { item: typeof MEGA_MENU[0]; onClose: () => void }) {
   return (
-    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-0 w-[640px] border border-[var(--border)] bg-[var(--bg)]/98 backdrop-blur-md shadow-2xl z-50 animate-fade-in">
+    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-0 w-[640px] border border-[var(--border)] shadow-2xl z-50 animate-fade-in"
+      style={{ background: "var(--nav-bg)" }}>
       <div className="grid grid-cols-2 gap-0 p-6">
         {item.columns.map((col, i) => (
           <div key={i} className={i > 0 ? "border-l border-[var(--border)] pl-6" : "pr-6"}>
@@ -140,7 +141,7 @@ function MegaMenu({ item, onClose }: { item: typeof MEGA_MENU[0]; onClose: () =>
             <div className="space-y-1">
               {col.links.map((link) => (
                 <Link key={link.href} href={link.href} onClick={onClose}
-                  className="block px-3 py-2.5 hover:bg-[var(--surface)] transition-colors group rounded-sm">
+                  className="block px-3 py-2.5 hover:bg-[var(--surface)] transition-colors group">
                   <div className="text-sm font-mono font-bold text-[var(--fg)] group-hover:text-cyan-400 transition-colors leading-tight">
                     {link.label}
                   </div>
@@ -151,7 +152,7 @@ function MegaMenu({ item, onClose }: { item: typeof MEGA_MENU[0]; onClose: () =>
           </div>
         ))}
       </div>
-      <div className="border-t border-[var(--border)] px-6 py-3 bg-[var(--surface)]/30">
+      <div className="border-t border-[var(--border)] px-6 py-3" style={{ background: "var(--surface)" }}>
         <Link href={item.href} onClick={onClose}
           className="text-xs text-cyan-400 hover:text-cyan-300 font-mono uppercase tracking-widest transition-colors">
           View all {item.label} →
@@ -189,15 +190,14 @@ function Nav() {
 
   return (
     <>
-      <nav ref={navRef} className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--bg)]/90 backdrop-blur-md">
+      <nav ref={navRef} className="sticky top-0 z-50 border-b border-[var(--border)]"
+        style={{ background: "var(--nav-bg)" }}>
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
-          {/* Logo */}
           <Link href="/" className="font-black tracking-tighter text-lg font-mono shrink-0" onClick={() => setActiveMenu(null)}>
             <span className="text-[var(--fg)]">Defiled</span>
             <span className="text-cyan-400">AI</span>
           </Link>
 
-          {/* Desktop mega-menu triggers */}
           <div className="hidden lg:flex items-center relative">
             {MEGA_MENU.map((item) => (
               <div key={item.label} className="relative">
@@ -212,7 +212,8 @@ function Nav() {
                       : "border-transparent text-[var(--muted)] hover:text-[var(--fg)]"
                   }`}>
                   {item.label}
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className={`transition-transform ${activeMenu === item.label ? "rotate-180" : ""}`}>
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none"
+                    className={`transition-transform ${activeMenu === item.label ? "rotate-180" : ""}`}>
                     <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                   </svg>
                 </button>
@@ -223,7 +224,6 @@ function Nav() {
             ))}
           </div>
 
-          {/* Right side */}
           <div className="flex items-center gap-1 shrink-0">
             <Link href="/search" aria-label="Search" onClick={() => setActiveMenu(null)}
               className="p-2 text-[var(--muted)] hover:text-[var(--fg)] transition-colors">
@@ -255,9 +255,9 @@ function Nav() {
         </div>
       </nav>
 
-      {/* Mobile menu — flat list */}
       {open && (
-        <div className="lg:hidden fixed inset-0 top-14 z-40 bg-[var(--bg)]/97 backdrop-blur-md border-t border-[var(--border)] overflow-y-auto">
+        <div className="lg:hidden fixed inset-0 top-14 z-40 border-t border-[var(--border)] overflow-y-auto"
+          style={{ background: "var(--nav-bg)" }}>
           <div className="p-4 space-y-1">
             {MEGA_MENU.map((section) => (
               <div key={section.label}>
@@ -296,9 +296,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" data-theme="dark">
       <head>
         <title>DefiledAI — Unrestricted Local AI Research</title>
-        <meta name="description" content="The research hub for open-weight, abliterated, and uncensored AI models. 10+ tools, community leaderboard, benchmarks, weekly digest." />
+        <meta name="description" content="The research hub for open-weight, abliterated, and uncensored AI models. 14 tools, community leaderboard, benchmarks, weekly digest." />
         <meta property="og:title" content="DefiledAI — Unrestricted Local AI Research" />
-        <meta property="og:description" content="Uncensored model database, 10+ tools, community leaderboard, HF tracker, weekly digest." />
+        <meta property="og:description" content="Uncensored model database, 14 tools, community leaderboard, HF tracker, weekly digest." />
         <meta property="og:url" content="https://defiledai.com" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://defiledai.com/og.png" />
@@ -315,12 +315,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           gtag('config', 'G-HTL8W4GT7L');
         `}} />
       </head>
-      <body className="bg-[var(--bg)] text-[var(--fg)] antialiased" onClick={(e) => {
-        const nav = document.querySelector("nav");
-        if (nav && !nav.contains(e.target as Node)) {
-          // mega menu closes via useEffect
-        }
-      }}>
+      <body className="bg-[var(--bg)] text-[var(--fg)] antialiased">
         <Nav />
         {children}
       </body>
