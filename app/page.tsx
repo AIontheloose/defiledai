@@ -3,30 +3,34 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const benchmarks = [
-  { model: "Llama 3.1 70B Abliterated", quant: "Q4_K_M", vram: "48GB", toks: "21.1", gpu: "2× RTX 3090" },
-  { model: "Qwen 3 72B Uncensored", quant: "Q4_K_M", vram: "48GB", toks: "19.4", gpu: "2× RTX 3090" },
-  { model: "Mistral 7B Abliterated", quant: "Q8_0", vram: "8GB", toks: "91.0", gpu: "RTX 4090" },
-  { model: "DeepSeek R1 70B", quant: "Q4_K_M", vram: "48GB", toks: "19.2", gpu: "2× RTX 3090" },
+  { model: "Llama 3.1 70B Abliterated", quant: "Q4_K_M", vram: "48GB", toks: "21.3", gpu: "2× RTX 3090" },
+  { model: "Qwen 3 72B Uncensored",     quant: "Q4_K_M", vram: "48GB", toks: "19.4", gpu: "2× RTX 3090" },
+  { model: "Mistral 7B Abliterated",    quant: "Q8_0",   vram: "8GB",  toks: "91.0", gpu: "RTX 4090"    },
+  { model: "DeepSeek R1 70B Abliterated", quant: "Q4_K_M", vram: "48GB", toks: "19.2", gpu: "2× RTX 3090" },
 ];
 
 const feed = [
   "Llama 3.1 70B abliteration retains 98.4% benchmark score",
-  "New Qwen 3 72B uncensored GGUF posted to HuggingFace",
+  "New Qwen 2.5 72B uncensored GGUF posted to HuggingFace",
   "Mistral 7B abliterated outperforms base on creative tasks",
-  "Community leaderboard updated with 12 new submissions",
-  "DeepSeek R1 abliteration guide now live",
-  "ExLlamaV2 v0.2.4 improves abliterated model throughput",
-];
-
-const recentArticles = [
-  { href: "/articles/abliteration-explained", cat: "RESEARCH", title: "Abliteration Explained", sub: "How refusal removal works and what it costs in quality" },
-  { href: "/articles/llama-3-1-70b-complete-guide", cat: "MODEL ANALYSIS", title: "Llama 3.1 70B Complete Guide", sub: "48GB+ VRAM · Q4_K_M · ExLlamaV2" },
-  { href: "/articles/best-abliterated-models-2026", cat: "LEADERBOARD", title: "Best Abliterated Models 2026", sub: "Community-tested rankings by use case" },
+  "MoE Pipeline Builder now live — design local expert pipelines",
+  "DeepSeek R1 abliteration guide now published",
+  "ExLlamaV2 v0.2.4 improves throughput by ~12%",
 ];
 
 const tools = [
-  { href: "/tools/vram-calculator", label: "VRAM Calculator", desc: "Exact VRAM needs for any model + quant", tag: "TOOL" },
-  { href: "/tools/submit-benchmark", label: "Submit Benchmark", desc: "Share your inference results", tag: "COMMUNITY" },
+  { href: "/tools/moe-builder",       label: "MoE Pipeline Builder", desc: "Design local expert pipelines",       tag: "NEW",  tagColor: "text-cyan-400 border-cyan-400/30" },
+  { href: "/tools/model-compatibility",label: "Model Compatibility",  desc: "What fits on your GPU",              tag: "POPULAR", tagColor: "text-green-400 border-green-400/30" },
+  { href: "/tools/speed-estimator",   label: "Speed Estimator",       desc: "Predict tok/s before downloading",   tag: "SHARE", tagColor: "text-purple-400 border-purple-400/30" },
+  { href: "/tools/vram-calculator",   label: "VRAM Calculator",       desc: "Exact requirements + shareable link", tag: "SHARE", tagColor: "text-purple-400 border-purple-400/30" },
+  { href: "/tools/hardware-advisor",  label: "Hardware Advisor",       desc: "Build recommendation wizard",        tag: "NEW",  tagColor: "text-cyan-400 border-cyan-400/30" },
+  { href: "/tools/system-prompt-library", label: "Prompt Library",    desc: "20 production-ready system prompts", tag: "NEW",  tagColor: "text-cyan-400 border-cyan-400/30" },
+];
+
+const recentArticles = [
+  { href: "/articles/abliteration-explained",       cat: "RESEARCH",      title: "Abliteration Explained",          sub: "How refusal removal works technically" },
+  { href: "/articles/llama-3-1-70b-complete-guide", cat: "MODEL ANALYSIS", title: "Llama 3.1 70B Complete Guide",    sub: "48GB+ VRAM · Q4_K_M · ExLlamaV2" },
+  { href: "/articles/best-abliterated-models-2026", cat: "LEADERBOARD",   title: "Best Abliterated Models 2026",    sub: "Community-tested rankings by use case" },
 ];
 
 export default function Home() {
@@ -34,14 +38,15 @@ export default function Home() {
   const [updated] = useState(() => new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC");
 
   useEffect(() => {
-    const t = setInterval(() => setFeedIdx((n) => (n + 1) % feed.length), 3500);
+    const t = setInterval(() => setFeedIdx(n => (n + 1) % feed.length), 3500);
     return () => clearInterval(t);
   }, []);
 
   return (
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)] overflow-x-hidden">
+
       {/* HERO */}
-      <section className="relative min-h-[92vh] flex flex-col items-center justify-center text-center px-6 overflow-hidden">
+      <section className="relative min-h-[88vh] flex flex-col items-center justify-center text-center px-6 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none" style={{
           backgroundImage: `linear-gradient(rgba(34,211,238,0.04) 1px, transparent 1px),
                             linear-gradient(90deg, rgba(34,211,238,0.04) 1px, transparent 1px)`,
@@ -70,11 +75,7 @@ export default function Home() {
 
           <p className="text-[var(--muted2)] text-lg md:text-xl max-w-2xl mx-auto mb-6 leading-relaxed">
             The research hub for open-weight, abliterated, and uncensored AI models.
-            Benchmarks, guides, community leaderboards, and hardware configs — all in one place.
-          </p>
-
-          <p className="text-[var(--muted)] text-sm max-w-xl mx-auto mb-10">
-            Run powerful AI locally, without restrictions. Full control over your hardware, your data, and your models.
+            20+ tools, community benchmarks, tutorials, and weekly model drops.
           </p>
 
           <div className="flex flex-wrap gap-4 justify-center">
@@ -82,9 +83,9 @@ export default function Home() {
               className="px-8 py-3 bg-cyan-500 text-black font-bold tracking-widest uppercase text-sm hover:bg-cyan-400 transition-colors">
               UNCENSORED MODELS
             </Link>
-            <Link href="/leaderboard"
+            <Link href="/tools/moe-builder"
               className="px-8 py-3 border border-cyan-500/40 text-cyan-400 font-bold tracking-widest uppercase text-sm hover:border-cyan-400 hover:bg-cyan-500/5 transition-all">
-              LEADERBOARD
+              MOE BUILDER
             </Link>
             <Link href="/tools/vram-calculator"
               className="px-8 py-3 border border-zinc-700 text-[var(--muted2)] font-bold tracking-widest uppercase text-sm hover:border-zinc-500 transition-all">
@@ -96,17 +97,17 @@ export default function Home() {
 
       {/* VALUE PROP STRIP */}
       <section className="border-y border-[var(--border)] bg-[var(--surface)]/40">
-        <div className="max-w-6xl mx-auto px-6 py-8 grid md:grid-cols-4 gap-6">
+        <div className="max-w-6xl mx-auto px-6 py-6 grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
-            { icon: "◈", title: "Abliterated Models", desc: "Curated database of refusal-removed models with quality benchmarks" },
-            { icon: "⊞", title: "Community Leaderboard", desc: "Real user rankings across coding, creative, and research tasks" },
-            { icon: "▸", title: "Hardware Guides", desc: "Exact builds to run 7B–70B locally without cloud dependency" },
-            { icon: "≡", title: "Benchmark Data", desc: "Tok/s, VRAM, quality scores across every major quant format" },
-          ].map((v) => (
-            <div key={v.title} className="flex gap-4">
-              <span className="text-cyan-400 text-xl font-mono shrink-0 mt-0.5">{v.icon}</span>
+            { icon: "⬡", title: "Uncensored DB",    desc: "Abliterated model database with quality scores" },
+            { icon: "◈", title: "20+ Tools",         desc: "VRAM, speed, MoE builder, hardware advisor" },
+            { icon: "▸", title: "Tutorials",          desc: "Beginner to expert — first install to MoE pipelines" },
+            { icon: "≡", title: "Weekly Digest",      desc: "New model drops every week, auto-updated" },
+          ].map(v => (
+            <div key={v.title} className="flex gap-3">
+              <span className="text-cyan-400 text-lg font-mono shrink-0 mt-0.5">{v.icon}</span>
               <div>
-                <div className="font-mono font-bold text-[var(--fg)] text-sm mb-1">{v.title}</div>
+                <div className="font-mono font-bold text-[var(--fg)] text-sm mb-0.5">{v.title}</div>
                 <div className="text-[var(--muted)] text-xs leading-relaxed">{v.desc}</div>
               </div>
             </div>
@@ -114,47 +115,29 @@ export default function Home() {
         </div>
       </section>
 
-      {/* LATEST RESEARCH */}
-      <section className="max-w-6xl mx-auto px-6 py-20">
-        <div className="flex items-center gap-4 mb-10">
-          <span className="text-[var(--accent)] text-xs tracking-widest uppercase">Latest Research</span>
-          <div className="flex-1 h-px bg-cyan-500/10" />
-          <Link href="/articles" className="text-xs text-[var(--muted)] hover:text-[var(--accent)] tracking-widest uppercase transition-colors">All Articles →</Link>
-        </div>
-        <div className="grid md:grid-cols-3 gap-4">
-          {recentArticles.map((a) => (
-            <Link key={a.href} href={a.href}
-              className="group border border-[var(--border)] hover:border-cyan-500/40 p-6 transition-all hover:bg-cyan-500/[0.02]">
-              <div className="text-cyan-400 text-xs tracking-widest uppercase mb-3">{a.cat}</div>
-              <div className="text-[var(--fg)] font-semibold mb-2 group-hover:text-cyan-100 transition-colors font-mono">{a.title}</div>
-              <div className="text-[var(--muted)] text-sm">{a.sub}</div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* TOOLS */}
-      <section className="max-w-6xl mx-auto px-6 pb-10">
-        <div className="flex items-center gap-4 mb-6">
+      {/* TOOLS GRID */}
+      <section className="max-w-6xl mx-auto px-6 py-16">
+        <div className="flex items-center gap-4 mb-8">
           <span className="text-[var(--accent)] text-xs tracking-widest uppercase">Tools</span>
           <div className="flex-1 h-px bg-cyan-500/10" />
+          <Link href="/tools" className="text-xs text-[var(--muted)] hover:text-[var(--accent)] tracking-widest uppercase transition-colors">All 20+ tools →</Link>
         </div>
-        <div className="grid md:grid-cols-2 gap-4">
-          {tools.map((t) => (
+        <div className="grid md:grid-cols-3 gap-4">
+          {tools.map(t => (
             <Link key={t.href} href={t.href}
-              className="group border border-[var(--border)] hover:border-cyan-500/40 p-6 transition-all hover:bg-cyan-500/[0.02] flex items-center justify-between">
-              <div>
-                <div className="text-[var(--fg)] font-mono font-bold mb-1 group-hover:text-cyan-100 transition-colors">{t.label}</div>
-                <div className="text-[var(--muted)] text-sm">{t.desc}</div>
+              className="group border border-[var(--border)] hover:border-cyan-500/40 p-5 transition-all hover:bg-cyan-500/[0.02]">
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="font-mono font-bold text-[var(--fg)] group-hover:text-cyan-100 transition-colors text-sm">{t.label}</div>
+                <span className={`text-xs border px-1.5 py-0.5 shrink-0 font-mono ${t.tagColor}`}>{t.tag}</span>
               </div>
-              <span className="text-xs border border-cyan-500/20 px-2 py-1 text-cyan-400 shrink-0 ml-4">{t.tag}</span>
+              <div className="text-[var(--muted)] text-xs">{t.desc}</div>
             </Link>
           ))}
         </div>
       </section>
 
       {/* BENCHMARK TABLE */}
-      <section className="max-w-6xl mx-auto px-6 py-10">
+      <section className="max-w-6xl mx-auto px-6 pb-10">
         <div className="border border-[var(--border)]">
           <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
             <span className="text-sm font-mono tracking-widest uppercase">Abliterated Model Benchmarks</span>
@@ -194,7 +177,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FEED */}
+      {/* LATEST RESEARCH */}
+      <section className="max-w-6xl mx-auto px-6 py-10">
+        <div className="flex items-center gap-4 mb-8">
+          <span className="text-[var(--accent)] text-xs tracking-widest uppercase">Latest Research</span>
+          <div className="flex-1 h-px bg-cyan-500/10" />
+          <Link href="/articles" className="text-xs text-[var(--muted)] hover:text-[var(--accent)] tracking-widest uppercase transition-colors">All articles →</Link>
+        </div>
+        <div className="grid md:grid-cols-3 gap-4">
+          {recentArticles.map(a => (
+            <Link key={a.href} href={a.href}
+              className="group border border-[var(--border)] hover:border-cyan-500/40 p-6 transition-all hover:bg-cyan-500/[0.02]">
+              <div className="text-cyan-400 text-xs tracking-widest uppercase mb-3">{a.cat}</div>
+              <div className="text-[var(--fg)] font-semibold mb-2 group-hover:text-cyan-100 transition-colors font-mono">{a.title}</div>
+              <div className="text-[var(--muted)] text-sm">{a.sub}</div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* COMMUNITY FEED */}
       <section className="max-w-6xl mx-auto px-6 py-6 pb-20">
         <div className="border border-[var(--border)] p-6">
           <div className="flex items-center gap-3 mb-4">
@@ -213,21 +215,22 @@ export default function Home() {
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-[var(--border)] py-10 px-6 text-center text-[var(--muted)] text-xs tracking-widest">
+      <footer className="border-t border-[var(--border)] py-10 px-6 text-[var(--muted)] text-xs tracking-widest">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <span>DEFILEDAI © {new Date().getFullYear()} — OPEN-WEIGHT AI RESEARCH</span>
           <div className="flex flex-wrap gap-6 justify-center">
-           {[
-  ["/uncensored", "UNCENSORED"],
-  ["/leaderboard", "LEADERBOARD"],
-  ["/articles", "ARTICLES"],
-  ["/benchmarks", "BENCHMARKS"],
-  ["/tools/vram-calculator", "VRAM CALC"],
-  ["/forum", "FORUM"],
-  ["/feed.xml", "RSS"],
-].map(([href, label]) => (
-  <Link key={href} href={href} className="hover:text-[var(--fg)] transition-colors">{label}</Link>
-))}
+            {[
+              ["/uncensored","UNCENSORED"],
+              ["/leaderboard","LEADERBOARD"],
+              ["/tools","TOOLS"],
+              ["/tutorials","TUTORIALS"],
+              ["/benchmarks","BENCHMARKS"],
+              ["/weekly","WEEKLY"],
+              ["/about","ABOUT"],
+              ["/feed.xml","RSS"],
+            ].map(([href, label]) => (
+              <Link key={href} href={href} className="hover:text-[var(--fg)] transition-colors">{label}</Link>
+            ))}
           </div>
         </div>
       </footer>
