@@ -37,10 +37,10 @@ const MEGA_MENU = [
       {
         heading: "Hardware & Performance",
         links: [
+          { href: "/tools/moe-builder", label: "MoE Pipeline Builder", desc: "Design local expert pipelines" },
           { href: "/tools/model-compatibility", label: "Model Compatibility", desc: "What runs on your GPU" },
-          { href: "/tools/can-i-run-it", label: "Can I Run It?", desc: "Quick GPU check + embed" },
           { href: "/tools/speed-estimator", label: "Speed Estimator", desc: "Predict tok/s" },
-          { href: "/tools/inference-profiler", label: "Inference Profiler", desc: "TTFT, bandwidth, offload analysis" },
+          { href: "/tools/inference-profiler", label: "Inference Profiler", desc: "TTFT and bandwidth analysis" },
           { href: "/tools/price-performance", label: "Price / Performance", desc: "GPU value rankings" },
           { href: "/tools/hardware-advisor", label: "Hardware Advisor", desc: "Build recommendations" },
         ],
@@ -48,14 +48,12 @@ const MEGA_MENU = [
       {
         heading: "Model & Pipeline",
         links: [
-          { href: "/tools/moe-builder", label: "MoE Pipeline Builder", desc: "Build local expert pipelines" },
           { href: "/tools/vram-calculator", label: "VRAM Calculator", desc: "Exact VRAM requirements" },
           { href: "/tools/context-calculator", label: "Context Calculator", desc: "Max context on your GPU" },
           { href: "/tools/token-budget", label: "Token Budget", desc: "Plan context and cost" },
           { href: "/tools/quant-picker", label: "Quant Picker", desc: "3-question format wizard" },
           { href: "/tools/backend-picker", label: "Backend Picker", desc: "Right inference backend" },
-          { href: "/tools/modelfile-generator", label: "Modelfile Generator", desc: "Ollama Modelfile builder" },
-          { href: "/tools/system-prompt-library", label: "System Prompt Library", desc: "Production-ready prompts" },
+          { href: "/tools/system-prompt-library", label: "Prompt Library", desc: "20 production-ready prompts" },
         ],
       },
     ],
@@ -70,7 +68,7 @@ const MEGA_MENU = [
         links: [
           { href: "/benchmarks", label: "Benchmark Matrix", desc: "Full results table" },
           { href: "/tools/submit-benchmark", label: "Submit Results", desc: "Add your benchmark" },
-          { href: "/tools/benchmark-compare", label: "Compare Configs", desc: "Side-by-side comparison" },
+          { href: "/tools/benchmark-compare", label: "Compare Configs", desc: "Side-by-side GPU comparison" },
         ],
       },
       {
@@ -93,9 +91,8 @@ const MEGA_MENU = [
         links: [
           { href: "/tutorials", label: "All Tutorials", desc: "Beginner to expert" },
           { href: "/tutorials/what-is-local-ai", label: "What is Local AI?", desc: "Start here" },
-          { href: "/tutorials/install-ollama-windows", label: "Install Ollama (Windows)", desc: "10 min setup guide" },
-          { href: "/tutorials/abliterated-models-guide", label: "Running Abliterated Models", desc: "Find and load uncensored GGUFs" },
-          { href: "/tutorials/moe-pipeline-guide", label: "Build a MoE Pipeline", desc: "Expert: router + experts + synth" },
+          { href: "/tutorials/install-ollama-windows", label: "Install Ollama (Windows)", desc: "10 min setup" },
+          { href: "/tutorials/moe-pipeline-guide", label: "Build a MoE Pipeline", desc: "Expert guide" },
         ],
       },
       {
@@ -105,7 +102,6 @@ const MEGA_MENU = [
           { href: "/weekly", label: "Weekly Digest", desc: "Model drops & news" },
           { href: "/models", label: "Model Database", desc: "All open-weight models" },
           { href: "/quantization", label: "Quantization Guide", desc: "Every GGUF format" },
-          { href: "/resources", label: "Resources", desc: "External tools and links" },
         ],
       },
     ],
@@ -139,16 +135,17 @@ const MEGA_MENU = [
 
 function MegaMenu({ item, onClose }: { item: typeof MEGA_MENU[0]; onClose: () => void }) {
   return (
-    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-0 border border-[var(--border)] shadow-2xl z-50 animate-fade-in"
-      style={{ background: "var(--nav-bg)", minWidth: "600px", maxWidth: "700px" }}>
-      <div className="grid grid-cols-2 gap-0 p-6">
+    <div
+      className="absolute top-full left-1/2 -translate-x-1/2 border border-[var(--border)] shadow-2xl z-50 animate-fade-in"
+      style={{ background: "var(--nav-bg)", minWidth: "580px", boxShadow: "0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(34,211,238,0.06)" }}>
+      <div className="grid grid-cols-2 gap-0 p-5">
         {item.columns.map((col, i) => (
-          <div key={i} className={i > 0 ? "border-l border-[var(--border)] pl-6" : "pr-6"}>
+          <div key={i} className={i > 0 ? "border-l border-[var(--border)] pl-5" : "pr-5"}>
             <div className="text-xs uppercase tracking-widest text-[var(--muted)] font-mono mb-4">{col.heading}</div>
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {col.links.map((link) => (
                 <Link key={link.href} href={link.href} onClick={onClose}
-                  className="block px-3 py-2 hover:bg-[var(--surface)] transition-colors group rounded-sm">
+                  className="block px-3 py-2.5 hover:bg-[var(--surface)] transition-colors group rounded-sm">
                   <div className="text-sm font-mono font-bold text-[var(--fg)] group-hover:text-cyan-400 transition-colors leading-tight">
                     {link.label}
                   </div>
@@ -159,7 +156,7 @@ function MegaMenu({ item, onClose }: { item: typeof MEGA_MENU[0]; onClose: () =>
           </div>
         ))}
       </div>
-      <div className="border-t border-[var(--border)] px-6 py-3" style={{ background: "var(--surface)" }}>
+      <div className="border-t border-[var(--border)] px-5 py-2.5 bg-[var(--surface)]/50">
         <Link href={item.href} onClick={onClose}
           className="text-xs text-cyan-400 hover:text-cyan-300 font-mono uppercase tracking-widest transition-colors">
           View all {item.label} →
@@ -173,6 +170,7 @@ function Nav() {
   const [open, setOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [scrolled, setScrolled] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -184,8 +182,10 @@ function Nav() {
     const handler = (e: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(e.target as Node)) setActiveMenu(null);
     };
+    const scroll = () => setScrolled(window.scrollY > 20);
     document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    window.addEventListener("scroll", scroll, { passive: true });
+    return () => { document.removeEventListener("mousedown", handler); window.removeEventListener("scroll", scroll); };
   }, []);
 
   const toggleTheme = () => {
@@ -197,10 +197,14 @@ function Nav() {
 
   return (
     <>
-      <nav ref={navRef} className="sticky top-0 z-50 border-b border-[var(--border)]"
-        style={{ background: "var(--nav-bg)" }}>
+      <nav ref={navRef}
+        className="sticky top-0 z-50 border-b border-[var(--border)] transition-shadow duration-200"
+        style={{
+          background: "var(--nav-bg)",
+          boxShadow: scrolled ? "0 4px 24px rgba(0,0,0,0.3)" : "none",
+        }}>
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
-          <Link href="/" className="font-black tracking-tighter text-lg font-mono shrink-0" onClick={() => setActiveMenu(null)}>
+          <Link href="/" className="font-black tracking-tighter text-lg font-mono shrink-0 flex items-center gap-0" onClick={() => setActiveMenu(null)}>
             <span className="text-[var(--fg)]">Defiled</span>
             <span className="text-cyan-400">AI</span>
           </Link>
@@ -220,7 +224,7 @@ function Nav() {
                   }`}>
                   {item.label}
                   <svg width="10" height="10" viewBox="0 0 10 10" fill="none"
-                    className={`transition-transform ${activeMenu === item.label ? "rotate-180" : ""}`}>
+                    className={`transition-transform duration-200 ${activeMenu === item.label ? "rotate-180" : ""}`}>
                     <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                   </svg>
                 </button>
@@ -247,7 +251,7 @@ function Nav() {
               About
             </Link>
             <Link href="/signup"
-              className="hidden md:block text-xs tracking-widest uppercase bg-cyan-500 text-black font-bold px-4 py-1.5 hover:bg-cyan-400 transition-colors ml-1">
+              className="hidden md:block text-xs tracking-widest uppercase bg-cyan-500 text-black font-black px-4 py-1.5 hover:bg-cyan-400 transition-all ml-1">
               Sign Up
             </Link>
             <button onClick={() => { setOpen(!open); setActiveMenu(null); }} aria-label="Menu"
@@ -272,15 +276,17 @@ function Nav() {
           <div className="p-4 space-y-1">
             {MEGA_MENU.map((section) => (
               <div key={section.label}>
-                <div className="text-xs uppercase tracking-widest text-[var(--muted)] font-mono px-3 py-2 mt-4">{section.label}</div>
-                {section.columns.flatMap((col) => col.links).map((link) => (
+                <div className={`text-xs uppercase tracking-widest font-mono px-3 py-2 mt-4 ${section.highlight ? "text-cyan-400" : "text-[var(--muted)]"}`}>
+                  {section.label}
+                </div>
+                {section.columns.flatMap(col => col.links).map((link) => (
                   <Link key={link.href} href={link.href} onClick={() => setOpen(false)}
                     className="flex items-center justify-between px-3 py-3 border-b border-[var(--border)]/30 hover:bg-[var(--surface)] transition-colors">
                     <div>
                       <div className="text-sm font-mono text-[var(--fg)]">{link.label}</div>
                       <div className="text-xs text-[var(--muted)]">{link.desc}</div>
                     </div>
-                    <span className="text-[var(--muted)] text-xs ml-3">→</span>
+                    <span className="text-[var(--muted)] text-xs ml-3 shrink-0">→</span>
                   </Link>
                 ))}
               </div>
@@ -291,7 +297,7 @@ function Nav() {
                 About
               </Link>
               <Link href="/signup" onClick={() => setOpen(false)}
-                className="flex-1 text-center py-3 text-xs tracking-widest uppercase bg-cyan-500 text-black font-bold hover:bg-cyan-400 transition-colors font-mono">
+                className="flex-1 text-center py-3 text-xs tracking-widest uppercase bg-cyan-500 text-black font-black hover:bg-cyan-400 transition-colors font-mono">
                 Sign Up
               </Link>
             </div>
