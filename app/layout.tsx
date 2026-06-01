@@ -35,23 +35,27 @@ const MEGA_MENU = [
     highlight: false,
     columns: [
       {
-        heading: "Hardware Tools",
+        heading: "Hardware & Performance",
         links: [
           { href: "/tools/model-compatibility", label: "Model Compatibility", desc: "What runs on your GPU" },
           { href: "/tools/can-i-run-it", label: "Can I Run It?", desc: "Quick GPU check + embed" },
           { href: "/tools/speed-estimator", label: "Speed Estimator", desc: "Predict tok/s" },
+          { href: "/tools/inference-profiler", label: "Inference Profiler", desc: "TTFT, bandwidth, offload analysis" },
           { href: "/tools/price-performance", label: "Price / Performance", desc: "GPU value rankings" },
-          { href: "/tools/benchmark-compare", label: "Benchmark Compare", desc: "Side-by-side GPU comparison" },
+          { href: "/tools/hardware-advisor", label: "Hardware Advisor", desc: "Build recommendations" },
         ],
       },
       {
-        heading: "Model Tools",
+        heading: "Model & Pipeline",
         links: [
+          { href: "/tools/moe-builder", label: "MoE Pipeline Builder", desc: "Build local expert pipelines" },
           { href: "/tools/vram-calculator", label: "VRAM Calculator", desc: "Exact VRAM requirements" },
           { href: "/tools/context-calculator", label: "Context Calculator", desc: "Max context on your GPU" },
+          { href: "/tools/token-budget", label: "Token Budget", desc: "Plan context and cost" },
           { href: "/tools/quant-picker", label: "Quant Picker", desc: "3-question format wizard" },
           { href: "/tools/backend-picker", label: "Backend Picker", desc: "Right inference backend" },
           { href: "/tools/modelfile-generator", label: "Modelfile Generator", desc: "Ollama Modelfile builder" },
+          { href: "/tools/system-prompt-library", label: "System Prompt Library", desc: "Production-ready prompts" },
         ],
       },
     ],
@@ -85,21 +89,23 @@ const MEGA_MENU = [
     highlight: false,
     columns: [
       {
-        heading: "Articles",
+        heading: "Tutorials",
         links: [
-          { href: "/articles", label: "Research Archive", desc: "All articles" },
-          { href: "/weekly", label: "Weekly Digest", desc: "Model drops & news" },
-          { href: "/articles/abliteration-explained", label: "Abliteration Guide", desc: "Technical deep dive" },
-          { href: "/articles/getting-started-local-ai-2026", label: "Getting Started", desc: "Beginner guide" },
+          { href: "/tutorials", label: "All Tutorials", desc: "Beginner to expert" },
+          { href: "/tutorials/what-is-local-ai", label: "What is Local AI?", desc: "Start here" },
+          { href: "/tutorials/install-ollama-windows", label: "Install Ollama (Windows)", desc: "10 min setup guide" },
+          { href: "/tutorials/abliterated-models-guide", label: "Running Abliterated Models", desc: "Find and load uncensored GGUFs" },
+          { href: "/tutorials/moe-pipeline-guide", label: "Build a MoE Pipeline", desc: "Expert: router + experts + synth" },
         ],
       },
       {
-        heading: "Reference",
+        heading: "Articles & Reference",
         links: [
+          { href: "/articles", label: "Research Archive", desc: "All articles" },
+          { href: "/weekly", label: "Weekly Digest", desc: "Model drops & news" },
           { href: "/models", label: "Model Database", desc: "All open-weight models" },
           { href: "/quantization", label: "Quantization Guide", desc: "Every GGUF format" },
-          { href: "/hardware", label: "Hardware Guide", desc: "Build configurations" },
-          { href: "/resources", label: "Resources", desc: "Guides and external tools" },
+          { href: "/resources", label: "Resources", desc: "External tools and links" },
         ],
       },
     ],
@@ -119,8 +125,9 @@ const MEGA_MENU = [
         ],
       },
       {
-        heading: "Latest",
+        heading: "About & Updates",
         links: [
+          { href: "/about", label: "About DefiledAI", desc: "What we build and why" },
           { href: "/weekly", label: "Weekly Digest", desc: "What dropped this week" },
           { href: "/tools/hf-tracker", label: "HF Tracker", desc: "New model uploads" },
           { href: "/feed.xml", label: "RSS Feed", desc: "Subscribe to updates" },
@@ -132,8 +139,8 @@ const MEGA_MENU = [
 
 function MegaMenu({ item, onClose }: { item: typeof MEGA_MENU[0]; onClose: () => void }) {
   return (
-    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-0 w-[640px] border border-[var(--border)] shadow-2xl z-50 animate-fade-in"
-      style={{ background: "var(--nav-bg)" }}>
+    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-0 border border-[var(--border)] shadow-2xl z-50 animate-fade-in"
+      style={{ background: "var(--nav-bg)", minWidth: "600px", maxWidth: "700px" }}>
       <div className="grid grid-cols-2 gap-0 p-6">
         {item.columns.map((col, i) => (
           <div key={i} className={i > 0 ? "border-l border-[var(--border)] pl-6" : "pr-6"}>
@@ -141,7 +148,7 @@ function MegaMenu({ item, onClose }: { item: typeof MEGA_MENU[0]; onClose: () =>
             <div className="space-y-1">
               {col.links.map((link) => (
                 <Link key={link.href} href={link.href} onClick={onClose}
-                  className="block px-3 py-2.5 hover:bg-[var(--surface)] transition-colors group">
+                  className="block px-3 py-2 hover:bg-[var(--surface)] transition-colors group rounded-sm">
                   <div className="text-sm font-mono font-bold text-[var(--fg)] group-hover:text-cyan-400 transition-colors leading-tight">
                     {link.label}
                   </div>
@@ -235,6 +242,10 @@ function Nav() {
               className="hidden md:block p-2 text-[var(--muted)] hover:text-[var(--fg)] transition-colors text-xs font-mono tracking-widest">
               {theme === "dark" ? "LIGHT" : "DARK"}
             </button>
+            <Link href="/about"
+              className="hidden md:block text-xs tracking-widest uppercase text-[var(--muted)] hover:text-[var(--fg)] transition-colors px-3 py-1.5">
+              About
+            </Link>
             <Link href="/signup"
               className="hidden md:block text-xs tracking-widest uppercase bg-cyan-500 text-black font-bold px-4 py-1.5 hover:bg-cyan-400 transition-colors ml-1">
               Sign Up
@@ -261,23 +272,23 @@ function Nav() {
           <div className="p-4 space-y-1">
             {MEGA_MENU.map((section) => (
               <div key={section.label}>
-                <div className="text-xs uppercase tracking-widest text-[var(--muted)] font-mono px-3 py-2 mt-3">{section.label}</div>
+                <div className="text-xs uppercase tracking-widest text-[var(--muted)] font-mono px-3 py-2 mt-4">{section.label}</div>
                 {section.columns.flatMap((col) => col.links).map((link) => (
                   <Link key={link.href} href={link.href} onClick={() => setOpen(false)}
-                    className="flex items-center justify-between px-3 py-3 border-b border-[var(--border)]/40 hover:bg-[var(--surface)] transition-colors">
+                    className="flex items-center justify-between px-3 py-3 border-b border-[var(--border)]/30 hover:bg-[var(--surface)] transition-colors">
                     <div>
                       <div className="text-sm font-mono text-[var(--fg)]">{link.label}</div>
                       <div className="text-xs text-[var(--muted)]">{link.desc}</div>
                     </div>
-                    <span className="text-[var(--muted)] text-xs">→</span>
+                    <span className="text-[var(--muted)] text-xs ml-3">→</span>
                   </Link>
                 ))}
               </div>
             ))}
             <div className="flex gap-3 px-3 pt-4 pb-6">
-              <Link href="/login" onClick={() => setOpen(false)}
+              <Link href="/about" onClick={() => setOpen(false)}
                 className="flex-1 text-center py-3 text-xs tracking-widest uppercase border border-[var(--border)] text-[var(--muted)] hover:text-[var(--fg)] transition-colors font-mono">
-                Login
+                About
               </Link>
               <Link href="/signup" onClick={() => setOpen(false)}
                 className="flex-1 text-center py-3 text-xs tracking-widest uppercase bg-cyan-500 text-black font-bold hover:bg-cyan-400 transition-colors font-mono">
@@ -296,9 +307,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" data-theme="dark">
       <head>
         <title>DefiledAI — Unrestricted Local AI Research</title>
-        <meta name="description" content="The research hub for open-weight, abliterated, and uncensored AI models. 14 tools, community leaderboard, benchmarks, weekly digest." />
+        <meta name="description" content="The research hub for open-weight, abliterated, and uncensored AI models. 20+ tools, tutorials, community leaderboard, MoE builder." />
         <meta property="og:title" content="DefiledAI — Unrestricted Local AI Research" />
-        <meta property="og:description" content="Uncensored model database, 14 tools, community leaderboard, HF tracker, weekly digest." />
+        <meta property="og:description" content="20+ tools, tutorials from beginner to expert, uncensored model database, MoE pipeline builder." />
         <meta property="og:url" content="https://defiledai.com" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://defiledai.com/og.png" />

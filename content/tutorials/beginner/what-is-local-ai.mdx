@@ -1,0 +1,108 @@
+---
+title: "What is Local AI and Why Run It Yourself?"
+excerpt: "The case for running AI models on your own hardware — privacy, cost, no restrictions, and full control. What local AI actually means and what you need to get started."
+date: "2026-05-30"
+category: "Beginner Tutorial"
+level: "beginner"
+tags: ["beginner", "intro", "local-ai", "privacy", "ollama"]
+---
+
+# What is Local AI and Why Run It Yourself?
+
+Local AI means running language models on your own hardware instead of sending your prompts to a company's servers. The model weights live on your machine. Your data never leaves. You pay nothing per query. And nobody can restrict what you ask.
+
+## How Cloud AI Actually Works
+
+When you use ChatGPT, Claude, or Gemini, your prompt travels to a data center, gets processed by a model running on expensive hardware, and comes back as a response. Every message is logged, potentially reviewed, and processed according to that company's content policies.
+
+This means:
+- Your questions are stored and associated with your account
+- Certain topics are refused or watered down
+- You pay per query at scale
+- The service can change, get more restrictive, or disappear
+
+## What Local AI Changes
+
+Running a model locally flips every one of those constraints:
+
+**Privacy** — your prompts never leave your machine. Sensitive business data, personal questions, research topics — none of it goes anywhere.
+
+**No restrictions** — open-weight models, especially abliterated variants, have no content policy enforcement. The model answers what you ask.
+
+**Cost** — after the initial hardware cost, inference is free. Run 10 queries or 10,000 — it costs the same.
+
+**Speed** — a local RTX 4090 generates 128 tokens per second on a 7B model. That's faster than most cloud APIs for short outputs.
+
+**Availability** — no rate limits, no API outages, no subscription required.
+
+## What Hardware Do You Need?
+
+The minimum viable setup for useful local AI is a GPU with **6GB of VRAM**. This runs Llama 3.1 8B at Q4_K_M — a model that performs comparably to GPT-3.5 on most tasks.
+
+| VRAM | What You Can Run |
+|---|---|
+| 4GB | Phi-3 Mini 3.8B, Llama 3.2 3B |
+| 6–8GB | Llama 3.1 8B Q4, Mistral 7B Q4 |
+| 12GB | 13B Q4, 7B Q8 (near-lossless) |
+| 24GB | 27B Q5, 13B Q8, any 7B model |
+| 48GB | 70B Q4 (requires dual GPU) |
+
+No dedicated GPU? You can still run models on CPU, just much slower — roughly 3-10 tokens per second depending on your RAM and the model size.
+
+## What Are Open-Weight Models?
+
+Open-weight models are AI models where the trained weights are publicly released. This is what makes local AI possible — you download the model file and run it yourself.
+
+Major open-weight model families:
+- **Llama** (Meta) — the most widely used, strong general capability
+- **Mistral / Mixtral** (Mistral AI) — fast, efficient, Apache 2.0 licensed
+- **Qwen** (Alibaba) — excellent for coding and multilingual tasks
+- **DeepSeek** — outstanding for reasoning and mathematics
+- **Gemma** (Google) — strong reasoning for its size
+- **Dolphin** (CognitiveComputations) — fine-tuned for uncensored assistance
+
+## What is GGUF?
+
+GGUF is the file format used by most local AI tools. It packages model weights with metadata and supports quantization — a compression technique that reduces the model's size and VRAM requirements while preserving most of its capability.
+
+A 70B model at full precision (F16) needs 140GB of VRAM. The same model at Q4_K_M quantization needs ~40GB and performs at 92-95% of the original quality.
+
+## The Fastest Way to Start
+
+Install **Ollama** — it handles everything: model downloads, VRAM detection, and serving. One command:
+
+**Windows:** Download from [ollama.com](https://ollama.com)
+
+**Linux/macOS:**
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+Then run your first model:
+```bash
+ollama run llama3.1:8b
+```
+
+Ollama automatically downloads the right quantization for your VRAM and starts a chat session. That's it.
+
+## What to Expect
+
+A 7-8B model on a 3080 Ti at Q4_K_M:
+- Generates 80-90 tokens per second — fast enough to feel instant
+- Handles coding, writing, analysis, and Q&A well
+- Falls short of GPT-4 on complex multi-step reasoning
+- Has no content restrictions if you use an abliterated variant
+
+A 70B model on dual RTX 3090 NVLink:
+- ~21 tokens per second — usable for interactive chat
+- Approaches frontier model quality on most benchmarks
+- Handles long-form reasoning, complex code, and nuanced writing
+- Completely unrestricted with abliterated weights
+
+The local AI experience in 2026 is genuinely good. For most daily tasks — coding assistance, writing, research, Q&A — a well-configured local model is more than sufficient.
+
+## Next Steps
+
+Read the [Installing Ollama on Windows](/tutorials/install-ollama-windows) or [Installing Ollama on Linux](/tutorials/install-ollama-linux) guide to get your first model running in the next 10 minutes.
+
+Use the [Model Compatibility Checker](/tools/model-compatibility) to see exactly which models fit your GPU.

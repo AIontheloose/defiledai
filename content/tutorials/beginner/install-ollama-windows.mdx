@@ -1,0 +1,149 @@
+---
+title: "Installing Ollama on Windows: Complete Guide"
+excerpt: "Step-by-step guide to installing Ollama on Windows 11, running your first model, and configuring it for best performance on your GPU."
+date: "2026-05-30"
+category: "Beginner Tutorial"
+level: "beginner"
+tags: ["ollama", "windows", "install", "beginner", "setup"]
+---
+
+# Installing Ollama on Windows: Complete Guide
+
+Ollama is the easiest way to run local AI models on Windows. It handles model downloads, GPU detection, and exposes an API automatically. This guide gets you from zero to running a model in under 10 minutes.
+
+## Requirements
+
+- Windows 10 or 11 (64-bit)
+- 8GB+ system RAM (16GB recommended)
+- GPU with 4GB+ VRAM (NVIDIA recommended, AMD supported, CPU fallback available)
+- 20GB+ free disk space for models
+
+## Step 1 — Download and Install
+
+Go to [ollama.com](https://ollama.com) and click **Download for Windows**.
+
+Run the installer. It installs Ollama as a background service that starts automatically with Windows. You'll see the Ollama icon in your system tray.
+
+Alternatively, install via winget:
+```powershell
+winget install Ollama.Ollama
+```
+
+## Step 2 — Verify the Installation
+
+Open PowerShell and run:
+```powershell
+ollama --version
+```
+
+You should see a version number. If you get "command not found", restart your terminal — Ollama adds itself to PATH during installation.
+
+Check that Ollama is running:
+```powershell
+curl http://localhost:11434
+# Should return: Ollama is running
+```
+
+## Step 3 — Run Your First Model
+
+Pull and run Llama 3.1 8B (recommended for 6GB+ VRAM):
+```powershell
+ollama run llama3.1:8b
+```
+
+Ollama downloads the model file (~4.7GB) and starts a chat session. Type your message and press Enter.
+
+For lower VRAM (4GB or less):
+```powershell
+ollama run phi3:mini
+```
+
+For higher VRAM (12GB+):
+```powershell
+ollama run llama3.1:8b:q8_0   # near-lossless quality
+```
+
+## Step 4 — Verify GPU Usage
+
+While a model is running, open a second PowerShell window:
+```powershell
+nvidia-smi
+```
+
+You should see Ollama using GPU memory. If it shows 0 GPU usage, Ollama is running on CPU — see the troubleshooting section below.
+
+## Step 5 — Configure for Your Setup
+
+Ollama uses environment variables for configuration. Set these in Windows System Environment Variables (**System Properties → Environment Variables → System Variables → New**):
+
+| Variable | Value | Effect |
+|---|---|---|
+| `OLLAMA_NUM_GPU` | `99` | Force all layers to GPU |
+| `OLLAMA_KEEP_ALIVE` | `300` | Keep model loaded 5 min |
+| `OLLAMA_MAX_LOADED_MODELS` | `1` | Only one model in VRAM at once |
+| `OLLAMA_HOST` | `0.0.0.0:11434` | Allow network access |
+
+After changing environment variables, restart the Ollama service:
+```powershell
+Stop-Process -Name "ollama" -Force
+Start-Process "ollama" -ArgumentList "serve"
+```
+
+Or restart from the system tray icon.
+
+## Useful Commands
+
+```powershell
+# List downloaded models
+ollama list
+
+# Pull a model without running it
+ollama pull mistral:7b
+
+# Remove a model
+ollama rm llama3.1:8b
+
+# Show model info
+ollama show llama3.1:8b
+
+# Run with a one-shot prompt (non-interactive)
+ollama run llama3.1:8b "Explain quantization in one paragraph"
+
+# List running models and VRAM usage
+ollama ps
+```
+
+## Recommended Models by VRAM
+
+| VRAM | Model | Command |
+|---|---|---|
+| 4GB | Phi-3 Mini | `ollama run phi3:mini` |
+| 6–8GB | Llama 3.1 8B | `ollama run llama3.1:8b` |
+| 8GB | Mistral 7B | `ollama run mistral:7b` |
+| 12GB | Llama 3.1 8B Q8 | `ollama run llama3.1:8b:q8_0` |
+| 24GB | Gemma 2 27B | `ollama run gemma2:27b` |
+
+## Troubleshooting
+
+**Model running on CPU instead of GPU**
+Check that your NVIDIA drivers are up to date (525+ required). Run `nvidia-smi` to verify the driver version. If drivers are current, set `OLLAMA_NUM_GPU=99` in environment variables.
+
+**Out of memory error**
+The model is too large for your VRAM. Try a smaller quantization:
+```powershell
+ollama run llama3.1:8b:q4_0   # smaller than default Q4_K_M
+```
+Or use a smaller model.
+
+**Ollama not found after install**
+Restart PowerShell or your terminal. The PATH update requires a new session.
+
+**Slow generation speed**
+Run `ollama ps` to confirm the model is on GPU. If VRAM is insufficient, Ollama automatically offloads some layers to CPU — this significantly reduces speed.
+
+## Next Steps
+
+- [Your First Model](/tutorials/your-first-model) — how to choose the right model for your hardware
+- [Open WebUI Setup](/tutorials/open-webui-setup) — get a ChatGPT-style interface
+- [Ollama API Guide](/tutorials/ollama-api-guide) — connect apps to your local model
+- [Finding Abliterated Models](/tutorials/abliterated-models-guide) — run uncensored variants

@@ -1,0 +1,256 @@
+---
+title: "Building a Local MoE Pipeline from Independent Models"
+excerpt: "Build a macro-scale Mixture-of-Experts pipeline using independent local models — a router, domain experts, and optional synthesizer — entirely on consumer hardware."
+date: "2026-05-30"
+category: "Expert Tutorial"
+level: "expert"
+tags: ["moe", "pipeline", "router", "ollama", "python", "architecture"]
+---
+
+# Building a Local MoE Pipeline from Independent Models
+
+A Mixture-of-Experts architecture routes each input to a specialist rather than running every parameter. Traditional MoE (Mixtral, DeepSeek V3) does this inside a single model at the layer level. This guide builds a **macro-scale MoE** from independent local models — each an expert in its domain — orchestrated by a router and optionally refined by a synthesizer.
+
+## Why This Matters
+
+Instead of loading one massive 70B dense model, you load:
+- A **router** (7B) — always in VRAM, classifies intent
+- A **coding expert** (32B) — loaded on demand for code tasks
+- A **reasoning expert** (14B) — loaded for math and logic
+- A **writing expert** (70B) — loaded for long-form creative tasks
+- A **synthesizer** (7B) — optional, integrates multi-domain outputs
+
+Peak VRAM usage is router + one expert + synthesizer, not all models simultaneously. On a 24GB GPU you can access capability that would normally require 150GB.
+
+## Architecture
+
+```
+User Prompt
+     ↓
+  Router (Mistral 7B)
+  └─ classifies domain
+  └─ decides if synthesis needed
+     ↓
+Expert Dispatch
+  ├─ coding    → Qwen 2.5 Coder 32B
+  ├─ reasoning → DeepSeek R1 14B
+  ├─ writing   → Llama 3.1 70B Abliterated
+  └─ general   → Dolphin 2.9 8B
+     ↓
+[Optional] Synthesizer (Mistral 7B)
+  └─ triggered only for multi-domain or report outputs
+     ↓
+Final Response
+```
+
+## Prerequisites
+
+```bash
+# Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Pull models (adjust to your VRAM)
+ollama pull mistral:7b          # router + synthesizer
+ollama pull qwen2.5-coder:7b   # coding expert (7B fits 8GB GPU)
+ollama pull deepseek-r1:7b     # reasoning expert
+ollama pull llama3.1:8b        # writing/general expert
+
+# Python
+pip install ollama
+```
+
+For 24GB+ VRAM you can use larger experts:
+```bash
+ollama pull qwen2.5-coder:32b  # 20GB
+ollama pull deepseek-r1:14b    # 10GB
+```
+
+## The Router
+
+The router's job is to classify intent and decide if synthesis is needed. Key design decisions:
+
+**Use a small, fast model.** The router runs on every single prompt. Mistral 7B at 138 tok/s adds ~0.5s latency. A 70B router would add 5-10s — unacceptable.
+
+**Force JSON output.** The router must return structured data, not prose.
+
+**System prompt:**
+
+```
+You are a routing assistant. Analyze the user's request and output ONLY valid JSON.
+No preamble, no explanation — JSON only.
+
+{"expert": "<domain>", "reasoning": "<one sentence>", "needs_synthesis": <true|false>}
+
+Domains: coding, reasoning, writing, general
+
+Rules:
+- coding: any programming, debugging, code review, architecture
+- reasoning: math, logic puzzles, multi-step analysis, STEM
+- writing: creative fiction, essays, long-form content, copywriting
+- general: everything else
+
+Set needs_synthesis to true ONLY when:
+- The answer requires integrating outputs from multiple domains
+- A structured report or document is needed
+- The question explicitly spans multiple fields
+
+Set needs_synthesis to false for:
+- Pure code output (always false — code needs no synthesis)
+- Single-domain factual questions
+- Direct mathematical answers
+- Simple lookups or conversions
+```
+
+## The Expert Models
+
+Each expert receives the original prompt without modification. The router's classification is invisible to the expert — it just sees a user message.
+
+| Domain | Model | VRAM | Tok/s | Strength |
+|---|---|---|---|---|
+| Coding | Qwen 2.5 Coder 7B/32B | 5/20GB | 132/44 | HumanEval 88% |
+| Reasoning | DeepSeek R1 7B/14B | 5/10GB | 129/86 | MATH-500 92% |
+| Writing | Llama 3.1 8B/70B Abliterated | 5/40GB | 128/21 | Long-form, creative |
+| General | Dolphin 2.9 8B | 5GB | 128 | Uncensored, versatile |
+
+## When to Use the Synthesizer
+
+The synthesizer is **not always needed** and adds latency when it runs. Skip it for:
+
+- Pure code output — synthesizing code introduces errors
+- Single-domain answers — adds nothing
+- Simple factual responses
+
+Trigger it for:
+
+- "Explain both the code and the mathematics behind this algorithm"
+- "Write a technical report on X covering implementation and theory"
+- Multi-part questions where different parts need different experts
+
+## Full Python Implementation
+
+```python
+#!/usr/bin/env python3
+"""
+Local MoE Pipeline
+Usage: python moe.py "Your prompt here"
+"""
+
+import json
+import sys
+import ollama
+
+ROUTER_MODEL = "mistral:7b"
+SYNTHESIZER_MODEL = "mistral:7b"
+
+EXPERTS = {
+    "coding":    "qwen2.5-coder:7b",
+    "reasoning": "deepseek-r1:7b",
+    "writing":   "llama3.1:8b",
+    "general":   "dolphin-llama3:8b",
+}
+
+ROUTER_SYSTEM = """You are a routing assistant. Output ONLY valid JSON.
+{"expert": "<domain>", "reasoning": "<one sentence>", "needs_synthesis": <true|false>}
+Domains: coding, reasoning, writing, general
+Set needs_synthesis false for code, math answers, and single-domain questions."""
+
+SYNTH_SYSTEM = """You are a synthesis assistant. Integrate specialist AI output into 
+a single coherent response. Preserve technical accuracy. Remove redundancy. 
+Format clearly with appropriate sections."""
+
+def route(prompt: str) -> dict:
+    print(f"\n[Router] Analyzing prompt...")
+    response = ollama.chat(
+        model=ROUTER_MODEL,
+        messages=[
+            {"role": "system", "content": ROUTER_SYSTEM},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    raw = response["message"]["content"].strip()
+    # Extract JSON robustly
+    start, end = raw.find("{"), raw.rfind("}") + 1
+    result = json.loads(raw[start:end])
+    print(f"[Router] Domain: {result['expert']} | Synthesis: {result['needs_synthesis']}")
+    print(f"[Router] Reason: {result.get('reasoning', '')}")
+    return result
+
+def call_expert(domain: str, prompt: str) -> str:
+    model = EXPERTS.get(domain, EXPERTS["general"])
+    print(f"\n[Expert:{domain}] Calling {model}...")
+    response = ollama.chat(
+        model=model,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response["message"]["content"]
+
+def synthesize(prompt: str, expert_output: str) -> str:
+    print(f"\n[Synthesizer] Refining output...")
+    response = ollama.chat(
+        model=SYNTHESIZER_MODEL,
+        messages=[
+            {"role": "system", "content": SYNTH_SYSTEM},
+            {"role": "user", "content": f"Question: {prompt}\n\nExpert output:\n{expert_output}"}
+        ]
+    )
+    return response["message"]["content"]
+
+def run(prompt: str) -> str:
+    routing = route(prompt)
+    domain = routing.get("expert", "general")
+    needs_synth = routing.get("needs_synthesis", False)
+
+    expert_output = call_expert(domain, prompt)
+
+    if needs_synth:
+        return synthesize(prompt, expert_output)
+    return expert_output
+
+if __name__ == "__main__":
+    prompt = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else input("Prompt: ")
+    result = run(prompt)
+    print(f"\n{'─'*60}\n{result}")
+```
+
+## Extending the Pipeline
+
+**Multi-expert dispatch** — for questions spanning multiple domains, route to two experts and synthesize:
+
+```python
+def route_multi(prompt: str) -> list[str]:
+    # Modify router prompt to return list of domains
+    # {"experts": ["coding", "reasoning"], "needs_synthesis": true}
+    ...
+```
+
+**Streaming output** — for interactive use, stream the expert's response:
+
+```python
+for chunk in ollama.chat(model=model, messages=msgs, stream=True):
+    print(chunk["message"]["content"], end="", flush=True)
+```
+
+**Memory across turns** — maintain conversation history per expert:
+
+```python
+HISTORIES = {domain: [] for domain in EXPERTS}
+
+def call_expert_with_memory(domain: str, prompt: str) -> str:
+    HISTORIES[domain].append({"role": "user", "content": prompt})
+    response = ollama.chat(model=EXPERTS[domain], messages=HISTORIES[domain])
+    output = response["message"]["content"]
+    HISTORIES[domain].append({"role": "assistant", "content": output})
+    return output
+```
+
+## Performance Notes
+
+With Ollama's `OLLAMA_KEEP_ALIVE=0`, each model unloads immediately after use, freeing VRAM for the next. With `OLLAMA_KEEP_ALIVE=300` (5 minutes), recently used models stay loaded — good if the same expert is called repeatedly.
+
+On a 24GB GPU running 7B experts: total latency per query is typically 2–8 seconds including routing. On dual 3090 NVLink with 32B experts: 5–15 seconds depending on output length.
+
+## Verdict
+
+The macro-scale MoE pattern gives you access to specialist capability without keeping a massive dense model in VRAM permanently. The architecture is simple enough to build in an afternoon and complex enough to tune significantly — router prompt quality, expert selection, and synthesis triggers all have major impact on output quality.
+
+Use the [MoE Builder tool](/tools/moe-builder) to generate the config and boilerplate code automatically.

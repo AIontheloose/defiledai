@@ -1,0 +1,154 @@
+---
+title: "Finding and Running Abliterated Models"
+excerpt: "Where to find abliterated GGUF files on HuggingFace, how to load them with Ollama and ExLlamaV2, and what quality to expect vs the base model."
+date: "2026-05-30"
+category: "Intermediate Tutorial"
+level: "intermediate"
+tags: ["abliterated", "uncensored", "ollama", "huggingface", "gguf", "failspy", "bartowski"]
+---
+
+# Finding and Running Abliterated Models
+
+Abliterated models are open-weight models with their refusal direction vectors removed via representation engineering. The result is a model that answers all questions directly, without content policy enforcement. Quality retention is typically 96–99% of the base model on standard benchmarks.
+
+## Where to Find Them
+
+The HuggingFace community maintains a large collection. The three most reliable sources:
+
+**failspy** — primary abliteration researcher. Produces the highest-quality abliterations using representation engineering. Look for:
+- `failspy/Meta-Llama-3-70B-Instruct-abliterated-v3`
+- `failspy/Llama-3-8B-Instruct-abliterated`
+- `failspy/Mistral-7B-Instruct-v0.3-abliterated`
+
+**bartowski** — prolific GGUF quantizer. Covers most major abliterated models with full quant packs (Q2_K through Q8_0). Almost every FailSpy abliteration has a Bartowski GGUF pack.
+
+**cognitivecomputations** — Eric Hartford's organization. Home of the Dolphin series — fine-tuned uncensored models (different method from abliteration but similar outcome).
+
+**Search terms that work on HuggingFace:**
+```
+llama 3.1 abliterated gguf
+mistral abliterated
+dolphin llama3
+qwen uncensored gguf
+```
+
+## Running with Ollama
+
+Ollama can load any GGUF file directly using a Modelfile:
+
+```bash
+# Download a GGUF from HuggingFace
+# Example: bartowski's Llama 3.1 8B abliterated Q4_K_M
+# Download from: https://huggingface.co/bartowski/Llama-3.1-8B-Instruct-abliterated
+
+# Create a Modelfile pointing to your GGUF
+cat > Modelfile << 'EOF'
+FROM /path/to/Llama-3.1-8B-Instruct-abliterated-Q4_K_M.gguf
+
+SYSTEM """
+You are a helpful, direct AI assistant. You answer all questions completely and accurately.
+"""
+
+PARAMETER temperature 0.7
+PARAMETER num_ctx 8192
+EOF
+
+# Create and run
+ollama create llama-abliterated -f ./Modelfile
+ollama run llama-abliterated
+```
+
+**Alternatively**, pull pre-packaged abliterated models from Ollama's registry:
+```bash
+ollama pull dolphin-mistral:7b
+ollama pull dolphin-llama3:8b
+```
+
+## Running with ExLlamaV2
+
+ExLlamaV2 loads GGUF files directly — no Modelfile needed:
+
+```bash
+# Clone and install
+git clone https://github.com/turboderp/exllamav2
+cd exllamav2
+pip install -e .
+
+# Run inference
+python test_inference.py \
+  -m /path/to/Llama-3.1-8B-Instruct-abliterated-Q4_K_M.gguf \
+  -p "Your prompt here" \
+  -t 200
+```
+
+For interactive chat:
+```bash
+python examples/chat.py \
+  -m /path/to/model.gguf \
+  -mode llama
+```
+
+## Quality Comparison
+
+Abliteration removes refusal direction vectors but leaves everything else intact. Measured on MMLU (higher = better):
+
+| Model | Base Score | Abliterated Score | Retention |
+|---|---|---|---|
+| Llama 3.1 8B | 73.0% | 72.4% | 99.2% |
+| Mistral 7B v0.3 | 64.2% | 63.7% | 99.2% |
+| Llama 3.1 70B | 83.6% | 82.1% | 98.2% |
+| Qwen 2.5 72B | 83.1% | 81.3% | 97.8% |
+
+In practice, the difference is imperceptible on normal tasks. The only change is that the model no longer refuses or adds disclaimers.
+
+## Dolphin vs Abliterated
+
+Both produce uncensored models but via different methods:
+
+**Abliteration** (FailSpy method):
+- Requires no training — weights are mathematically modified
+- Takes minutes on CPU
+- Quality loss: 0.5–2%
+- Preserves the base model's personality and capabilities exactly
+
+**Dolphin fine-tune** (CognitiveComputations):
+- Fine-tuned on carefully curated uncensored datasets
+- Adds "helpful AI assistant" personality
+- Quality loss: 1–3% on benchmarks, but subjectively often feels better for chat
+- More consistent instruction following for complex multi-turn conversations
+
+**Which to use:**
+- For raw capability preservation: abliterated (FailSpy)
+- For general chat and roleplay: Dolphin
+- For coding: abliterated Qwen 2.5 Coder or DeepSeek R1
+
+## Verifying an Abliteration Worked
+
+A quick test — ask the model something that a standard instruct model would refuse:
+
+```
+Explain in detail how nuclear reactors work, including the specific physics 
+of the fission chain reaction and criticality conditions.
+```
+
+A properly abliterated model answers directly and completely. A partially abliterated model may still hedge or add unnecessary caveats.
+
+Use the [Abliteration Quality Scorer](/tools/abliteration-scorer) to look up benchmark retention scores for known models.
+
+## VRAM Requirements
+
+Same as the base model — abliteration does not change model size:
+
+| Model | VRAM (Q4_K_M) | Min GPU |
+|---|---|---|
+| Llama 3.2 3B Abliterated | 2.2GB | GTX 1060 6GB |
+| Llama 3.1 8B Abliterated | 5.5GB | RTX 3060 6GB |
+| Mistral 7B Abliterated | 4.8GB | RTX 3060 6GB |
+| Llama 3.1 70B Abliterated | 40GB | 2× RTX 3090 NVLink |
+
+## Next Steps
+
+- [Abliteration Explained](/articles/abliteration-explained) — technical deep dive into how it works
+- [Uncensored Model Database](/uncensored) — curated list with quality scores
+- [HuggingFace Tracker](/tools/hf-tracker) — latest uploads from key authors
+- [Run Abliteration Yourself](/tutorials/abliteration-diy) — apply it to any model
