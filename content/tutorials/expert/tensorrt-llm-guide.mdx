@@ -1,0 +1,279 @@
+---
+title: "TensorRT-LLM: Maximum Throughput on NVIDIA"
+excerpt: "Compile, quantize, and serve LLMs with TensorRT-LLM for production-level throughput — 2-4x faster than llama.cpp on the same hardware."
+date: "2026-05-30"
+category: "Expert Tutorial"
+level: "expert"
+tags: ["tensorrt", "nvidia", "cuda", "production", "throughput", "expert"]
+---
+
+# TensorRT-LLM: Maximum Throughput on NVIDIA
+
+TensorRT-LLM is NVIDIA's production inference library. It compiles models into optimised TensorRT engines, applies kernel fusion, and uses paged KV cache for continuous batching. On an RTX 4090, it delivers 160–200 tok/s on 7B models vs ~128 tok/s for ExLlamaV2. The tradeoff is setup complexity — this is not a beginner tool.
+
+## When to Use TensorRT-LLM
+
+Use it when:
+- You need maximum throughput for production API serving
+- You're serving multiple concurrent users
+- You have an NVIDIA GPU (Ada or Ampere) and want every bit of performance
+
+Don't use it for:
+- Single-user interactive chat (ExLlamaV2 is simpler and close enough)
+- AMD or Apple Silicon (CUDA-only)
+- Quick experimentation (compile times are 10–30 minutes)
+
+## Requirements
+
+- NVIDIA GPU (RTX 30-series or newer, Ampere/Ada recommended)
+- CUDA 12.2+
+- Docker (strongly recommended — dependency management is complex)
+- 32GB+ system RAM
+- Python 3.10+
+
+## Install via Docker (Recommended)
+
+```bash
+# Pull the TensorRT-LLM container
+docker pull nvcr.io/nvidia/tritonserver:24.01-trtllm-python-py3
+
+# Run with GPU access
+docker run --gpus all -it --rm \
+  -v /your/model/path:/models \
+  -p 8000:8000 \
+  nvcr.io/nvidia/tritonserver:24.01-trtllm-python-py3 \
+  bash
+```
+
+## Install from Source
+
+If you prefer local install:
+
+```bash
+pip install tensorrt-llm --extra-index-url https://pypi.nvidia.com
+```
+
+Verify:
+
+```bash
+python -c "import tensorrt_llm; print(tensorrt_llm.__version__)"
+```
+
+## Step 1 — Download a HuggingFace Model
+
+TensorRT-LLM works with HuggingFace format models, not GGUF. Download the original weights:
+
+```bash
+pip install huggingface_hub
+
+python -c "
+from huggingface_hub import snapshot_download
+snapshot_download(
+    repo_id='meta-llama/Meta-Llama-3.1-8B-Instruct',
+    local_dir='./hf-models/llama3.1-8b',
+    ignore_patterns=['*.gguf'],
+)
+"
+```
+
+For abliterated models, download the HuggingFace format version (not GGUF):
+
+```bash
+# FailSpy's abliterated Llama 3.1 8B
+snapshot_download(
+    repo_id='failspy/Llama-3-8B-Instruct-abliterated',
+    local_dir='./hf-models/llama3-8b-abliterated',
+)
+```
+
+## Step 2 — Convert to TensorRT Engine
+
+This is the compile step. It takes 10–30 minutes and must be repeated for each GPU/precision combination.
+
+```bash
+# Clone TensorRT-LLM examples
+git clone https://github.com/NVIDIA/TensorRT-LLM
+cd TensorRT-LLM/examples/llama
+
+# Convert HF weights to TensorRT format
+python convert_checkpoint.py \
+  --model_dir /models/hf-models/llama3.1-8b \
+  --output_dir /models/trt-ckpts/llama3.1-8b-fp16 \
+  --dtype float16
+
+# Build the TensorRT engine
+trtllm-build \
+  --checkpoint_dir /models/trt-ckpts/llama3.1-8b-fp16 \
+  --output_dir /models/trt-engines/llama3.1-8b-fp16 \
+  --gemm_plugin float16 \
+  --max_batch_size 8 \
+  --max_input_len 2048 \
+  --max_seq_len 4096
+```
+
+## Step 3 — INT8/INT4 Quantization (Optional)
+
+For smaller VRAM footprint with near-fp16 quality:
+
+```bash
+# INT8 weight-only quantization
+python convert_checkpoint.py \
+  --model_dir /models/hf-models/llama3.1-8b \
+  --output_dir /models/trt-ckpts/llama3.1-8b-int8 \
+  --dtype float16 \
+  --use_weight_only \
+  --weight_only_precision int8
+
+trtllm-build \
+  --checkpoint_dir /models/trt-ckpts/llama3.1-8b-int8 \
+  --output_dir /models/trt-engines/llama3.1-8b-int8 \
+  --gemm_plugin float16 \
+  --max_batch_size 8 \
+  --max_input_len 2048 \
+  --max_seq_len 4096
+```
+
+## Step 4 — Run Inference
+
+Direct Python inference:
+
+```python
+import tensorrt_llm
+from tensorrt_llm.runtime import ModelRunner
+from transformers import AutoTokenizer
+
+ENGINE_DIR = "/models/trt-engines/llama3.1-8b-fp16"
+TOKENIZER = "meta-llama/Meta-Llama-3.1-8B-Instruct"
+
+tokenizer = AutoTokenizer.from_pretrained(TOKENIZER)
+runner = ModelRunner.from_dir(ENGINE_DIR, rank=0)
+
+def generate(prompt: str, max_tokens: int = 200) -> str:
+    input_ids = tokenizer.encode(prompt, return_tensors="pt").cuda()
+    
+    outputs = runner.generate(
+        batch_input_ids=[input_ids[0]],
+        max_new_tokens=max_tokens,
+        temperature=0.7,
+        top_p=0.9,
+    )
+    
+    return tokenizer.decode(outputs[0][0], skip_special_tokens=True)
+
+result = generate("<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\nExplain TensorRT-LLM in one paragraph<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n")
+print(result)
+```
+
+## Step 5 — Serve with Triton (OpenAI-Compatible API)
+
+For production serving with an OpenAI-compatible endpoint:
+
+```bash
+# Prepare Triton model repository
+python TensorRT-LLM/examples/llama/prepare_triton.py \
+  --engine_dir /models/trt-engines/llama3.1-8b-fp16 \
+  --model_repo /models/triton-repo \
+  --tokenizer meta-llama/Meta-Llama-3.1-8B-Instruct
+
+# Start Triton server
+tritonserver \
+  --model-repository /models/triton-repo \
+  --grpc-port 8001 \
+  --http-port 8000 \
+  --log-verbose 0
+```
+
+Test the API:
+
+```bash
+curl http://localhost:8000/v2/models/ensemble/generate \
+  -d '{
+    "text_input": "What is TensorRT-LLM?",
+    "max_tokens": 200,
+    "bad_words": "",
+    "stop_words": ""
+  }'
+```
+
+## Performance Comparison
+
+On RTX 4090, Llama 3.1 8B Q4/INT8:
+
+| Backend | Tok/s | Setup Time | VRAM |
+|---|---|---|---|
+| TensorRT-LLM INT8 | 165 | 30 min | 8GB |
+| ExLlamaV2 Q4_K_M | 128 | 5 min | 5.5GB |
+| Ollama Q4_K_M | 98 | 1 min | 5.5GB |
+| llama.cpp CUDA | 91 | 5 min | 5.5GB |
+
+TensorRT-LLM wins on throughput but loses on setup simplicity. For production serving of multiple users simultaneously, the throughput advantage compounds — 4 concurrent users at 165 tok/s each vs 4 at 91 tok/s is a meaningful difference.
+
+## Multi-GPU with Tensor Parallelism
+
+```bash
+# Build engine for 2 GPUs with tensor parallelism
+python convert_checkpoint.py \
+  --model_dir /models/hf-models/llama3.1-70b \
+  --output_dir /models/trt-ckpts/llama3.1-70b-tp2 \
+  --dtype float16 \
+  --tp_size 2            # Tensor parallel across 2 GPUs
+
+trtllm-build \
+  --checkpoint_dir /models/trt-ckpts/llama3.1-70b-tp2 \
+  --output_dir /models/trt-engines/llama3.1-70b-tp2 \
+  --gemm_plugin float16 \
+  --max_batch_size 4 \
+  --max_input_len 2048 \
+  --max_seq_len 4096 \
+  --workers 2
+```
+
+## Rebuilding After Changes
+
+Any change to the model, quantization, batch size, or sequence length requires a full rebuild. Keep a script:
+
+```bash
+#!/bin/bash
+# rebuild.sh
+set -e
+echo "Converting checkpoint..."
+python convert_checkpoint.py \
+  --model_dir $1 \
+  --output_dir /tmp/trt-ckpt \
+  --dtype float16
+
+echo "Building engine..."
+trtllm-build \
+  --checkpoint_dir /tmp/trt-ckpt \
+  --output_dir $2 \
+  --gemm_plugin float16 \
+  --max_batch_size 8 \
+  --max_input_len 2048 \
+  --max_seq_len 4096
+
+echo "Done: $2"
+```
+
+## Troubleshooting
+
+**Out of memory during build**
+
+Reduce `--max_batch_size`. Build uses more memory than inference.
+
+**Slow build times**
+
+Normal — 10–30 minutes on first build per model/config. Subsequent builds of the same model are faster due to caching.
+
+**CUDA version mismatch**
+
+TensorRT-LLM is tightly coupled to CUDA version. Use the Docker container to avoid version conflicts.
+
+**Engine not loading**
+
+Engines are GPU-architecture specific. An engine built on Ada (RTX 40-series) will not run on Ampere (RTX 30-series) and vice versa.
+
+## Next Steps
+
+- [CUDA Optimization](/tutorials/cuda-optimization) — maximize throughput on your specific GPU
+- [Inference Profiler](/tools/inference-profiler) — benchmark TensorRT vs other backends
+- [Dual GPU NVLink Setup](/tutorials/dual-gpu-nvlink-setup) — tensor parallel across consumer GPUs
