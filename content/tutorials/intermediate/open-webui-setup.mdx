@@ -1,0 +1,148 @@
+---
+title: "Open WebUI: ChatGPT-Style Interface for Ollama"
+excerpt: "Install Open WebUI with Docker and get a full browser-based chat interface for your local Ollama models — conversations, model switching, and document upload."
+date: "2026-05-30"
+category: "Intermediate Tutorial"
+level: "intermediate"
+tags: ["open-webui", "ollama", "docker", "interface", "chat"]
+---
+
+# Open WebUI: ChatGPT-Style Interface for Ollama
+
+Ollama's terminal interface is functional but basic. Open WebUI gives you a full browser-based chat interface — conversation history, model switching, document upload, system prompts, and more. It takes about 5 minutes to set up.
+
+## Prerequisites
+
+- Ollama installed and running ([Windows guide](/tutorials/install-ollama-windows) / [Linux guide](/tutorials/install-ollama-linux))
+- Docker Desktop (Windows/macOS) or Docker Engine (Linux)
+- At least one model pulled: `ollama pull llama3.1:8b`
+
+## Install Docker
+
+**Windows/macOS:** Download Docker Desktop from docker.com and run the installer.
+
+**Linux (Ubuntu):**
+```bash
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+# Log out and back in
+```
+
+## Install Open WebUI
+
+**Windows (PowerShell):**
+```powershell
+docker run -d `
+  -p 3000:8080 `
+  --add-host=host.docker.internal:host-gateway `
+  -v open-webui:/app/backend/data `
+  --name open-webui `
+  --restart always `
+  ghcr.io/open-webui/open-webui:main
+```
+
+**Linux/macOS:**
+```bash
+docker run -d \
+  -p 3000:8080 \
+  --add-host=host.docker.internal:host-gateway \
+  -v open-webui:/app/backend/data \
+  --name open-webui \
+  --restart always \
+  ghcr.io/open-webui/open-webui:main
+```
+
+Wait about 30 seconds for the container to start, then open:
+```
+http://localhost:3000
+```
+
+## First Setup
+
+1. Click **Sign up** and create an admin account (local only — not sent anywhere)
+2. The first account automatically becomes admin
+3. Select your model from the dropdown at the top
+4. Start chatting
+
+## Key Features
+
+**Model switching** — dropdown at the top of any conversation lets you switch models mid-chat or compare responses from multiple models side by side.
+
+**System prompts** — click the settings icon in a conversation to set a persistent system prompt. Use the [System Prompt Library](/tools/system-prompt-library) for ready-made prompts.
+
+**Document upload** — drag and drop PDFs, text files, or code into the chat. The model reads the document and answers questions about it.
+
+**Conversation history** — all conversations are saved locally in the Docker volume. They persist across restarts.
+
+**Model management** — pull new Ollama models directly from the Open WebUI interface without using the terminal.
+
+## Connecting to Ollama
+
+Open WebUI auto-detects Ollama at `http://host.docker.internal:11434`. If it doesn't connect:
+
+1. Go to **Settings → Admin → Connections**
+2. Set Ollama API URL to `http://host.docker.internal:11434`
+3. Click **Save**
+
+If you're on Linux and `host.docker.internal` doesn't resolve:
+
+```bash
+# Stop and remove existing container
+docker stop open-webui && docker rm open-webui
+
+# Re-run with host network mode
+docker run -d \
+  --network=host \
+  -v open-webui:/app/backend/data \
+  --name open-webui \
+  --restart always \
+  -e OLLAMA_BASE_URL=http://127.0.0.1:11434 \
+  ghcr.io/open-webui/open-webui:main
+```
+
+Then access at `http://localhost:8080`.
+
+## Updating Open WebUI
+
+```bash
+docker pull ghcr.io/open-webui/open-webui:main
+docker stop open-webui
+docker rm open-webui
+# Re-run the original docker run command
+```
+
+Your conversations and settings are stored in the `open-webui` volume and survive the update.
+
+## Useful Docker Commands
+
+```bash
+# Check if running
+docker ps
+
+# View logs
+docker logs open-webui
+
+# Restart
+docker restart open-webui
+
+# Stop
+docker stop open-webui
+
+# Start again
+docker start open-webui
+```
+
+## Network Access (access from other devices)
+
+To access Open WebUI from your phone or another computer on your network:
+
+1. Find your machine's local IP: `ipconfig` (Windows) or `ip addr` (Linux)
+2. Access from other devices at `http://YOUR_LOCAL_IP:3000`
+
+Note: Open WebUI has no authentication by default beyond the initial signup. Only expose it on trusted networks.
+
+## Next Steps
+
+- [Ollama API Guide](/tutorials/ollama-api-guide) — connect apps directly to Ollama
+- [Modelfile Guide](/tutorials/modelfile-guide) — create custom model personalities
+- [Abliterated Models Guide](/tutorials/abliterated-models-guide) — run uncensored models

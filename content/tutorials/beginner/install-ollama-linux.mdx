@@ -1,0 +1,198 @@
+---
+title: "Installing Ollama on Linux (Ubuntu/Debian)"
+excerpt: "One-command install, systemd service setup, and running your first local AI model on Ubuntu or Debian."
+date: "2026-05-30"
+category: "Beginner Tutorial"
+level: "beginner"
+tags: ["ollama", "linux", "ubuntu", "install", "beginner"]
+---
+
+# Installing Ollama on Linux (Ubuntu/Debian)
+
+Ollama installs in a single command on Ubuntu and Debian. It runs as a systemd service, starts automatically on boot, and auto-detects your GPU. This guide covers installation, configuration, and first run.
+
+## Requirements
+
+- Ubuntu 20.04+ or Debian 11+
+- 8GB+ RAM (16GB recommended)
+- NVIDIA GPU with 4GB+ VRAM (recommended), or CPU-only fallback
+- 20GB+ free disk space
+
+## Step 1 — Install
+
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+This installs the Ollama binary, creates a systemd service, and starts it automatically. The whole process takes about 30 seconds.
+
+Verify it's running:
+
+```bash
+systemctl status ollama
+# Should show: Active: active (running)
+
+curl http://localhost:11434
+# Should return: Ollama is running
+```
+
+## Step 2 — Run Your First Model
+
+```bash
+# Pull and run Llama 3.1 8B (recommended for 6GB+ VRAM)
+ollama run llama3.1:8b
+
+# For 4GB VRAM
+ollama run phi3:mini
+
+# For 12GB+ VRAM (near-lossless quality)
+ollama run llama3.1:8b:q8_0
+```
+
+Ollama downloads the model on first run (~4–7GB depending on quant) and starts an interactive chat session.
+
+## Step 3 — Verify GPU Usage
+
+While a model is running, open a second terminal:
+
+```bash
+nvidia-smi
+# Check the "Memory-Usage" column — Ollama should be using VRAM
+
+# Or with watch for live updates
+watch -n 1 nvidia-smi
+```
+
+If GPU memory usage shows 0, Ollama is running on CPU. See troubleshooting below.
+
+## Step 4 — Configure Ollama
+
+Edit the systemd service to set environment variables:
+
+```bash
+sudo systemctl edit ollama
+```
+
+This opens a drop-in config file. Add your settings:
+
+```ini
+[Service]
+Environment="OLLAMA_NUM_GPU=99"
+Environment="OLLAMA_KEEP_ALIVE=300"
+Environment="OLLAMA_MAX_LOADED_MODELS=1"
+Environment="OLLAMA_HOST=0.0.0.0:11434"
+```
+
+Save and restart:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart ollama
+```
+
+| Variable | Value | Effect |
+|---|---|---|
+| `OLLAMA_NUM_GPU` | `99` | Force all layers to GPU |
+| `OLLAMA_KEEP_ALIVE` | `300` | Keep model in VRAM for 5 min |
+| `OLLAMA_MAX_LOADED_MODELS` | `1` | Only one model at a time |
+| `OLLAMA_HOST` | `0.0.0.0:11434` | Allow network access |
+
+## Step 5 — AMD GPU Setup (ROCm)
+
+Ollama supports AMD GPUs via ROCm on Linux. The install script auto-detects AMD GPUs if ROCm drivers are installed.
+
+Install ROCm:
+
+```bash
+# Ubuntu 22.04
+wget https://repo.radeon.com/amdgpu-install/6.1/ubuntu/jammy/amdgpu-install_6.1.60100-1_all.deb
+sudo dpkg -i amdgpu-install_6.1.60100-1_all.deb
+sudo amdgpu-install --usecase=rocm
+sudo usermod -aG render,video $USER
+reboot
+```
+
+Verify ROCm:
+
+```bash
+rocm-smi
+# Should show your AMD GPU with memory usage
+```
+
+Then install Ollama normally — it picks up ROCm automatically.
+
+## Useful Commands
+
+```bash
+# List downloaded models
+ollama list
+
+# Pull without running
+ollama pull mistral:7b
+
+# Check what's loaded and VRAM usage
+ollama ps
+
+# Remove a model
+ollama rm llama3.1:8b
+
+# View logs
+journalctl -u ollama -f
+
+# Non-interactive single prompt
+ollama run llama3.1:8b "Explain Q4_K_M quantization in one paragraph"
+```
+
+## Recommended Models by VRAM
+
+| VRAM | Model | Command |
+|---|---|---|
+| 4GB | Phi-3 Mini | `ollama run phi3:mini` |
+| 6–8GB | Llama 3.1 8B | `ollama run llama3.1:8b` |
+| 8GB | Mistral 7B | `ollama run mistral:7b` |
+| 12GB | Llama 3.1 8B Q8 | `ollama run llama3.1:8b:q8_0` |
+| 24GB | Gemma 2 27B | `ollama run gemma2:27b` |
+
+## Troubleshooting
+
+**Model running on CPU instead of GPU**
+
+Check NVIDIA drivers: `nvidia-smi`. If the command fails, install drivers:
+
+```bash
+sudo apt install nvidia-driver-535
+sudo reboot
+```
+
+After reboot, set `OLLAMA_NUM_GPU=99` in the systemd config and restart Ollama.
+
+**Permission denied errors**
+
+```bash
+sudo usermod -aG ollama $USER
+# Log out and back in
+```
+
+**Port already in use**
+
+```bash
+sudo lsof -i :11434
+# Kill whatever is using the port, or change OLLAMA_HOST to a different port
+```
+
+**Out of memory**
+
+The model is too large for your VRAM. Try a smaller quant:
+
+```bash
+ollama run llama3.1:8b:q4_0
+```
+
+Or a smaller model altogether.
+
+## Next Steps
+
+- [Your First Model](/tutorials/your-first-model) — choosing the right model for your hardware
+- [Open WebUI Setup](/tutorials/open-webui-setup) — ChatGPT-style browser interface
+- [Ollama API Guide](/tutorials/ollama-api-guide) — connect apps to your local model
+- [Finding Abliterated Models](/tutorials/abliterated-models-guide) — uncensored variants

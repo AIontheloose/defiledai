@@ -1,0 +1,204 @@
+---
+title: "ExLlamaV2 Setup: 20-30% Faster Than Ollama on NVIDIA"
+excerpt: "Install ExLlamaV2, load a GGUF model, and benchmark against Ollama. The fastest inference backend for NVIDIA GPUs running local AI."
+date: "2026-05-30"
+category: "Intermediate Tutorial"
+level: "intermediate"
+tags: ["exllamav2", "nvidia", "cuda", "performance", "gguf", "intermediate"]
+---
+
+# ExLlamaV2 Setup: 20-30% Faster Than Ollama on NVIDIA
+
+ExLlamaV2 is a Python inference library built specifically for NVIDIA GPUs. It implements custom CUDA kernels optimised for Llama-architecture models and consistently outperforms llama.cpp and Ollama by 20-30% on throughput benchmarks. If you have an NVIDIA GPU and want maximum tokens per second, this is the backend to use.
+
+## Requirements
+
+- NVIDIA GPU (RTX 20-series or newer)
+- CUDA 12.1+ installed
+- Python 3.8+
+- 6GB+ VRAM
+
+## Install CUDA
+
+Check if CUDA is installed:
+
+```bash
+nvcc --version
+nvidia-smi
+```
+
+If not installed, download CUDA Toolkit from developer.nvidia.com. CUDA 12.1+ recommended.
+
+## Install ExLlamaV2
+
+```bash
+pip install exllamav2
+```
+
+If you get build errors, install from source:
+
+```bash
+git clone https://github.com/turboderp/exllamav2
+cd exllamav2
+pip install -e .
+```
+
+Verify installation:
+
+```bash
+python -c "import exllamav2; print('ExLlamaV2 installed')"
+```
+
+## Download a GGUF Model
+
+ExLlamaV2 runs GGUF files directly. Download from HuggingFace — bartowski's quantizations are reliable:
+
+```bash
+# Example: Llama 3.1 8B Q4_K_M (~4.7GB)
+# Search: https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-GGUF
+# Download the Q4_K_M file
+```
+
+Or use the huggingface_hub library:
+
+```bash
+pip install huggingface_hub
+
+python -c "
+from huggingface_hub import hf_hub_download
+hf_hub_download(
+    repo_id='bartowski/Meta-Llama-3.1-8B-Instruct-GGUF',
+    filename='Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf',
+    local_dir='./models'
+)
+"
+```
+
+## Basic Inference Test
+
+```bash
+# From the exllamav2 directory
+python test_inference.py \
+  -m ./models/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf \
+  -p "What is quantization in AI?" \
+  -t 200
+```
+
+This outputs the response and reports tokens per second at the end.
+
+## Interactive Chat
+
+```bash
+python examples/chat.py \
+  -m ./models/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf \
+  -mode llama
+```
+
+Mode options: `llama`, `chatml`, `mistral`, `gemma` — match to your model's chat format.
+
+## Python API
+
+```python
+from exllamav2 import ExLlamaV2, ExLlamaV2Config, ExLlamaV2Cache
+from exllamav2.generator import ExLlamaV2DynamicGenerator, ExLlamaV2DynamicJob
+from exllamav2.generator.filters import ExLlamaV2PrefixFilter
+
+MODEL_PATH = "./models/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf"
+
+# Load model
+config = ExLlamaV2Config(MODEL_PATH)
+config.max_seq_len = 8192
+
+model = ExLlamaV2(config)
+cache = ExLlamaV2Cache(model, max_seq_len=8192, lazy=True)
+model.load_autosplit(cache)
+
+tokenizer = ExLlamaV2Tokenizer(config)
+generator = ExLlamaV2DynamicGenerator(
+    model=model,
+    cache=cache,
+    tokenizer=tokenizer,
+)
+
+# Generate
+output = generator.generate(
+    prompt="<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\nExplain VRAM<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n",
+    max_new_tokens=512,
+    temperature=0.7,
+    top_p=0.9,
+)
+print(output)
+```
+
+## Multi-GPU Setup
+
+For dual GPU with NVLink or PCIe, split the model across both:
+
+```bash
+python test_inference.py \
+  -m ./models/Meta-Llama-3.1-70B-Q4_K_M.gguf \
+  -gs 24,24    # 24GB per GPU
+```
+
+The `-gs` flag specifies VRAM allocation per GPU in GB.
+
+## Benchmarking vs Ollama
+
+Run this to get a direct comparison:
+
+```bash
+# ExLlamaV2 benchmark
+python test_inference.py \
+  -m ./models/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf \
+  -p "Write a detailed explanation of how transformers work" \
+  -t 300 \
+  -pps  # Print tokens per second
+
+# Ollama benchmark (in a separate terminal with Ollama running)
+time ollama run llama3.1:8b "Write a detailed explanation of how transformers work"
+```
+
+Expected results on RTX 4090:
+- ExLlamaV2: ~128 tok/s
+- Ollama: ~98 tok/s
+
+## TabbyAPI — ExLlamaV2 with OpenAI API
+
+If you want ExLlamaV2 speed with an OpenAI-compatible API server:
+
+```bash
+git clone https://github.com/theroyallab/tabbyAPI
+cd tabbyAPI
+pip install -r requirements.txt
+
+# Configure
+cp config_sample.yml config.yml
+# Edit config.yml: set model_dir and model_name
+
+python main.py
+# API available at http://localhost:5000/v1
+```
+
+Then use it with the OpenAI SDK exactly like Ollama:
+
+```python
+from openai import OpenAI
+client = OpenAI(base_url="http://localhost:5000/v1", api_key="tabby")
+```
+
+## When to Use ExLlamaV2 vs Ollama
+
+| Use case | Recommended |
+|---|---|
+| Maximum throughput | ExLlamaV2 |
+| Easy setup, just works | Ollama |
+| AMD GPU | Ollama (llama.cpp ROCm) |
+| Apple Silicon | Ollama (Metal) |
+| OpenAI-compatible API | Ollama or TabbyAPI |
+| Production serving | TabbyAPI or TensorRT-LLM |
+
+## Next Steps
+
+- [llama.cpp Server Mode](/tutorials/llamacpp-server) — OpenAI API without TabbyAPI
+- [Inference Profiler](/tools/inference-profiler) — compare configs before committing
+- [Speed Estimator](/tools/speed-estimator) — predict tok/s for your GPU

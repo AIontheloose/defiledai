@@ -1,0 +1,127 @@
+---
+title: "Understanding VRAM: Why It's Everything in Local AI"
+excerpt: "What VRAM is, why it's the primary constraint for local AI, how to calculate what you need, and strategies for running larger models on limited hardware."
+date: "2026-05-30"
+category: "Beginner Tutorial"
+level: "beginner"
+tags: ["vram", "beginner", "hardware", "memory", "quantization"]
+---
+
+# Understanding VRAM: Why It's Everything in Local AI
+
+VRAM — Video RAM — is the memory on your GPU. It's the single most important factor in local AI. The model weights must fit in VRAM for fast inference. If they don't fit, the GPU offloads to system RAM, and inference slows down by 10–50×.
+
+## What VRAM Is
+
+Your GPU has its own dedicated memory separate from your system RAM. It's faster than system RAM (typically 400–2000 GB/s vs 50–100 GB/s for DDR5) and physically located on the GPU card itself.
+
+When you load a model, the weights — billions of floating-point numbers — get loaded into VRAM. Every time the model generates a token, it reads through those weights. The speed of that read is determined by VRAM bandwidth. This is why VRAM bandwidth matters as much as VRAM capacity for inference speed.
+
+## Why Models Need So Much VRAM
+
+A 7B model has 7 billion parameters. At full precision (FP16, 2 bytes per parameter):
+
+```
+7,000,000,000 × 2 bytes = 14,000,000,000 bytes = ~14GB
+```
+
+That's 14GB just for the weights. Add KV cache for context and you're looking at 15–18GB for a 7B model at full precision on a 16K context.
+
+This is why quantization exists — reducing precision from 16-bit to 4-bit drops that to ~5GB.
+
+## VRAM Requirements by Model Size and Quantization
+
+| Model | F16 | Q8_0 | Q5_K_M | Q4_K_M | Q2_K |
+|---|---|---|---|---|---|
+| 3B | 6GB | 3.5GB | 2.2GB | 1.9GB | 1.1GB |
+| 7B | 14GB | 7.5GB | 5GB | 4.2GB | 2.5GB |
+| 8B | 16GB | 8.5GB | 5.5GB | 4.7GB | 2.7GB |
+| 13B | 26GB | 14GB | 9GB | 7.5GB | 4.5GB |
+| 27B | 54GB | 28GB | 18GB | 15GB | 9GB |
+| 70B | 140GB | 70GB | 47GB | 40GB | 22GB |
+
+Use the [VRAM Calculator](/tools/vram-calculator) to get exact numbers for your setup.
+
+## KV Cache: The Hidden VRAM Cost
+
+Beyond model weights, context (conversation history) takes VRAM in the form of KV cache. This grows with context length.
+
+A rough formula: KV cache adds approximately 0.5–1GB per 4K tokens of context for a 7B model, scaling with model size.
+
+At 4K context, KV cache is small. At 32K context it becomes significant. If you're doing long-document RAG or very long conversations, factor this in.
+
+## What Happens When the Model Doesn't Fit
+
+When the model is too large for your VRAM, Ollama automatically offloads layers to system RAM. This works but is very slow.
+
+Example: Llama 3.1 70B Q4_K_M (40GB) on an RTX 4090 (24GB):
+- 24GB stays on GPU
+- 16GB offloads to system RAM
+- Speed: ~3–5 tok/s instead of 21 tok/s
+
+It's technically functional but not practical for interactive use.
+
+## Strategies for Running Larger Models
+
+**Strategy 1 — Lower quantization**
+Drop from Q8_0 to Q4_K_M or lower. Quality decreases slightly but the model stays in VRAM.
+
+**Strategy 2 — Reduce context length**
+KV cache uses VRAM proportional to context. Lowering from 8K to 2K context frees meaningful VRAM.
+
+In Ollama:
+```bash
+ollama run llama3.1:8b --ctx-size 2048
+```
+
+**Strategy 3 — Use a smaller model**
+A well-quantized 13B model (Q5_K_M, ~9GB) often beats an offloaded 70B model in quality/speed tradeoff.
+
+**Strategy 4 — Add a GPU**
+Two RTX 3090s with NVLink gives you 48GB. See the [Dual GPU NVLink guide](/tutorials/dual-gpu-nvlink-setup).
+
+**Strategy 5 — Use system RAM deliberately**
+For batch processing where speed doesn't matter, full CPU inference at Q4_K_M on a 32B model via llama.cpp is viable. Slow (3–8 tok/s) but free and accurate.
+
+## VRAM vs System RAM
+
+| Property | VRAM | System RAM |
+|---|---|---|
+| Speed | 400–2000 GB/s | 50–100 GB/s |
+| Capacity | 4–80GB typical | 16–256GB typical |
+| Used for | Model weights, KV cache | OS, other apps, CPU offload |
+| Cost | High per GB | Low per GB |
+
+You want the model in VRAM. System RAM is a fallback, not a target.
+
+## Monitoring VRAM Usage
+
+```bash
+# NVIDIA — live view
+watch -n 1 nvidia-smi
+
+# NVIDIA — just memory
+nvidia-smi --query-gpu=memory.used,memory.total --format=csv
+
+# Ollama's view
+ollama ps
+```
+
+## How Much VRAM Should You Buy?
+
+| Budget | GPU | Runs |
+|---|---|---|
+| ~$180 used | RTX 3060 12GB | 7–13B Q4 |
+| ~$400 used | RTX 3080 Ti 12GB | 7–13B Q8 |
+| ~$650 used | RTX 3090 24GB | 27B Q5, any 7–13B |
+| ~$1,500 new | RTX 4090 24GB | 27B Q8, fastest 7–13B |
+| ~$1,400 used | 2× RTX 3090 NVLink | 70B Q4 |
+
+The RTX 3090 at ~$650 is the current sweet spot — 24GB fits nearly everything except 70B, and NVLink support means you can add a second one later for 70B capability.
+
+## Next Steps
+
+- [VRAM Calculator](/tools/vram-calculator) — calculate requirements for your exact setup
+- [Quant Picker](/tools/quant-picker) — find the right quantization for your VRAM
+- [Hardware Advisor](/tools/hardware-advisor) — get a specific GPU recommendation
+- [What is Quantization](/tutorials/what-is-quantization) — understand the quality tradeoffs

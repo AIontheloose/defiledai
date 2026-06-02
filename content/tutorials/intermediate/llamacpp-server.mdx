@@ -1,0 +1,204 @@
+---
+title: "llama.cpp Server Mode: Local OpenAI-Compatible API"
+excerpt: "Run llama.cpp as a persistent API server with an OpenAI-compatible endpoint — works on NVIDIA, AMD, Apple Silicon, and CPU."
+date: "2026-05-30"
+category: "Intermediate Tutorial"
+level: "intermediate"
+tags: ["llama.cpp", "server", "api", "openai", "cuda", "rocm", "metal"]
+---
+
+# llama.cpp Server Mode: Local OpenAI-Compatible API
+
+llama.cpp includes a built-in HTTP server that exposes an OpenAI-compatible API. Unlike Ollama, it gives you fine-grained control over every inference parameter. Unlike ExLlamaV2, it runs on NVIDIA, AMD, Apple Silicon, and CPU without changing anything.
+
+## Build llama.cpp
+
+**Linux/macOS (CUDA):**
+
+```bash
+git clone https://github.com/ggerganov/llama.cpp
+cd llama.cpp
+cmake -B build -DGGML_CUDA=ON
+cmake --build build --config Release -j$(nproc)
+```
+
+**Linux (ROCm/AMD):**
+
+```bash
+cmake -B build -DGGML_HIPBLAS=ON
+cmake --build build --config Release -j$(nproc)
+```
+
+**macOS (Metal/Apple Silicon):**
+
+```bash
+cmake -B build -DGGML_METAL=ON
+cmake --build build --config Release -j$(nproc)
+```
+
+**Windows (CUDA):**
+
+```powershell
+cmake -B build -DGGML_CUDA=ON
+cmake --build build --config Release
+```
+
+Or download pre-built binaries from the llama.cpp GitHub releases page — look for `llama-*-bin-win-cuda-*.zip` for Windows with CUDA.
+
+## Download a Model
+
+```bash
+# Download from HuggingFace using huggingface-cli
+pip install huggingface_hub
+huggingface-cli download bartowski/Meta-Llama-3.1-8B-Instruct-GGUF \
+  Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf \
+  --local-dir ./models
+```
+
+## Start the Server
+
+```bash
+./build/bin/llama-server \
+  -m ./models/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf \
+  --port 8080 \
+  -ngl 99 \
+  --ctx-size 8192 \
+  --parallel 1
+```
+
+Key flags:
+
+| Flag | Value | Effect |
+|---|---|---|
+| `-m` | path to .gguf | Model file |
+| `-ngl` | `99` | GPU layers (99 = all) |
+| `--port` | `8080` | Server port |
+| `--ctx-size` | `8192` | Context window |
+| `--parallel` | `1` | Concurrent requests |
+| `--host` | `0.0.0.0` | Allow network access |
+| `--api-key` | `secret` | Optional auth key |
+
+The server starts and logs: `llama server listening at http://127.0.0.1:8080`
+
+## Test the API
+
+```bash
+# Health check
+curl http://localhost:8080/health
+
+# OpenAI-compatible chat
+curl http://localhost:8080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "llama3.1",
+    "messages": [{"role": "user", "content": "What is Q4_K_M?"}]
+  }'
+```
+
+## Python with OpenAI SDK
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://localhost:8080/v1",
+    api_key="none",  # No auth by default
+)
+
+response = client.chat.completions.create(
+    model="llama3.1",  # Model name is ignored, uses whatever is loaded
+    messages=[
+        {"role": "system", "content": "You are a local AI expert."},
+        {"role": "user", "content": "Compare ExLlamaV2 vs llama.cpp"}
+    ],
+    temperature=0.7,
+    max_tokens=512,
+)
+
+print(response.choices[0].message.content)
+```
+
+Streaming:
+
+```python
+stream = client.chat.completions.create(
+    model="llama3.1",
+    messages=[{"role": "user", "content": "Write a haiku about VRAM"}],
+    stream=True,
+)
+
+for chunk in stream:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="", flush=True)
+```
+
+## Multi-GPU
+
+```bash
+./build/bin/llama-server \
+  -m ./models/Meta-Llama-3.1-70B-Q4_K_M.gguf \
+  -ngl 99 \
+  --tensor-split 1,1 \  # Equal split across 2 GPUs
+  --ctx-size 4096 \
+  --port 8080
+```
+
+## Running as a Background Service
+
+**Linux (systemd):**
+
+```bash
+sudo nano /etc/systemd/system/llamacpp.service
+```
+
+```ini
+[Unit]
+Description=llama.cpp Server
+After=network.target
+
+[Service]
+Type=simple
+User=YOUR_USERNAME
+ExecStart=/path/to/llama.cpp/build/bin/llama-server \
+  -m /path/to/models/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf \
+  -ngl 99 \
+  --ctx-size 8192 \
+  --port 8080
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl enable llamacpp
+sudo systemctl start llamacpp
+```
+
+**Windows (run on startup):**
+
+Create a batch file and add it to the Startup folder (`shell:startup`):
+
+```batch
+@echo off
+cd C:\path\to\llama.cpp
+build\bin\llama-server.exe -m models\model.gguf -ngl 99 --port 8080
+```
+
+## llama.cpp vs Ollama Server Comparison
+
+| Feature | llama.cpp server | Ollama |
+|---|---|---|
+| Setup complexity | Medium | Easy |
+| Parameter control | Full | Limited |
+| AMD/Apple support | Excellent | Good |
+| Model switching | Manual restart | Automatic |
+| OpenAI compatibility | Yes | Yes |
+| Speed (NVIDIA) | Good | Similar |
+| Background service | Manual setup | Automatic |
+
+## Next Steps
+
+- [ExLlamaV2 Setup](/tutorials/exllamav2-setup) — faster on NVIDIA
+- [Build a Local MoE Pipeline](/tutorials/moe-pipeline-guide) — multi-model orchestration using the API
+- [Ollama API Guide](/tutorials/ollama-api-guide) — if you prefer Ollama's simplicity

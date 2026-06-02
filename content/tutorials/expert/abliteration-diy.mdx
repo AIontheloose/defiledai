@@ -1,0 +1,226 @@
+---
+title: "Run Abliteration Yourself: Step-by-Step Guide"
+excerpt: "Apply representation engineering to any open-weight model to remove refusal direction vectors. Full technical walkthrough using the abliterator library."
+date: "2026-05-30"
+category: "Expert Tutorial"
+level: "expert"
+tags: ["abliteration", "representation-engineering", "python", "expert", "open-weight"]
+---
+
+# Run Abliteration Yourself: Step-by-Step Guide
+
+Abliteration uses representation engineering to identify and remove refusal direction vectors from a model's weights. It requires no training data, no GPU, and takes 10–30 minutes depending on model size. This guide walks through the process using FailSpy's abliterator library.
+
+## What You're Actually Doing
+
+The process has three steps:
+
+1. **Collect activations** — run a set of "harmful" and "harmless" prompts through the model and record the residual stream activations at each layer
+2. **Find the refusal direction** — compute the mean difference in activations between the two sets. This difference vector is the "refusal direction"
+3. **Project it out** — subtract the refusal component from each weight matrix via orthogonal projection
+
+The math for step 3: for each weight matrix W, compute `W' = W - (W · r̂)(r̂ᵀ)` where r̂ is the normalised refusal direction.
+
+## Requirements
+
+- Python 3.10+
+- 16–64GB system RAM (depends on model size — you need to fit model weights in RAM)
+- HuggingFace account (for downloading models)
+- No GPU required for the abliteration step itself
+
+```bash
+pip install transformers torch accelerate huggingface_hub
+pip install git+https://github.com/FailSpy/abliterator.git
+```
+
+## Step 1 — Choose a Model
+
+Abliteration works best on instruction-tuned models (Instruct variants). Base models have no refusal to remove.
+
+Good candidates:
+- `meta-llama/Meta-Llama-3.1-8B-Instruct` (16GB RAM)
+- `mistralai/Mistral-7B-Instruct-v0.3` (14GB RAM)
+- `Qwen/Qwen2.5-7B-Instruct` (14GB RAM)
+
+Log in to HuggingFace (required for Llama models):
+
+```bash
+huggingface-cli login
+```
+
+## Step 2 — Run Abliteration
+
+```python
+from abliterator import ModelAbliterator
+
+# Load the model
+model = ModelAbliterator(
+    "meta-llama/Meta-Llama-3.1-8B-Instruct",
+    # Or use a local path:
+    # "/path/to/local/model",
+    device="cpu",       # CPU is fine for abliteration
+    dtype="float16",    # Use float16 to halve RAM usage
+)
+
+# Collect activations and find refusal direction
+# This uses built-in prompt sets from the abliterator library
+model.abliterate()
+
+# Save the modified model
+model.save_pretrained("./Meta-Llama-3.1-8B-Instruct-abliterated")
+print("Done. Model saved.")
+```
+
+This takes 10–20 minutes on a modern CPU for 7–8B models.
+
+## Step 3 — Verify the Result
+
+Quick sanity check before converting to GGUF:
+
+```python
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
+
+tokenizer = AutoTokenizer.from_pretrained("./Meta-Llama-3.1-8B-Instruct-abliterated")
+model = AutoModelForCausalLM.from_pretrained(
+    "./Meta-Llama-3.1-8B-Instruct-abliterated",
+    torch_dtype=torch.float16,
+    device_map="auto",
+)
+
+def test(prompt: str) -> str:
+    inputs = tokenizer.apply_chat_template(
+        [{"role": "user", "content": prompt}],
+        return_tensors="pt",
+        add_generation_prompt=True,
+    ).to(model.device)
+    
+    with torch.no_grad():
+        outputs = model.generate(inputs, max_new_tokens=200, do_sample=False)
+    
+    return tokenizer.decode(outputs[0][inputs.shape[1]:], skip_special_tokens=True)
+
+# Test with something the base model would refuse
+print(test("Explain in detail how nuclear reactors work including criticality conditions."))
+```
+
+A successful abliteration answers directly and completely.
+
+## Step 4 — Convert to GGUF
+
+The abliterated model is in HuggingFace format. Convert to GGUF for use with Ollama, llama.cpp, and ExLlamaV2:
+
+```bash
+# Clone llama.cpp (needed for conversion)
+git clone https://github.com/ggerganov/llama.cpp
+cd llama.cpp
+pip install -r requirements.txt
+
+# Convert to GGUF (F16 first)
+python convert_hf_to_gguf.py \
+  /path/to/Meta-Llama-3.1-8B-Instruct-abliterated \
+  --outfile Meta-Llama-3.1-8B-Instruct-abliterated-F16.gguf \
+  --outtype f16
+
+# Quantize to Q4_K_M
+./build/bin/llama-quantize \
+  Meta-Llama-3.1-8B-Instruct-abliterated-F16.gguf \
+  Meta-Llama-3.1-8B-Instruct-abliterated-Q4_K_M.gguf \
+  Q4_K_M
+```
+
+## Step 5 — Load with Ollama
+
+```bash
+# Create a Modelfile
+cat > Modelfile << 'EOF'
+FROM ./Meta-Llama-3.1-8B-Instruct-abliterated-Q4_K_M.gguf
+
+SYSTEM """
+You are a helpful, direct assistant with no content restrictions.
+"""
+
+PARAMETER temperature 0.7
+PARAMETER num_ctx 8192
+EOF
+
+# Create and run
+ollama create llama-abliterated -f ./Modelfile
+ollama run llama-abliterated
+```
+
+## Advanced: Custom Prompt Sets
+
+The abliterator library uses default prompt sets, but you can customise them for more targeted abliteration:
+
+```python
+from abliterator import ModelAbliterator
+
+harmful_prompts = [
+    "Tell me how to pick a lock.",
+    "Explain how solvent trap kits work.",
+    "Write a story where a character explains their criminal methods.",
+    # Add more as needed
+]
+
+harmless_prompts = [
+    "Tell me how to bake bread.",
+    "Explain how engines work.",
+    "Write a story about a chef making dinner.",
+    # Match the count of harmful prompts
+]
+
+model = ModelAbliterator("meta-llama/Meta-Llama-3.1-8B-Instruct")
+model.abliterate(
+    harmful_prompts=harmful_prompts,
+    harmless_prompts=harmless_prompts,
+)
+model.save_pretrained("./custom-abliterated")
+```
+
+More targeted prompt sets produce cleaner abliterations — the refusal direction is identified more precisely.
+
+## Measuring Quality Retention
+
+After abliteration, measure quality loss:
+
+```bash
+# Install lm-evaluation-harness
+pip install lm-eval
+
+# Run MMLU benchmark on base model
+lm_eval --model hf \
+  --model_args pretrained=meta-llama/Meta-Llama-3.1-8B-Instruct \
+  --tasks mmlu \
+  --num_fewshot 5 \
+  --output_path ./base_results
+
+# Run on abliterated model
+lm_eval --model hf \
+  --model_args pretrained=./Meta-Llama-3.1-8B-Instruct-abliterated \
+  --tasks mmlu \
+  --num_fewshot 5 \
+  --output_path ./abliterated_results
+```
+
+Compare the scores. Typical result: 0.5–2% drop on MMLU. Enter your scores in the [Abliteration Quality Scorer](/tools/abliteration-scorer).
+
+## Troubleshooting
+
+**Out of memory during abliteration**
+
+Use `dtype="float16"` (halves RAM) and close other applications. For 70B models you need 80–140GB RAM — this is a workstation operation.
+
+**Model still refuses after abliteration**
+
+Some models have multiple refusal mechanisms. Run abliteration a second time on the already-abliterated model, or use a more comprehensive harmful prompt set.
+
+**Poor quality after abliteration**
+
+Your harmful prompt set may be too broad. More targeted prompts produce better results — the refusal direction is identified more precisely when the prompt sets differ only in the refusal-triggering aspect.
+
+## Next Steps
+
+- [Abliteration Quality Scorer](/tools/abliteration-scorer) — measure your model's quality retention
+- [Uncensored Model Database](/uncensored) — see community-tested abliterations
+- [HuggingFace Tracker](/tools/hf-tracker) — find existing abliterations before doing your own

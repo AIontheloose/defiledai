@@ -1,0 +1,119 @@
+---
+title: "Quantization Explained for Beginners"
+excerpt: "Why quantization exists, what Q4_K_M actually means, the quality tradeoff at each level, and how to pick the right format for your hardware."
+date: "2026-05-30"
+category: "Beginner Tutorial"
+level: "beginner"
+tags: ["quantization", "gguf", "q4_k_m", "beginner", "vram"]
+---
+
+# Quantization Explained for Beginners
+
+Quantization is how you fit a large AI model into a small GPU. It compresses the model weights by reducing numerical precision — trading a small amount of quality for dramatically lower memory usage and faster inference. This guide explains what it means in practice.
+
+## The Problem Quantization Solves
+
+A 70B model at full precision (FP16) requires 140GB of VRAM. No consumer GPU has that. Quantization compresses it to 40GB (Q4_K_M) — small enough for two RTX 3090s.
+
+The compression works by reducing how precisely each weight is stored:
+- **FP16** — 16 bits per weight, full precision
+- **Q8_0** — 8 bits per weight, ~0.5× the size
+- **Q4_K_M** — ~4.8 bits per weight, ~0.25× the size
+- **Q2_K** — ~2.6 bits per weight, ~0.13× the size
+
+## What the Letters Mean
+
+GGUF quantization names follow a pattern: `Q[bits]_[type][variant]`
+
+**Q4** — 4-bit quantization (approximately)
+**K** — K-quant: uses mixed precision, preserving quality in critical layers
+**M** — Medium block size (larger = slightly better quality, more VRAM)
+**S** — Small block size (smaller, slightly lower quality)
+
+So `Q4_K_M` = 4-bit mixed-precision quantization with medium block size.
+
+**IQ** formats (IQ3_M, IQ4_NL) use importance matrices — they identify which weights matter most and quantize them at higher precision. Generally better quality than plain Q formats at the same size.
+
+## Quality and Size at Each Level
+
+For a 70B model:
+
+| Format | Size | Quality | Use When |
+|---|---|---|---|
+| F16 | 140GB | 100% | You have datacenter hardware |
+| Q8_0 | 70GB | 99% | 80GB+ VRAM available |
+| Q6_K | 54GB | 98% | 60GB+ VRAM |
+| Q5_K_M | 47GB | 96% | 56GB+ VRAM |
+| Q4_K_M | 40GB | 92% | 48GB VRAM (dual 3090) |
+| IQ3_M | 32GB | 87% | Tight 40GB systems |
+| Q2_K | 22GB | 65% | Last resort only |
+
+For a 7B model:
+
+| Format | Size | Quality | Use When |
+|---|---|---|---|
+| F16 | 14GB | 100% | 16GB+ VRAM available |
+| Q8_0 | 7.5GB | 99% | 8GB VRAM |
+| Q6_K | 5.5GB | 98% | 6–8GB VRAM, quality priority |
+| Q5_K_M | 5GB | 96% | 6GB VRAM, balanced |
+| Q4_K_M | 4.2GB | 92% | 4–6GB VRAM |
+| Q2_K | 2.5GB | 65% | 4GB only, last resort |
+
+## The Quality Difference in Practice
+
+At Q4_K_M the model scores about 92% of F16 on standard benchmarks. In everyday use, the difference is often imperceptible — for coding, writing, and general Q&A you typically cannot tell the difference between Q4_K_M and Q8_0 outputs.
+
+The gap becomes more noticeable at:
+- Q3 and below — outputs can drift on complex reasoning
+- Very long responses — quality degradation accumulates
+- Precise mathematical calculations — rounding errors compound
+
+For most use cases, Q4_K_M is the right default. If you have the VRAM headroom, Q5_K_M or Q6_K is a meaningful quality upgrade.
+
+## The Quick Rule
+
+> **Use the highest quant that comfortably fits in your VRAM.**
+
+Leave about 2GB headroom for KV cache and overhead. If your GPU has 12GB, target models that use ~10GB maximum.
+
+## How Ollama Handles This
+
+Ollama picks the quantization automatically based on your available VRAM. When you run `ollama run llama3.1:8b`, it pulls the Q4_K_M variant by default because it fits the widest range of hardware.
+
+To specify a quant manually:
+
+```bash
+# Near-lossless
+ollama run llama3.1:8b:q8_0
+
+# Smaller/faster
+ollama run llama3.1:8b:q4_0
+
+# Default (Q4_K_M)
+ollama run llama3.1:8b
+```
+
+## Downloading Specific Quants from HuggingFace
+
+If you're using ExLlamaV2 or llama.cpp directly, you download GGUF files from HuggingFace. Search for `[model name] GGUF` — bartowski is the most reliable quantizer with full quant packs.
+
+File naming example:
+```
+Llama-3.1-8B-Instruct-Q4_K_M.gguf    ← what you want for 6GB GPU
+Llama-3.1-8B-Instruct-Q8_0.gguf      ← what you want for 8GB GPU
+Llama-3.1-8B-Instruct-Q5_K_M.gguf    ← middle ground
+```
+
+## Common Mistakes
+
+**Using Q2_K when Q4 would fit** — Q2 quality is significantly degraded. Always use the highest quant that fits.
+
+**Not accounting for KV cache** — the model file size is not the total VRAM used. A 4.7GB model file might use 5.5GB total with KV cache at 4K context.
+
+**Downloading Q8 when you only have 8GB** — Q8 of an 8B model (~7.5GB) barely fits an 8GB GPU. Use Q5_K_M or Q6_K instead for headroom.
+
+## Next Steps
+
+- [VRAM Calculator](/tools/vram-calculator) — calculate exact requirements including KV cache
+- [Quant Picker](/tools/quant-picker) — 3-question wizard to find your format
+- [Quantization Guide](/quantization) — full technical reference with perplexity scores

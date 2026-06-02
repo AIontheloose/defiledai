@@ -1,0 +1,172 @@
+---
+title: "Downloading and Running Your First Model"
+excerpt: "How to choose the right model for your GPU, download it with Ollama, and get the best performance from your first local AI setup."
+date: "2026-05-30"
+category: "Beginner Tutorial"
+level: "beginner"
+tags: ["ollama", "beginner", "models", "vram", "first-model"]
+---
+
+# Downloading and Running Your First Model
+
+You have Ollama installed. Now you need to pick the right model for your hardware. This guide covers how to choose, download, and get the most out of your first local model.
+
+## The Only Number That Matters: VRAM
+
+Your GPU's VRAM determines which models you can run. The model file must fit in VRAM — if it doesn't, Ollama offloads layers to system RAM and inference becomes 10–50× slower.
+
+Check your VRAM:
+
+```bash
+# NVIDIA
+nvidia-smi --query-gpu=memory.total --format=csv
+
+# AMD
+rocm-smi --showmeminfo vram
+
+# macOS
+system_profiler SPDisplaysDataType | grep VRAM
+```
+
+## Choosing Your Model
+
+| Your VRAM | Best First Model | Quality Level |
+|---|---|---|
+| 4GB | Phi-3 Mini 3.8B | Good for simple tasks |
+| 6GB | Llama 3.1 8B Q4_K_M | Strong all-rounder |
+| 8GB | Mistral 7B Q8_0 | Near-lossless 7B |
+| 10–12GB | Gemma 2 9B Q8_0 | Excellent reasoning |
+| 16GB | Gemma 2 27B Q4_K_M | Strong capability |
+| 24GB | Gemma 2 27B Q8_0 | Near-lossless 27B |
+| 48GB | Llama 3.1 70B Q4_K_M | Frontier-class local AI |
+
+**Recommendation for most people:** Start with `llama3.1:8b` if you have 6GB+ VRAM. It's the most tested, has the largest community, and performs well on coding, writing, and general tasks.
+
+## Downloading Your First Model
+
+```bash
+# Pull without running (downloads in background)
+ollama pull llama3.1:8b
+
+# Pull and run immediately
+ollama run llama3.1:8b
+```
+
+Ollama automatically selects the best quantization for your VRAM. You don't need to specify a quant manually for your first model.
+
+Model sizes to expect:
+
+| Model | Download Size |
+|---|---|
+| Phi-3 Mini 3.8B | ~2.3GB |
+| Llama 3.1 8B | ~4.7GB |
+| Mistral 7B | ~4.1GB |
+| Gemma 2 9B | ~5.4GB |
+| Gemma 2 27B | ~17GB |
+| Llama 3.1 70B | ~40GB |
+
+## Running Your First Conversation
+
+After `ollama run llama3.1:8b`, you'll see a `>>>` prompt. Type your message and press Enter.
+
+```
+>>> What is quantization in the context of AI models?
+```
+
+To exit: type `/bye` or press `Ctrl+D`.
+
+Useful slash commands during a session:
+
+```
+/help          Show all commands
+/clear         Clear conversation history
+/show info     Show model details
+/set verbose   Show timing and token stats
+```
+
+## Checking Performance
+
+After your first response, check how fast it's generating:
+
+```bash
+# In a second terminal while model is running
+ollama ps
+```
+
+This shows:
+- Model name
+- Size in VRAM
+- Processor (GPU or CPU)
+- Time until unload
+
+**Target speeds:**
+- 7–8B model on 6–8GB GPU: 60–130 tok/s — feels instant
+- 27B model on 24GB GPU: 40–60 tok/s — usable
+- 70B model on 48GB: 18–25 tok/s — slower but very capable
+
+If you're seeing under 5 tok/s, the model is probably running on CPU. Check the troubleshooting section in the [Ollama install guide](/tutorials/install-ollama-windows).
+
+## Specific Quants for More Control
+
+Ollama's default quant is good but you can specify:
+
+```bash
+# Near-lossless quality (needs ~8GB VRAM for 8B)
+ollama run llama3.1:8b:q8_0
+
+# Smaller/faster (needs ~4GB VRAM)
+ollama run llama3.1:8b:q4_0
+
+# Default (Q4_K_M — best balance)
+ollama run llama3.1:8b
+```
+
+Use the [Quant Picker tool](/tools/quant-picker) if you're unsure which format to use.
+
+## Trying Different Models
+
+Once you're comfortable, try other models:
+
+```bash
+# Great for coding
+ollama run qwen2.5-coder:7b
+
+# Strong reasoning
+ollama run deepseek-r1:7b
+
+# Fast and capable
+ollama run mistral:7b
+
+# Uncensored assistant
+ollama run dolphin-mistral:7b
+```
+
+See what else is available:
+
+```bash
+ollama list         # What you've downloaded
+# Browse more at: ollama.com/library
+```
+
+## Managing Disk Space
+
+Models accumulate quickly. Manage them:
+
+```bash
+# See what you have and sizes
+ollama list
+
+# Remove a model
+ollama rm phi3:mini
+
+# Models are stored at:
+# Linux/macOS: ~/.ollama/models
+# Windows: C:\Users\<you>\.ollama\models
+```
+
+## Next Steps
+
+- [Open WebUI Setup](/tutorials/open-webui-setup) — get a proper chat interface instead of the terminal
+- [Ollama API Guide](/tutorials/ollama-api-guide) — use your model from any app
+- [Understanding VRAM](/tutorials/understanding-vram) — go deeper on memory management
+- [Abliterated Models Guide](/tutorials/abliterated-models-guide) — run uncensored variants

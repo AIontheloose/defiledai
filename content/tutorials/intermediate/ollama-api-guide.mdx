@@ -1,0 +1,234 @@
+---
+title: "Using the Ollama API: Build Your First Integration"
+excerpt: "How to use Ollama's REST API and Python client to connect your apps to local models — chat completions, streaming, OpenAI compatibility, and practical examples."
+date: "2026-05-30"
+category: "Intermediate Tutorial"
+level: "intermediate"
+tags: ["ollama", "api", "python", "openai", "integration", "rest"]
+---
+
+# Using the Ollama API: Build Your First Integration
+
+Ollama exposes a REST API on `localhost:11434` that lets any application talk to your local models. It's OpenAI-compatible, so any tool built for ChatGPT's API works locally with a one-line change.
+
+## The API Endpoints
+
+| Endpoint | Method | What it does |
+|---|---|---|
+| `/api/generate` | POST | Single prompt, returns completion |
+| `/api/chat` | POST | Chat with history |
+| `/api/tags` | GET | List downloaded models |
+| `/api/pull` | POST | Download a model |
+| `/api/delete` | DELETE | Remove a model |
+| `/v1/chat/completions` | POST | OpenAI-compatible chat |
+
+## Basic curl Test
+
+```bash
+# Test the API is responding
+curl http://localhost:11434/api/tags
+
+# Single prompt
+curl http://localhost:11434/api/generate -d '{
+  "model": "llama3.1:8b",
+  "prompt": "What is Q4_K_M quantization?",
+  "stream": false
+}'
+
+# Chat format
+curl http://localhost:11434/api/chat -d '{
+  "model": "llama3.1:8b",
+  "messages": [
+    {"role": "user", "content": "Explain VRAM in one paragraph"}
+  ],
+  "stream": false
+}'
+```
+
+## Python — Direct API
+
+```python
+import requests
+
+def ask(prompt: str, model: str = "llama3.1:8b") -> str:
+    response = requests.post(
+        "http://localhost:11434/api/chat",
+        json={
+            "model": model,
+            "messages": [{"role": "user", "content": prompt}],
+            "stream": False,
+        }
+    )
+    return response.json()["message"]["content"]
+
+print(ask("What GPU do I need for 70B models?"))
+```
+
+## Python — Ollama Library (recommended)
+
+```bash
+pip install ollama
+```
+
+```python
+import ollama
+
+# Simple chat
+response = ollama.chat(
+    model="llama3.1:8b",
+    messages=[{"role": "user", "content": "Explain quantization"}]
+)
+print(response["message"]["content"])
+
+# Streaming
+for chunk in ollama.chat(
+    model="llama3.1:8b",
+    messages=[{"role": "user", "content": "Write a haiku about GPU VRAM"}],
+    stream=True
+):
+    print(chunk["message"]["content"], end="", flush=True)
+
+# With system prompt
+response = ollama.chat(
+    model="llama3.1:8b",
+    messages=[
+        {"role": "system", "content": "You are a local AI hardware expert."},
+        {"role": "user", "content": "What's the best GPU for 70B inference?"}
+    ]
+)
+```
+
+## Multi-Turn Conversation
+
+```python
+import ollama
+
+history = []
+
+def chat(user_message: str, model: str = "llama3.1:8b") -> str:
+    history.append({"role": "user", "content": user_message})
+    
+    response = ollama.chat(model=model, messages=history)
+    assistant_message = response["message"]["content"]
+    
+    history.append({"role": "assistant", "content": assistant_message})
+    return assistant_message
+
+# Maintains context across turns
+print(chat("What GPU should I buy for local AI?"))
+print(chat("What if my budget is $500?"))
+print(chat("Will that run 70B models?"))
+```
+
+## OpenAI SDK Compatibility
+
+Ollama's `/v1/` endpoints are OpenAI-compatible. Any code using the OpenAI SDK works locally by changing the base URL:
+
+```bash
+pip install openai
+```
+
+```python
+from openai import OpenAI
+
+# Point to local Ollama instead of OpenAI
+client = OpenAI(
+    base_url="http://localhost:11434/v1",
+    api_key="ollama",  # Required by SDK, ignored by Ollama
+)
+
+response = client.chat.completions.create(
+    model="llama3.1:8b",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "What is ExLlamaV2?"}
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+This means you can swap between GPT-4o and your local model by changing one line.
+
+## Practical Example: Document Q&A
+
+```python
+import ollama
+
+def ask_about_document(document: str, question: str) -> str:
+    return ollama.chat(
+        model="llama3.1:8b",
+        messages=[
+            {
+                "role": "system",
+                "content": "Answer questions about the provided document accurately and concisely."
+            },
+            {
+                "role": "user",
+                "content": f"Document:\n\n{document}\n\nQuestion: {question}"
+            }
+        ]
+    )["message"]["content"]
+
+with open("my_document.txt") as f:
+    doc = f.read()
+
+print(ask_about_document(doc, "What are the main points?"))
+```
+
+## Practical Example: Code Review
+
+```python
+import ollama
+
+def review_code(code: str, language: str = "Python") -> str:
+    return ollama.chat(
+        model="qwen2.5-coder:7b",  # Coding-specific model
+        messages=[
+            {
+                "role": "system",
+                "content": f"You are a senior {language} developer. Review code for bugs, performance issues, and style. Be specific and direct."
+            },
+            {
+                "role": "user",
+                "content": f"Review this code:\n\n```{language.lower()}\n{code}\n```"
+            }
+        ]
+    )["message"]["content"]
+```
+
+## Listing and Switching Models
+
+```python
+import ollama
+
+# List all available models
+models = ollama.list()
+for model in models["models"]:
+    print(f"{model['name']} - {model['size'] / 1e9:.1f}GB")
+
+# Pull a model
+ollama.pull("mistral:7b")
+
+# Check what's currently loaded
+# (use ollama ps in terminal, no Python API for this yet)
+```
+
+## Environment Variables for API Access
+
+To access the API from other machines on your network:
+
+```bash
+# Allow all network interfaces
+OLLAMA_HOST=0.0.0.0:11434 ollama serve
+
+# Or set permanently in systemd/environment
+```
+
+Then access from other devices at `http://YOUR_IP:11434`.
+
+## Next Steps
+
+- [Modelfile Guide](/tutorials/modelfile-guide) — create custom model configs with system prompts
+- [llama.cpp Server Mode](/tutorials/llamacpp-server) — alternative API server
+- [Build a Local MoE Pipeline](/tutorials/moe-pipeline-guide) — multi-model orchestration

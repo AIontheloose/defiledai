@@ -1,0 +1,162 @@
+---
+title: "Dual GPU NVLink Setup for 70B Local Inference"
+excerpt: "Hardware requirements, driver configuration, NVLink bridge installation, and running 70B models at 21+ tok/s on dual RTX 3090s."
+date: "2026-05-30"
+category: "Expert Tutorial"
+level: "expert"
+tags: ["nvlink", "dual-gpu", "70b", "rtx3090", "hardware", "expert"]
+---
+
+# Dual GPU NVLink Setup for 70B Local Inference
+
+A single consumer GPU tops out at 24GB VRAM — not enough for 70B Q4_K_M (40GB). Dual RTX 3090 with NVLink bridges the gap: two 24GB cards become a single 48GB pool, enough for 70B Q4_K_M with 8GB headroom for KV cache.
+
+## What NVLink Does
+
+Without NVLink, splitting a model across two GPUs routes data through PCIe and system RAM. This creates a bottleneck — inference slows to ~5 tok/s on 70B.
+
+With NVLink, the two GPUs share a 600 GB/s bidirectional interconnect and the OS sees them as one 48GB device. Inference runs at ~21 tok/s — usable for interactive chat.
+
+## Hardware Requirements
+
+**Two RTX 3090s** — must be the same brand (both ASUS, both EVGA, both Founders Edition). Mismatched cooling can cause thermal issues. Founders Edition cards are ideal.
+
+**NVLink Bridge** — the physical bridge connecting the two cards. RTX 3090 uses a 3-slot bridge for most AIB cards, 4-slot for Founders Edition. Check your specific card's spacing.
+
+**Motherboard** — needs two PCIe x16 slots running at full x16 electrical bandwidth. Many boards have x16/x4 — the x4 slot kills bandwidth. Check your board's spec sheet carefully.
+
+**PSU** — two RTX 3090s draw up to 700W combined. Add CPU, drives, overhead: **1200W minimum**, 1600W recommended. Use a single PSU, not two.
+
+**Case** — full tower. The NVLink bridge occupies the space between the cards, which must be in adjacent slots. You need 7–8 expansion slots of space.
+
+## Building the System
+
+**Step 1 — Install cards**
+
+Install both RTX 3090s in the two x16 slots. They should be adjacent (no gap between them). Tighten the screws — NVLink bridges add lateral force.
+
+**Step 2 — Install the NVLink bridge**
+
+With the PC powered off, press the NVLink bridge onto the gold connectors on top of both cards. It clicks into place. Don't force it — if it doesn't seat smoothly, check you have the right bridge for your card spacing.
+
+**Step 3 — Connect power**
+
+Each RTX 3090 needs two 8-pin (or 16-pin on newer cards) PCIe power connectors. Use separate cables from the PSU to each card — don't daisy chain.
+
+## Driver and Software Setup
+
+**Verify NVLink detection:**
+
+```bash
+# Linux
+nvidia-smi nvlink --status
+# Should show: Link 0: Active for both GPUs
+
+# Windows PowerShell
+nvidia-smi nvlink --status
+```
+
+**Check unified memory pool:**
+
+```bash
+nvidia-smi topo -m
+# Should show NV2 or NV4 connection between GPU 0 and GPU 1
+# NV2 = 2 NVLink lanes, NV4 = 4 NVLink lanes (RTX 3090 = NV2)
+```
+
+**Verify VRAM:**
+
+```bash
+nvidia-smi --query-gpu=name,memory.total --format=csv
+# Should show two entries, each 24576 MiB
+```
+
+## Running 70B Models
+
+**Ollama** — detects NVLink automatically, no configuration needed:
+
+```bash
+ollama pull llama3.1:70b
+ollama run llama3.1:70b
+# Ollama uses the full 48GB pool automatically
+```
+
+**ExLlamaV2:**
+
+```bash
+python test_inference.py \
+  -m /path/to/Meta-Llama-3.1-70B-Q4_K_M.gguf \
+  -gs 24,24 \
+  -t 300
+```
+
+**llama.cpp:**
+
+```bash
+./build/bin/llama-server \
+  -m /path/to/Meta-Llama-3.1-70B-Q4_K_M.gguf \
+  -ngl 83 \
+  --tensor-split 1,1 \
+  --ctx-size 4096 \
+  --port 8080
+```
+
+## Expected Performance
+
+Benchmarks on dual RTX 3090 NVLink, ExLlamaV2, CUDA 12.4:
+
+| Model | Quant | Tok/s |
+|---|---|---|
+| Llama 3.1 70B | Q4_K_M | 21.3 |
+| Llama 3.1 70B | Q5_K_M | 16.1 |
+| Qwen 2.5 72B | Q4_K_M | 19.8 |
+| DeepSeek R1 70B | Q4_K_M | 19.2 |
+| Mixtral 8x22B | Q4_K_M | 24.7 |
+
+21 tok/s is fast enough for interactive chat. It's not instant like a 7B model on a 4090, but it's usable.
+
+## Thermal Management
+
+The primary challenge is heat. The NVLink bridge blocks airflow between cards and the bottom card runs 15–20°C hotter than the top.
+
+**Solutions in order of effectiveness:**
+
+1. **Remove the side panel** during inference — immediate, free, works well
+2. **Undervolt both GPUs** — MSI Afterburner, 900mV core at 1800MHz reduces heat by ~30W per card
+3. **Replace thermal pads** — RTX 3090 VRAM throttles above 105°C, common on used cards
+4. **Dedicated intake fan** — pointing directly at the gap between cards
+
+**Target temperatures:** GPU core below 83°C, VRAM below 100°C under sustained load.
+
+## Troubleshooting
+
+**NVLink not detected**
+
+- Reseat the bridge with the PC off
+- Update NVIDIA drivers to 525+
+- Check BIOS PCIe settings — enable "PCIe 4.0" and "Above 4G Decoding"
+
+**Only one GPU being used**
+
+Set the correct flags: `-gs 24,24` in ExLlamaV2, `--tensor-split 1,1` in llama.cpp. Ollama handles this automatically.
+
+**Speed slower than expected**
+
+Check that both GPUs are running at x16 bandwidth:
+
+```bash
+nvidia-smi --query-gpu=pcie.link.width.current --format=csv
+# Both should show 16
+```
+
+If one shows 4, your motherboard is running the second slot at x4. Check your board's manual — some boards only run x16/x4 unless a specific BIOS setting is enabled.
+
+**Temperatures too high**
+
+Undervolting is the most effective fix. In MSI Afterburner: Ctrl+F to open voltage/frequency curve editor, lock the 900mV point at 1800MHz, apply. Reduces power draw by 50–80W per card.
+
+## Next Steps
+
+- [CUDA Optimization](/tutorials/cuda-optimization) — squeeze more performance from your setup
+- [Inference Profiler](/tools/inference-profiler) — benchmark your exact configuration
+- [Speed Estimator](/tools/speed-estimator) — predict throughput before buying hardware

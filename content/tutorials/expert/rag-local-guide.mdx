@@ -1,0 +1,232 @@
+---
+title: "Building a Local RAG Pipeline with Ollama"
+excerpt: "Set up retrieval-augmented generation entirely locally — document ingestion, vector embeddings, semantic search, and grounded responses with no cloud dependency."
+date: "2026-05-30"
+category: "Expert Tutorial"
+level: "expert"
+tags: ["rag", "ollama", "embeddings", "vector-search", "python", "expert"]
+---
+
+# Building a Local RAG Pipeline with Ollama
+
+RAG (Retrieval-Augmented Generation) lets a model answer questions about documents it wasn't trained on. Instead of stuffing a document into the context window, you store it in a vector database, retrieve only the relevant chunks at query time, and pass those to the model. Everything here runs locally — no cloud APIs.
+
+## How RAG Works
+
+```
+Document → Chunk → Embed → Vector DB
+                                ↓
+Query → Embed → Similarity Search → Top-K Chunks
+                                          ↓
+                              [System Prompt + Chunks + Query] → LLM → Answer
+```
+
+1. **Chunk** — split documents into overlapping segments (500–1000 tokens each)
+2. **Embed** — convert each chunk to a vector using an embedding model
+3. **Store** — save vectors in a vector database
+4. **Query** — embed the user's question, find the most similar chunks
+5. **Generate** — pass retrieved chunks + question to the LLM
+
+## Install Dependencies
+
+```bash
+pip install ollama chromadb langchain-text-splitters pypdf
+```
+
+## Pull an Embedding Model
+
+Ollama includes embedding models. Pull one:
+
+```bash
+ollama pull nomic-embed-text    # Fast, good quality, 274MB
+ollama pull mxbai-embed-large  # Higher quality, 670MB
+```
+
+## Complete RAG Implementation
+
+```python
+import ollama
+import chromadb
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+import os
+
+# ── Config ──────────────────────────────────
+EMBED_MODEL = "nomic-embed-text"
+CHAT_MODEL = "llama3.1:8b"
+CHUNK_SIZE = 500
+CHUNK_OVERLAP = 50
+TOP_K = 5
+
+# ── Setup ────────────────────────────────────
+client = chromadb.Client()
+collection = client.get_or_create_collection("documents")
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=CHUNK_SIZE,
+    chunk_overlap=CHUNK_OVERLAP,
+)
+
+# ── Ingest a document ────────────────────────
+def ingest_text(text: str, source: str = "document"):
+    chunks = splitter.split_text(text)
+    embeddings = []
+    for chunk in chunks:
+        response = ollama.embeddings(model=EMBED_MODEL, prompt=chunk)
+        embeddings.append(response["embedding"])
+
+    collection.add(
+        documents=chunks,
+        embeddings=embeddings,
+        ids=[f"{source}_{i}" for i in range(len(chunks))],
+        metadatas=[{"source": source} for _ in chunks],
+    )
+    print(f"Ingested {len(chunks)} chunks from {source}")
+
+def ingest_file(filepath: str):
+    ext = os.path.splitext(filepath)[1].lower()
+    if ext == ".pdf":
+        from pypdf import PdfReader
+        reader = PdfReader(filepath)
+        text = "\n".join(page.extract_text() for page in reader.pages)
+    else:
+        with open(filepath, "r", encoding="utf-8") as f:
+            text = f.read()
+    ingest_text(text, source=os.path.basename(filepath))
+
+# ── Query ─────────────────────────────────────
+def query(question: str) -> str:
+    # Embed the question
+    q_embedding = ollama.embeddings(model=EMBED_MODEL, prompt=question)["embedding"]
+
+    # Retrieve top-K similar chunks
+    results = collection.query(
+        query_embeddings=[q_embedding],
+        n_results=TOP_K,
+    )
+    
+    chunks = results["documents"][0]
+    sources = [m["source"] for m in results["metadatas"][0]]
+
+    if not chunks:
+        return "No relevant documents found."
+
+    # Build context
+    context = "\n\n---\n\n".join(
+        f"[Source: {src}]\n{chunk}"
+        for chunk, src in zip(chunks, sources)
+    )
+
+    # Generate answer
+    response = ollama.chat(
+        model=CHAT_MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a helpful assistant that answers questions based on "
+                    "provided context. Answer based only on the context given. "
+                    "If the context doesn't contain the answer, say so clearly. "
+                    "Cite the source when relevant."
+                ),
+            },
+            {
+                "role": "user",
+                "content": f"Context:\n\n{context}\n\nQuestion: {question}",
+            },
+        ],
+    )
+    return response["message"]["content"]
+
+# ── Main ─────────────────────────────────────
+if __name__ == "__main__":
+    # Ingest documents
+    ingest_file("my_document.pdf")
+    ingest_file("notes.txt")
+
+    # Query
+    while True:
+        q = input("\nQuestion (q to quit): ").strip()
+        if q.lower() == "q":
+            break
+        print("\n" + query(q))
+```
+
+## Persistent Vector Database
+
+The above uses an in-memory ChromaDB instance. For persistence across sessions:
+
+```python
+# Replace the client line with:
+client = chromadb.PersistentClient(path="./chroma_db")
+```
+
+Data is saved to disk and reloaded on next run. Only ingest documents once.
+
+## Improving Retrieval Quality
+
+**Larger chunk overlap** — increase `CHUNK_OVERLAP` to 100–150 for documents where context spans chunk boundaries (e.g. legal documents, technical specs).
+
+**Reranking** — after retrieving TOP_K chunks, rerank them by relevance before passing to the LLM:
+
+```python
+# Simple reranking by keyword overlap
+def rerank(chunks: list[str], question: str, top_n: int = 3) -> list[str]:
+    question_words = set(question.lower().split())
+    scored = [
+        (chunk, len(set(chunk.lower().split()) & question_words))
+        for chunk in chunks
+    ]
+    scored.sort(key=lambda x: x[1], reverse=True)
+    return [chunk for chunk, _ in scored[:top_n]]
+```
+
+**Hybrid search** — combine semantic (vector) search with keyword (BM25) search:
+
+```bash
+pip install rank-bm25
+```
+
+```python
+from rank_bm25 import BM25Okapi
+
+# Build BM25 index alongside ChromaDB
+all_chunks = []  # Store all chunks at ingest time
+bm25 = BM25Okapi([chunk.split() for chunk in all_chunks])
+
+def hybrid_query(question: str, alpha: float = 0.7) -> list[str]:
+    # Semantic results
+    q_embed = ollama.embeddings(model=EMBED_MODEL, prompt=question)["embedding"]
+    semantic = collection.query(query_embeddings=[q_embed], n_results=10)
+    
+    # BM25 results
+    bm25_scores = bm25.get_scores(question.split())
+    
+    # Combine scores (alpha = weight for semantic)
+    # ... merge and rerank
+```
+
+## Streaming Responses
+
+```python
+def query_stream(question: str):
+    # ... (same retrieval as above)
+    
+    for chunk in ollama.chat(
+        model=CHAT_MODEL,
+        messages=[...],
+        stream=True,
+    ):
+        print(chunk["message"]["content"], end="", flush=True)
+    print()
+```
+
+## Performance Notes
+
+Embedding speed with `nomic-embed-text` on an RTX 4090: ~500–1000 chunks per minute. For large document sets (hundreds of PDFs), run ingestion overnight.
+
+Query latency: embedding the question takes ~50ms, ChromaDB retrieval ~10ms, LLM generation dominates at whatever your model's tok/s allows.
+
+## Next Steps
+
+- [Ollama API Guide](/tutorials/ollama-api-guide) — integrate the RAG pipeline into applications
+- [Token Budget Calculator](/tools/token-budget) — plan context window usage for large documents
+- [Context Length Calculator](/tools/context-calculator) — understand KV cache limits for long contexts

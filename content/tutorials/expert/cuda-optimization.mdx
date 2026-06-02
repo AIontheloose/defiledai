@@ -1,0 +1,231 @@
+---
+title: "CUDA Optimization for LLM Inference"
+excerpt: "Flash attention, KV cache tuning, batch sizing, context length optimization, and profiling tools to squeeze maximum performance from NVIDIA GPUs for local AI."
+date: "2026-05-30"
+category: "Expert Tutorial"
+level: "expert"
+tags: ["cuda", "optimization", "flash-attention", "kv-cache", "nvidia", "expert"]
+---
+
+# CUDA Optimization for LLM Inference
+
+Getting 128 tok/s on a 7B model instead of 90 tok/s comes down to a handful of well-understood optimizations. This guide covers the techniques that actually move the needle for local LLM inference on NVIDIA hardware.
+
+## Understanding the Bottleneck
+
+Token generation (the autoregressive decode phase) is **memory-bandwidth bound**, not compute bound. The GPU reads the entire model's weights for every single token generated. At 4.8 bits per weight for Q4_K_M:
+
+```
+7B model: 7e9 × 4.8/8 bytes = ~4.2GB
+RTX 4090 bandwidth: 1,008 GB/s
+Theoretical max tok/s: 1008 / 4.2 ≈ 240 tok/s
+Real-world (with overhead): ~128 tok/s
+```
+
+The gap between theoretical and real is where optimization lives.
+
+## 1. Flash Attention
+
+Flash attention rewrites the attention mechanism to minimise memory traffic. Instead of materialising the full attention matrix (which scales as O(n²) with sequence length), it fuses operations into a single kernel pass.
+
+**Enable in llama.cpp:**
+
+```bash
+cmake -B build -DGGML_CUDA=ON -DGGML_CUDA_FA_ALL_QUANTS=ON
+cmake --build build -j$(nproc)
+
+./build/bin/llama-server \
+  -m model.gguf \
+  -ngl 99 \
+  --flash-attn \    # Enable flash attention
+  --ctx-size 8192
+```
+
+**Enable in ExLlamaV2** — on by default for supported GPUs. Verify:
+
+```python
+config = ExLlamaV2Config(model_path)
+config.use_flash_attn = True  # Should be True by default
+```
+
+**Impact:** 10–25% throughput improvement at long context lengths (8K+). Minimal effect at 2K context.
+
+## 2. KV Cache Quantization
+
+The KV cache stores key-value pairs for every token in the context. At 4K context a 7B model's KV cache is ~1GB. At 32K it's ~8GB. Quantizing the KV cache from FP16 to Q8 halves its VRAM footprint with negligible quality impact.
+
+**llama.cpp:**
+
+```bash
+./build/bin/llama-server \
+  -m model.gguf \
+  -ngl 99 \
+  --ctx-size 32768 \
+  -ctk q8_0 \      # KV cache key quantization
+  -ctv q8_0 \      # KV cache value quantization
+  --flash-attn     # Required for KV cache quant
+```
+
+**ExLlamaV2:**
+
+```python
+from exllamav2 import ExLlamaV2Cache_Q8
+
+cache = ExLlamaV2Cache_Q8(model, max_seq_len=32768, lazy=True)
+```
+
+**Impact:** Enables 2× longer context in the same VRAM. Quality loss is under 0.5% on most benchmarks.
+
+## 3. Context Length Tuning
+
+Every token of context costs VRAM for KV cache. More context = more VRAM = potentially slower if it forces the model to partially offload.
+
+**Rule:** Set context length to what you actually need, not to the maximum.
+
+```bash
+# For chat (most conversations are under 4K)
+--ctx-size 4096
+
+# For document Q&A
+--ctx-size 16384
+
+# For full-document analysis
+--ctx-size 65536  # Only if your VRAM allows it
+```
+
+Use the [Context Length Calculator](/tools/context-calculator) to find the maximum your GPU supports.
+
+## 4. Batch Size for Throughput
+
+For interactive single-user chat, batch size 1 is correct. For serving multiple users or batch processing, increasing batch size improves overall throughput at the cost of individual response latency.
+
+**llama.cpp:**
+
+```bash
+./build/bin/llama-server \
+  -m model.gguf \
+  -ngl 99 \
+  --parallel 4 \       # Handle 4 concurrent requests
+  --cont-batching      # Enable continuous batching
+  --ctx-size 4096
+```
+
+**ExLlamaV2 dynamic batching:**
+
+```python
+generator = ExLlamaV2DynamicGenerator(
+    model=model,
+    cache=cache,
+    tokenizer=tokenizer,
+    max_batch_size=4,
+)
+```
+
+## 5. GPU Clock and Power Settings
+
+RTX 30-series cards have aggressive power throttling by default. Locking the GPU clock prevents throttling during sustained inference.
+
+```bash
+# Linux — lock GPU clocks (requires root)
+sudo nvidia-smi -pm 1                    # Persistence mode
+sudo nvidia-smi --lock-gpu-clocks=1980  # Lock at max clock (adjust for your card)
+
+# Check current clock
+nvidia-smi --query-gpu=clocks.gr --format=csv
+
+# Unlock (restore dynamic clocking)
+sudo nvidia-smi --reset-gpu-clocks
+```
+
+**Undervolting for sustained performance** — high temperatures cause throttling. Undervolting maintains high clocks at lower temperatures:
+
+Use MSI Afterburner: Ctrl+F → voltage/frequency curve → lock 900mV point at 1800MHz. Reduces power draw by 60–80W on a 3090, drops temperature 10–15°C, maintains 95%+ of peak performance.
+
+## 6. NUMA and CPU Affinity
+
+On multi-socket or CCX systems, memory locality matters. Pin Ollama/llama.cpp to the CPU cores closest to your GPU's PCIe slot.
+
+```bash
+# Find which NUMA node your GPU is on
+nvidia-smi topo -m
+
+# Run llama.cpp bound to that NUMA node
+numactl --cpunodebind=0 --membind=0 ./build/bin/llama-server \
+  -m model.gguf \
+  -ngl 99 \
+  --ctx-size 4096 \
+  --port 8080
+```
+
+**Impact:** 3–8% improvement on Ryzen (CCX architecture) and HEDT platforms.
+
+## 7. Profiling with nvtop and nvidia-smi
+
+```bash
+# Install nvtop (better than nvidia-smi for live monitoring)
+sudo apt install nvtop
+nvtop
+
+# nvidia-smi live monitoring
+watch -n 0.5 nvidia-smi
+
+# Detailed GPU metrics
+nvidia-smi dmon -s pucvmet -d 1
+
+# Check if bandwidth is the bottleneck
+nvidia-smi nvlink --status     # NVLink bandwidth (if applicable)
+nvidia-smi pmon -d 100 -c 5   # Per-process GPU utilization
+```
+
+Look for:
+- **GPU utilization** should be 95–100% during generation
+- **Memory utilization** should be 90–100% of available VRAM
+- **Temperature** should stay under 83°C core, 100°C VRAM
+
+## 8. Optimization Checklist
+
+| Setting | Command | Impact |
+|---|---|---|
+| Flash attention | `--flash-attn` | +10–25% at long context |
+| KV cache Q8 | `-ctk q8_0 -ctv q8_0` | 2× longer context |
+| GPU layers | `-ngl 99` | All layers on GPU |
+| Locked clocks | `nvidia-smi --lock-gpu-clocks` | Prevent throttling |
+| NUMA binding | `numactl --cpunodebind=0` | +3–8% on AMD |
+| Batch size | `--parallel N` | Higher throughput |
+
+## Putting It All Together
+
+Optimized llama.cpp server command for interactive chat on RTX 4090:
+
+```bash
+./build/bin/llama-server \
+  -m models/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf \
+  -ngl 99 \
+  --flash-attn \
+  -ctk q8_0 \
+  -ctv q8_0 \
+  --ctx-size 8192 \
+  --parallel 1 \
+  --port 8080 \
+  --host 127.0.0.1
+```
+
+For a 70B model on dual 3090 NVLink:
+
+```bash
+./build/bin/llama-server \
+  -m models/Meta-Llama-3.1-70B-Q4_K_M.gguf \
+  -ngl 83 \
+  --tensor-split 1,1 \
+  --flash-attn \
+  -ctk q8_0 \
+  -ctv q8_0 \
+  --ctx-size 4096 \
+  --port 8080
+```
+
+## Next Steps
+
+- [Inference Profiler](/tools/inference-profiler) — measure the impact of each optimization
+- [Speed Estimator](/tools/speed-estimator) — predict theoretical maximum before optimizing
+- [TensorRT-LLM Guide](/tutorials/tensorrt-llm-guide) — maximum throughput for production
