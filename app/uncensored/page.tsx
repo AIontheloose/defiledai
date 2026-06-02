@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { getAllModels, getAllTags, getFamilies } from "../../../lib/models";
+import { getAllModels, getAllTags, getFamilies } from "../../lib/models";
 
 const TYPE_COLORS: Record<string, string> = {
   abliterated: "text-cyan-400 border-cyan-400/30",
