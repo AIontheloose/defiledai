@@ -78,7 +78,7 @@ function profile(params: number, quant: typeof QUANTS[0], gpu: typeof GPUS[0], b
 export default function InferenceProfilerPage() {
   const [params, setParams] = useState("70");
   const [quantName, setQuantName] = useState("Q4_K_M");
-  const [gpuName, setGpuName] = useState("RTX 3090 24GB");
+  const [gpuName, setGpuName] = useState(GPUS[0].name);
   const [backendId, setBackendId] = useState("exllamav2");
   const [ctx, setCtx] = useState(4096);
   const [batch, setBatch] = useState(1);
