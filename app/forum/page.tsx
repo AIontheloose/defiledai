@@ -188,7 +188,7 @@ export default function ForumPage() {
                 <span className="text-xs uppercase tracking-widest text-[#5865F2] font-mono">Discord Server</span>
               </div>
               <div className="p-4">
-                {DISCORD_SERVER_ID !== "YOUR_SERVER_ID" ? (
+                {DISCORD_SERVER_ID !== "1511081413452234922" ? (
                   <iframe
                     src={`https://discord.com/widget?id=${DISCORD_SERVER_ID}&theme=dark`}
                     width="100%"
