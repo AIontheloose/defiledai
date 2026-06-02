@@ -81,7 +81,7 @@ function calcProfile(params: number, quantBpw: number, gpuBw: number, gpuVram: n
   else if (toks > 10) notes.push("⚠ Marginal — consider smaller model or lower quant");
   else if (toks > 0) notes.push("✗ Too slow for interactive use");
 
-  return { toks, ttft, vramUsed: Math.min(totalGb, totalVram), cpuOffload, efficiency, modelGb, kvGb, totalGb, fits };
+  return { toks, ttft, vramUsed: Math.min(totalGb, totalVram), cpuOffload, efficiency, modelGb, kvGb, totalGb, fits, notes };
 }
 
 export default function InferenceProfilerPage() {
