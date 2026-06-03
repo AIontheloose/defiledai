@@ -1,11 +1,10 @@
 "use client";
 import { useState } from "react";
 
-// ─── DATA ─────────────────────────────────────────────────────────────────────
-// Perplexity increase % vs F16 baseline, by model size tier and quant level.
-// Based on published llama.cpp perplexity benchmarks and community results.
-// Lower = better (less degradation from baseline).
+// ─── TYPES ─────────────────────────────────────────────────────────────────────
+type QuantType = keyof typeof QUANT_DATA;
 
+// ─── DATA ─────────────────────────────────────────────────────────────────────
 const QUANT_DATA = {
   "F16":    { bits: 16,   label: "F16",    short: "Full precision baseline" },
   "Q8_0":   { bits: 8.5,  label: "Q8_0",   short: "Near-lossless" },
@@ -21,11 +20,9 @@ const QUANT_DATA = {
   "Q2_K":   { bits: 3.35, label: "Q2_K",   short: "Severe — emergency use only" },
   "IQ2_M":  { bits: 2.7,  label: "IQ2_M",  short: "Extreme compression" },
   "IQ1_M":  { bits: 1.75, label: "IQ1_M",  short: "Near-unusable" },
-};
+} as const;
 
-// Perplexity delta % by model size. Larger models tolerate quantization better.
-// Data: approximate from published benchmarks across 7B, 13B, 34B, 70B models.
-const PPLX_DELTA: Record<string, Record<string, number>> = {
+const PPLX_DELTA: Record<QuantType, Record<string, number>> = {
   "F16":    { "3B": 0,    "7B": 0,    "13B": 0,    "34B": 0,    "70B+": 0    },
   "Q8_0":   { "3B": 0.05, "7B": 0.04, "13B": 0.03, "34B": 0.02, "70B+": 0.01 },
   "Q6_K":   { "3B": 0.2,  "7B": 0.12, "13B": 0.08, "34B": 0.06, "70B+": 0.04 },
@@ -45,8 +42,7 @@ const PPLX_DELTA: Record<string, Record<string, number>> = {
 const SIZE_TIERS = ["3B", "7B", "13B", "34B", "70B+"] as const;
 type SizeTier = typeof SIZE_TIERS[number];
 
-// Approx VRAM at each quant for a 7B model baseline (scales proportionally)
-const BASE_7B_VRAM: Record<string, number> = {
+const BASE_7B_VRAM: Record<QuantType, number> = {
   "F16":    14.0,
   "Q8_0":   7.7,
   "Q6_K":   6.1,
@@ -64,7 +60,11 @@ const BASE_7B_VRAM: Record<string, number> = {
 };
 
 const PARAM_MULTIPLIERS: Record<SizeTier, number> = {
-  "3B": 3/7, "7B": 1, "13B": 13/7, "34B": 34/7, "70B+": 70/7,
+  "3B": 3/7,
+  "7B": 1,
+  "13B": 13/7,
+  "34B": 34/7,
+  "70B+": 70/7,
 };
 
 const MODEL_PRESETS = [
@@ -72,7 +72,7 @@ const MODEL_PRESETS = [
   { label: "Phi-3 Mini 3.8B",           tier: "3B" as SizeTier,  params: 3.8 },
   { label: "DeepSeek R1 14B",           tier: "13B" as SizeTier, params: 14 },
   { label: "Qwen 2.5 Coder 32B",        tier: "34B" as SizeTier, params: 32 },
-  { label: "Llama 3.1 70B",             tier: "70B+" as SizeTier,params: 70 },
+  { label: "Llama 3.1 70B",             tier: "70B+" as SizeTier, params: 70 },
 ];
 
 const getColor = (delta: number): string => {
@@ -96,26 +96,25 @@ const getLabel = (delta: number): string => {
 
 export default function QuantQualityEstimatorPage() {
   const [selectedTier, setSelectedTier] = useState<SizeTier>("7B");
-  const [selectedQuant, setSelectedQuant] = useState<string>("Q4_K_M");
+  const [selectedQuant, setSelectedQuant] = useState<QuantType>("Q4_K_M");
   const [availableVram, setAvailableVram] = useState(8);
-  const [customParams, setCustomParams] = useState(7);
 
-  const quantList = Object.keys(QUANT_DATA);
+  const quantList = Object.keys(QUANT_DATA) as QuantType[];
 
   // VRAM for selected tier at each quant
   const mult = PARAM_MULTIPLIERS[selectedTier];
-  const vramByQuant = (q: string) => (BASE_7B_VRAM[q] ?? 5) * mult;
+  const vramByQuant = (q: QuantType) => (BASE_7B_VRAM[q] ?? 5) * mult;
 
   // What quants fit in available VRAM
   const fittingQuants = quantList.filter((q) => vramByQuant(q) <= availableVram);
 
   // Best quality quant that fits
-  const bestFit = fittingQuants.length > 0 ? fittingQuants[0] : null; // first = highest quality (F16 first)
+  const bestFit = fittingQuants.length > 0 ? fittingQuants[0] : null;
 
-  const selectedDelta = PPLX_DELTA[selectedQuant]?.[selectedTier] ?? 0;
+  const selectedDelta = PPLX_DELTA[selectedQuant][selectedTier] ?? 0;
   const selectedVram = vramByQuant(selectedQuant);
 
-  // Chart: delta vs quant, for selected tier
+  // Chart: max delta for scaling
   const maxDelta = Math.max(...quantList.map((q) => PPLX_DELTA[q]?.[selectedTier] ?? 0));
 
   return (
@@ -133,6 +132,7 @@ export default function QuantQualityEstimatorPage() {
 
         {/* Config row */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
+          {/* Model Size */}
           <div className="border border-[var(--border)] p-4">
             <div className="text-xs uppercase tracking-widest text-[var(--muted)] mb-3">Model Size</div>
             <div className="grid grid-cols-3 gap-1.5 mb-3">
@@ -164,19 +164,25 @@ export default function QuantQualityEstimatorPage() {
             </div>
           </div>
 
+          {/* Available VRAM */}
           <div className="border border-[var(--border)] p-4">
             <div className="text-xs uppercase tracking-widest text-[var(--muted)] mb-3">Available VRAM (GB)</div>
             <input
               type="number"
               value={availableVram}
-              min={1} max={200} step={1}
+              min={1}
+              max={200}
+              step={1}
               onChange={(e) => setAvailableVram(parseInt(e.target.value) || 1)}
               className="w-full bg-[var(--bg)] border border-[var(--border)] px-3 py-2.5 font-mono text-lg text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] mb-4"
             />
             <div className="text-xs text-[var(--muted)] mb-2">Quants that fit:</div>
             <div className="flex flex-wrap gap-1">
               {fittingQuants.map((q) => (
-                <span key={q} className="text-xs font-mono px-1.5 py-0.5 bg-green-400/10 text-green-400 border border-green-400/20">
+                <span
+                  key={q}
+                  className="text-xs font-mono px-1.5 py-0.5 bg-green-400/10 text-green-400 border border-green-400/20"
+                >
                   {q}
                 </span>
               ))}
@@ -199,12 +205,15 @@ export default function QuantQualityEstimatorPage() {
             selectedDelta < 3 ? "border-yellow-500/40" : "border-red-500/40"
           }`}>
             <div className="text-xs uppercase tracking-widest text-[var(--muted)] mb-3">Selected: {selectedQuant}</div>
+            
             <div className="text-4xl font-black font-mono mb-1" style={{ color: getColor(selectedDelta) }}>
               {selectedDelta === 0 ? "—" : `+${selectedDelta}%`}
             </div>
+            
             <div className="text-xs font-mono mb-3" style={{ color: getColor(selectedDelta) }}>
               {getLabel(selectedDelta)} quality loss vs F16
             </div>
+
             <div className="space-y-1 text-xs font-mono text-[var(--muted)]">
               <div className="flex justify-between">
                 <span>Est. VRAM ({selectedTier})</span>
@@ -214,12 +223,12 @@ export default function QuantQualityEstimatorPage() {
               </div>
               <div className="flex justify-between">
                 <span>Bits per weight</span>
-                <span>{QUANT_DATA[selectedQuant]?.bits}</span>
+                <span>{QUANT_DATA[selectedQuant].bits}</span>
               </div>
               <div className="flex justify-between">
                 <span>Size reduction vs F16</span>
                 <span className="text-cyan-400">
-                  {Math.round((1 - (QUANT_DATA[selectedQuant]?.bits ?? 16) / 16) * 100)}%
+                  {Math.round((1 - QUANT_DATA[selectedQuant].bits / 16) * 100)}%
                 </span>
               </div>
             </div>
@@ -247,33 +256,26 @@ export default function QuantQualityEstimatorPage() {
                   className={`w-full text-left transition-all ${isSelected ? "bg-[var(--surface)]" : "hover:bg-[var(--surface)]/30"}`}
                 >
                   <div className="flex items-center gap-3 px-2 py-2">
-                    {/* Quant name */}
                     <div className={`w-16 text-xs font-mono font-bold flex-shrink-0 ${isSelected ? "text-[var(--fg)]" : "text-[var(--muted)]"}`}>
                       {q}
                     </div>
 
-                    {/* Bar */}
                     <div className="flex-1 h-5 bg-[var(--bg)] border border-[var(--border)] overflow-hidden relative">
                       <div
                         className="h-full transition-all duration-300"
                         style={{ width: `${Math.max(barWidth, delta === 0 ? 0.5 : 0)}%`, backgroundColor: color }}
                       />
-                      {isSelected && (
-                        <div className="absolute inset-0 border border-white/20" />
-                      )}
+                      {isSelected && <div className="absolute inset-0 border border-white/20" />}
                     </div>
 
-                    {/* Delta */}
                     <div className="w-16 text-xs font-mono text-right flex-shrink-0" style={{ color }}>
                       {delta === 0 ? "baseline" : `+${delta}%`}
                     </div>
 
-                    {/* VRAM */}
                     <div className={`w-16 text-xs font-mono text-right flex-shrink-0 ${fits ? "text-green-400" : "text-red-400"}`}>
                       {vram.toFixed(1)}GB
                     </div>
 
-                    {/* Quality label */}
                     <div className="w-24 text-xs font-mono text-right flex-shrink-0 hidden md:block" style={{ color: getColor(delta) }}>
                       {getLabel(delta)}
                     </div>
@@ -285,7 +287,7 @@ export default function QuantQualityEstimatorPage() {
           <div className="flex gap-6 mt-4 text-xs font-mono text-[var(--muted)]">
             <span>← Bar = perplexity increase vs F16</span>
             <span>GB = estimated VRAM for {selectedTier} model</span>
-            <span className="text-red-400">Red GB = doesn't fit in {availableVram}GB</span>
+            <span className="text-red-400">Red GB = doesn&apos;t fit in {availableVram}GB</span>
           </div>
         </div>
 
