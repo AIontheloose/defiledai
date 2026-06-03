@@ -17,6 +17,13 @@ const TOOL_SECTIONS = [
         tagColor: "text-cyan-400 border-cyan-400/30",
       },
       {
+        href: "/tools/hardware-simulator",
+        title: "Hardware Simulator",
+        desc: "Beyond basic VRAM calculator: Input your exact setup (e.g., 2× RTX 4090 + 128GB RAM, or 1× 5090 + CPU offload) and get realistic estimates",
+        tag: "NEW & UNIQUE",
+        tagColor: "text-cyan-400 border-cyan-400/30",
+      },
+      {
         href: "/tools/abliteration-test-suite",
         title: "Abliteration Test Suite",
         desc: "Abliteration test suite with publishable results score-card",
