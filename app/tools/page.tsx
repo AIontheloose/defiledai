@@ -52,9 +52,9 @@ const TOOL_SECTIONS = [
         tagColor: "text-cyan-400 border-cyan-400/30",
       },
       {
-        href: "/tools/true-vram-calculator",
-        title: "True VRAM Calculator",
-        desc: "True VRAM Calculator based on all metrics",
+        href: "/tools/local-stack",
+        title: "Local LLM Stack Builder",
+        desc: "Intelligent Local LLM Stack Builder based on your hardware.",
         tag: "NEW & UNIQUE",
         tagColor: "text-cyan-400 border-cyan-400/30",
       },
