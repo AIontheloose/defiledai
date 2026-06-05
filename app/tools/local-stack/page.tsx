@@ -1,182 +1,396 @@
 "use client";
-import { useState } from "react";
 
-type UseCase = "general" | "roleplay" | "coding" | "agentic" | "longcontext" | "multimodal";
+import { useMemo, useState } from "react";
+
+type UseCase =
+  | "general"
+  | "roleplay"
+  | "coding"
+  | "agentic"
+  | "longcontext"
+  | "multimodal";
+
+type Priority = "balanced" | "speed" | "quality";
 
 interface Stack {
   model: string;
   quant: string;
   backend: string;
-  speed: string;
+  minVRAM: number;
+  recommendedRAM: number;
   context: string;
-  rating: string;
-  bestFor: string;
-  color: string;
+  speed: number;
+  quality: number;
+  confidence: number;
+  useCases: UseCase[];
+  deploy: string;
 }
+
+const STACKS: Stack[] = [
+  {
+    model: "Gemma 3 12B",
+    quant: "Q5_K_M",
+    backend: "llama.cpp",
+    minVRAM: 12,
+    recommendedRAM: 32,
+    context: "128k",
+    speed: 90,
+    quality: 72,
+    confidence: 88,
+    useCases: ["general"],
+    deploy: "ollama run gemma3:12b",
+  },
+
+  {
+    model: "Qwen 3 32B",
+    quant: "Q4_K_M",
+    backend: "ExLlamaV2",
+    minVRAM: 24,
+    recommendedRAM: 64,
+    context: "128k",
+    speed: 76,
+    quality: 89,
+    confidence: 94,
+    useCases: ["general", "coding"],
+    deploy: "ollama run qwen3:32b",
+  },
+
+  {
+    model: "Llama 3.1 70B",
+    quant: "Q4_K_M",
+    backend: "ExLlamaV2",
+    minVRAM: 48,
+    recommendedRAM: 64,
+    context: "128k",
+    speed: 58,
+    quality: 95,
+    confidence: 96,
+    useCases: ["general", "roleplay"],
+    deploy: "ollama run llama3.1:70b",
+  },
+
+  {
+    model: "DeepSeek V3",
+    quant: "Q4",
+    backend: "TensorRT-LLM",
+    minVRAM: 80,
+    recommendedRAM: 128,
+    context: "128k",
+    speed: 52,
+    quality: 99,
+    confidence: 97,
+    useCases: ["agentic"],
+    deploy: "docker run vllm/vllm-openai",
+  },
+
+  {
+    model: "Llama 3.2 11B Vision",
+    quant: "Q5_K_M",
+    backend: "llama.cpp",
+    minVRAM: 16,
+    recommendedRAM: 32,
+    context: "128k",
+    speed: 82,
+    quality: 84,
+    confidence: 91,
+    useCases: ["multimodal"],
+    deploy: "ollama run llama3.2-vision",
+  },
+
+  {
+    model: "Qwen 3 32B",
+    quant: "Q5_K_M",
+    backend: "ExLlamaV2",
+    minVRAM: 32,
+    recommendedRAM: 64,
+    context: "256k",
+    speed: 70,
+    quality: 92,
+    confidence: 95,
+    useCases: ["longcontext"],
+    deploy: "ollama run qwen3:32b",
+  },
+];
 
 export default function StackForge() {
   const [gpuCount, setGpuCount] = useState(1);
   const [vramPerGpu, setVramPerGpu] = useState(24);
   const [systemRam, setSystemRam] = useState(64);
   const [useCase, setUseCase] = useState<UseCase>("general");
-  const [priority, setPriority] = useState<"balanced" | "speed" | "quality">("balanced");
+  const [priority, setPriority] =
+    useState<Priority>("balanced");
 
   const totalVRAM = gpuCount * vramPerGpu;
+  const totalMemory = totalVRAM + systemRam;
 
-  const getBestStack = (): Stack => {
-    let stack: Stack = {
-      model: "Llama 3.1 70B",
-      quant: "Q5_K_M",
-      backend: "ExLlama2",
-      speed: "52-68 t/s",
-      context: "128k",
-      rating: "Excellent",
-      bestFor: "Balanced Performance",
-      color: "cyan"
-    };
+  const availableStacks = useMemo(() => {
+    return STACKS.filter(
+      (s) =>
+        s.useCases.includes(useCase) &&
+        totalVRAM >= s.minVRAM
+    );
+  }, [useCase, totalVRAM]);
 
-    // Hardware Tier Logic
-    if (totalVRAM >= 100) {
-      stack = { model: "Llama 3.1 70B", quant: "Q6_K", backend: "vLLM", speed: "60-78 t/s", context: "128k+", rating: "Outstanding", bestFor: "High-End Setup", color: "emerald" };
-    } else if (totalVRAM >= 48) {
-      stack = { model: "Llama 3.1 70B", quant: "Q5_K_M", backend: "ExLlama2", speed: "50-65 t/s", context: "128k", rating: "Excellent", bestFor: "Sweet Spot", color: "cyan" };
-    } else if (totalVRAM >= 24) {
-      stack = { model: "Llama 3.1 8B", quant: "Q6_K", backend: "ExLlama2", speed: "78-98 t/s", context: "64k", rating: "Very Strong", bestFor: "Fast Daily Driver", color: "amber" };
-    } else {
-      stack = { model: "Gemma 2 9B", quant: "Q5_K_M", backend: "llama.cpp", speed: "58-75 t/s", context: "32k", rating: "Solid", bestFor: "Efficient", color: "violet" };
-    }
+  const bestStack = useMemo(() => {
+    if (!availableStacks.length) return null;
 
-    // Use Case Overrides
-    if (useCase === "coding") stack.model = "Qwen 2.5 Coder 32B";
-    if (useCase === "roleplay") stack.model = "Llama 3.1 70B (Abliterated)";
-    if (useCase === "agentic") stack.backend = "vLLM";
-    if (useCase === "longcontext") stack.context = "128k+";
-    if (useCase === "multimodal") stack.model = "Llama 3.2 11B Vision";
+    const sorted = [...availableStacks];
 
-    // Priority Adjustments
     if (priority === "speed") {
-      stack.quant = stack.quant.includes("Q6") ? "Q4_K_M" : "Q4_K_S";
-      stack.speed = stack.speed.replace(/\d+/, n => String(Math.floor(parseInt(n) * 1.4)));
-    }
-    if (priority === "quality") {
-      stack.quant = "Q6_K";
-      stack.speed = stack.speed.replace(/\d+/, n => String(Math.floor(parseInt(n) * 0.7)));
+      sorted.sort((a, b) => b.speed - a.speed);
+    } else if (priority === "quality") {
+      sorted.sort((a, b) => b.quality - a.quality);
+    } else {
+      sorted.sort(
+        (a, b) =>
+          b.speed +
+          b.quality -
+          (a.speed + a.quality)
+      );
     }
 
-    return stack;
-  };
+    return sorted[0];
+  }, [availableStacks, priority]);
 
-  const mainStack = getBestStack();
+  const alternatives = useMemo(() => {
+    return availableStacks
+      .filter((s) => s !== bestStack)
+      .slice(0, 3);
+  }, [availableStacks, bestStack]);
+
+  if (!bestStack) {
+    return (
+      <main className="min-h-screen p-10">
+        <h1 className="text-4xl font-bold mb-4">
+          StackForge
+        </h1>
+
+        <p>
+          No suitable model found for your hardware.
+        </p>
+      </main>
+    );
+  }
+
+  const offloadRequired =
+    totalMemory <
+    bestStack.minVRAM + bestStack.recommendedRAM;
 
   return (
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
-      <div className="max-w-6xl mx-auto px-6 py-20">
+      <div className="max-w-7xl mx-auto px-6 py-20">
+
         <div className="text-center mb-16">
-          <div className="inline-block px-4 py-1.5 bg-[var(--accent)]/10 text-[var(--accent)] text-xs uppercase tracking-[3px] font-mono mb-4">DefiledAI Flagship</div>
-          <h1 className="text-6xl md:text-7xl font-black font-mono mb-4 tracking-tighter">STACKFORGE</h1>
-          <p className="text-2xl text-[var(--muted)] max-w-2xl mx-auto">
-            One decision engine.<br />Perfect local LLM stack.
+          <div className="inline-block px-4 py-2 border border-cyan-500 text-cyan-400 text-xs uppercase tracking-widest mb-6">
+            DefiledAI Recommendation Engine
+          </div>
+
+          <h1 className="text-6xl font-black mb-4">
+            STACKFORGE
+          </h1>
+
+          <p className="text-zinc-400 text-xl">
+            Build the ideal local LLM stack.
           </p>
         </div>
 
         <div className="grid lg:grid-cols-12 gap-10">
-          {/* Input Section */}
-          <div className="lg:col-span-5 space-y-8">
-            <div className="border border-[var(--border)] p-10">
-              <h2 className="font-mono uppercase tracking-widest text-sm mb-8">YOUR HARDWARE</h2>
-              
-              <div className="space-y-8">
-                <div>
-                  <label className="text-[var(--muted)] text-sm block mb-3">GPU COUNT</label>
-                  <input 
-                    type="number" 
-                    value={gpuCount} 
-                    onChange={(e) => setGpuCount(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-full bg-transparent border-b border-[var(--border)] pb-4 text-5xl font-mono focus:outline-none"
-                  />
-                </div>
 
-                <div>
-                  <label className="text-[var(--muted)] text-sm block mb-3">VRAM PER GPU (GB)</label>
-                  <input 
-                    type="number" 
-                    value={vramPerGpu} 
-                    onChange={(e) => setVramPerGpu(parseInt(e.target.value) || 24)}
-                    className="w-full bg-transparent border-b border-[var(--border)] pb-4 text-5xl font-mono focus:outline-none"
-                  />
-                </div>
+          <div className="lg:col-span-4 space-y-8">
 
-                <div>
-                  <label className="text-[var(--muted)] text-sm block mb-3">SYSTEM RAM (GB)</label>
-                  <input 
-                    type="number" 
-                    value={systemRam} 
-                    onChange={(e) => setSystemRam(parseInt(e.target.value) || 64)}
-                    className="w-full bg-transparent border-b border-[var(--border)] pb-4 text-5xl font-mono focus:outline-none"
-                  />
-                </div>
+            <div className="border border-zinc-800 p-8">
+              <h2 className="mb-6 font-bold">
+                Hardware
+              </h2>
+
+              <div className="space-y-5">
+
+                <input
+                  type="number"
+                  value={gpuCount}
+                  onChange={(e) =>
+                    setGpuCount(
+                      Number(e.target.value)
+                    )
+                  }
+                  className="w-full p-3 bg-zinc-900"
+                />
+
+                <input
+                  type="number"
+                  value={vramPerGpu}
+                  onChange={(e) =>
+                    setVramPerGpu(
+                      Number(e.target.value)
+                    )
+                  }
+                  className="w-full p-3 bg-zinc-900"
+                />
+
+                <input
+                  type="number"
+                  value={systemRam}
+                  onChange={(e) =>
+                    setSystemRam(
+                      Number(e.target.value)
+                    )
+                  }
+                  className="w-full p-3 bg-zinc-900"
+                />
               </div>
             </div>
 
-            <div className="border border-[var(--border)] p-10">
-              <h2 className="font-mono uppercase tracking-widest text-sm mb-6">USE CASE</h2>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { key: "general", label: "Chat", emoji: "💬" },
-                  { key: "roleplay", label: "RP", emoji: "🎭" },
-                  { key: "coding", label: "Code", emoji: "💻" },
-                  { key: "agentic", label: "Agents", emoji: "🤖" },
-                  { key: "longcontext", label: "Long", emoji: "📜" },
-                  { key: "multimodal", label: "Vision", emoji: "👁️" },
-                ].map(item => (
-                  <button
-                    key={item.key}
-                    onClick={() => setUseCase(item.key as UseCase)}
-                    className={`aspect-square flex flex-col items-center justify-center border transition-all ${useCase === item.key ? "border-cyan-400 bg-cyan-500/10" : "border-[var(--border)] hover:border-zinc-600"}`}
-                  >
-                    <span className="text-4xl mb-2">{item.emoji}</span>
-                    <span className="text-sm">{item.label}</span>
-                  </button>
-                ))}
-              </div>
+            <div className="border border-zinc-800 p-8">
+              <h2 className="mb-6 font-bold">
+                Priority
+              </h2>
+
+              <select
+                value={priority}
+                onChange={(e) =>
+                  setPriority(
+                    e.target.value as Priority
+                  )
+                }
+                className="w-full p-3 bg-zinc-900"
+              >
+                <option value="balanced">
+                  Balanced
+                </option>
+                <option value="speed">
+                  Speed
+                </option>
+                <option value="quality">
+                  Quality
+                </option>
+              </select>
             </div>
           </div>
 
-          {/* Output Section */}
-          <div className="lg:col-span-7">
-            <div className="sticky top-8">
-              <div className={`border border-[var(--accent)]/50 p-12 bg-[var(--surface)]`}>
-                <div className="uppercase text-xs tracking-widest mb-2 text-[var(--accent)]">RECOMMENDED STACK</div>
-                <h3 className="text-4xl font-bold mb-8 leading-none">{mainStack.model}</h3>
+          <div className="lg:col-span-8">
 
-                <div className="space-y-8">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[var(--muted)]">Quantization</span>
-                    <span className="font-mono text-xl font-bold text-cyan-400">{mainStack.quant}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[var(--muted)]">Backend</span>
-                    <span className="font-mono text-xl">{mainStack.backend}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[var(--muted)]">Expected Speed</span>
-                    <span className="font-mono text-2xl text-green-400">{mainStack.speed}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[var(--muted)]">Max Context</span>
-                    <span className="font-mono text-xl">{mainStack.context}</span>
-                  </div>
+            <div className="border border-cyan-500 p-10">
+
+              <div className="text-xs uppercase tracking-widest text-cyan-400 mb-2">
+                Recommended Stack
+              </div>
+
+              <h2 className="text-5xl font-bold mb-8">
+                {bestStack.model}
+              </h2>
+
+              <div className="grid md:grid-cols-2 gap-6">
+
+                <Info
+                  label="Quant"
+                  value={bestStack.quant}
+                />
+
+                <Info
+                  label="Backend"
+                  value={bestStack.backend}
+                />
+
+                <Info
+                  label="Context"
+                  value={bestStack.context}
+                />
+
+                <Info
+                  label="Confidence"
+                  value={`${bestStack.confidence}%`}
+                />
+
+                <Info
+                  label="Quality Score"
+                  value={`${bestStack.quality}/100`}
+                />
+
+                <Info
+                  label="Speed Score"
+                  value={`${bestStack.speed}/100`}
+                />
+              </div>
+
+              <div className="mt-10 border-t border-zinc-800 pt-8">
+
+                <div className="mb-3">
+                  Total VRAM: {totalVRAM} GB
                 </div>
 
-                <div className="mt-12 pt-8 border-t border-[var(--border)] text-[var(--muted)]">
-                  Optimized for <span className="text-white">{mainStack.bestFor}</span>. 
-                  This is currently the strongest configuration for your hardware and goals.
+                <div className="mb-3">
+                  Total Memory: {totalMemory} GB
                 </div>
+
+                {offloadRequired ? (
+                  <div className="text-yellow-400">
+                    CPU offload likely required.
+                  </div>
+                ) : (
+                  <div className="text-green-400">
+                    Fully fits in memory.
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-10">
+                <div className="text-sm uppercase mb-3">
+                  Deployment
+                </div>
+
+                <pre className="bg-black p-4 overflow-x-auto">
+                  {bestStack.deploy}
+                </pre>
               </div>
             </div>
+
+            <div className="mt-10 border border-zinc-800 p-8">
+
+              <h3 className="text-xl font-bold mb-6">
+                Alternatives
+              </h3>
+
+              <div className="space-y-4">
+                {alternatives.map((alt) => (
+                  <div
+                    key={`${alt.model}-${alt.quant}`}
+                    className="border border-zinc-800 p-4"
+                  >
+                    <div className="font-semibold">
+                      {alt.model}
+                    </div>
+
+                    <div className="text-sm text-zinc-400">
+                      {alt.quant} • {alt.backend}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
     </main>
+  );
+}
+
+function Info({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="border border-zinc-800 p-4">
+      <div className="text-zinc-500 text-sm mb-1">
+        {label}
+      </div>
+
+      <div className="font-semibold">
+        {value}
+      </div>
+    </div>
   );
 }
