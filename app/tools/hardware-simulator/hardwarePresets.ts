@@ -33,7 +33,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 5,
       isLaptop: true,
     },
-    runtime: { backend: "Ollama", deviceType: "Laptop" },
+    runtime: { backend: "ollama", deviceType: "Laptop" },
   },
   {
     name: "MacBook Air M2",
@@ -49,7 +49,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 5,
       isLaptop: true,
     },
-    runtime: { backend: "Ollama", deviceType: "Laptop" },
+    runtime: { backend: "ollama", deviceType: "Laptop" },
   },
   {
     name: "MacBook Pro M3 Pro",
@@ -65,7 +65,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 5,
       isLaptop: true,
     },
-    runtime: { backend: "Ollama", deviceType: "Laptop" },
+    runtime: { backend: "ollama", deviceType: "Laptop" },
   },
   {
     name: "MacBook Pro M3 Max",
@@ -81,7 +81,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 5,
       isLaptop: true,
     },
-    runtime: { backend: "Ollama", deviceType: "Laptop" },
+    runtime: { backend: "ollama", deviceType: "Laptop" },
   },
   {
     name: "Mac Studio M2 Ultra",
@@ -97,7 +97,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 5,
       isLaptop: false,
     },
-    runtime: { backend: "Ollama", deviceType: "Desktop" },
+    runtime: { backend: "ollama", deviceType: "Desktop" },
   },
 
   // -----------------------------
@@ -117,7 +117,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 4,
       isLaptop: true,
     },
-    runtime: { backend: "Ollama", deviceType: "Laptop" },
+    runtime: { backend: "ollama", deviceType: "Laptop" },
   },
   {
     name: "Dell XPS 15 (RTX 4050)",
@@ -133,7 +133,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 4,
       isLaptop: true,
     },
-    runtime: { backend: "llama.cpp", deviceType: "Laptop" },
+    runtime: { backend: "llamacpp", deviceType: "Laptop" },
   },
   {
     name: "HP Omen (RTX 4070)",
@@ -149,7 +149,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 4,
       isLaptop: true,
     },
-    runtime: { backend: "llama.cpp", deviceType: "Laptop" },
+    runtime: { backend: "llamacpp", deviceType: "Laptop" },
   },
   {
     name: "Lenovo Legion 5 Pro (RTX 4080)",
@@ -165,7 +165,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 4,
       isLaptop: true,
     },
-    runtime: { backend: "llama.cpp", deviceType: "Laptop" },
+    runtime: { backend: "llamacpp", deviceType: "Laptop" },
   },
   {
     name: "Razer Blade 16 (RTX 4090 Mobile)",
@@ -181,7 +181,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 5,
       isLaptop: true,
     },
-    runtime: { backend: "llama.cpp", deviceType: "Laptop" },
+    runtime: { backend: "llamacpp", deviceType: "Laptop" },
   },
   {
     name: "Alienware m18 (RTX 4090)",
@@ -197,7 +197,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 5,
       isLaptop: true,
     },
-    runtime: { backend: "llama.cpp", deviceType: "Laptop" },
+    runtime: { backend: "llamacpp", deviceType: "Laptop" },
   },
 
   // -----------------------------
@@ -217,7 +217,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 4,
       isLaptop: true,
     },
-    runtime: { backend: "Ollama", deviceType: "MiniPC" },
+    runtime: { backend: "ollama", deviceType: "MiniPC" },
   },
   {
     name: "Minisforum UM790 Pro",
@@ -233,7 +233,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 4,
       isLaptop: true,
     },
-    runtime: { backend: "Ollama", deviceType: "MiniPC" },
+    runtime: { backend: "ollama", deviceType: "MiniPC" },
   },
   {
     name: "Beelink SER7 (7840HS)",
@@ -249,7 +249,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 4,
       isLaptop: true,
     },
-    runtime: { backend: "Ollama", deviceType: "MiniPC" },
+    runtime: { backend: "ollama", deviceType: "MiniPC" },
   },
 
   // -----------------------------
@@ -269,7 +269,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 4,
       isLaptop: false,
     },
-    runtime: { backend: "llama.cpp", deviceType: "Desktop" },
+    runtime: { backend: "llamacpp", deviceType: "Desktop" },
   },
   {
     name: "RTX 4070 Desktop",
@@ -285,7 +285,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 5,
       isLaptop: false,
     },
-    runtime: { backend: "llama.cpp", deviceType: "Desktop" },
+    runtime: { backend: "llamacpp", deviceType: "Desktop" },
   },
   {
     name: "RTX 4080 Desktop",
@@ -301,7 +301,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 5,
       isLaptop: false,
     },
-    runtime: { backend: "llama.cpp", deviceType: "Desktop" },
+    runtime: { backend: "llamacpp", deviceType: "Desktop" },
   },
   {
     name: "RTX 4090 Desktop",
@@ -317,7 +317,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 5,
       isLaptop: false,
     },
-    runtime: { backend: "llama.cpp", deviceType: "Desktop" },
+    runtime: { backend: "llamacpp", deviceType: "Desktop" },
   },
 
   // -----------------------------
@@ -342,7 +342,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
         hasNVLink: false,
       },
     },
-    runtime: { backend: "vLLM", deviceType: "Server" },
+    runtime: { backend: "vllm", deviceType: "Server" },
   },
   {
     name: "4×A100 40GB",
@@ -363,7 +363,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
         hasNVLink: true,
       },
     },
-    runtime: { backend: "vLLM", deviceType: "Server" },
+    runtime: { backend: "vllm", deviceType: "Server" },
   },
   {
     name: "8×A100 80GB NVLink",
@@ -384,7 +384,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
         hasNVLink: true,
       },
     },
-    runtime: { backend: "vLLM", deviceType: "Server" },
+    runtime: { backend: "vllm", deviceType: "Server" },
   },
   {
     name: "8×H100 80GB NVLink",
@@ -405,7 +405,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
         hasNVLink: true,
       },
     },
-    runtime: { backend: "vLLM", deviceType: "Server" },
+    runtime: { backend: "vllm", deviceType: "Server" },
   },
   {
     name: "16×H100 NVLink (670B Ready)",
@@ -426,7 +426,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
         hasNVLink: true,
       },
     },
-    runtime: { backend: "vLLM", deviceType: "Server" },
+    runtime: { backend: "vllm", deviceType: "Server" },
   },
 
   // -----------------------------
@@ -462,7 +462,7 @@ export const HARDWARE_PRESETS: HardwarePreset[] = [
       pcieGen: 5,
       isLaptop: true,
     },
-    runtime: { backend: "Ollama", deviceType: "Tablet" },
+    runtime: { backend: "ollama", deviceType: "Tablet" },
   },
   {
     name: "Samsung S24 Ultra",

@@ -5,6 +5,8 @@
 // ======================================================
 
 import type { HardwareProfile, Quantization } from "./hardwareEngine";
+import type { RuntimeProfile } from "./hardwareEngine";
+
 
 export type DevicePreset = {
   id: string;
@@ -25,7 +27,7 @@ export type BackendPreset = {
   id: string;
   label: string;
   description?: string;
-  value: string;
+  value: RuntimeProfile["backend"];
 };
 
 // ------------------------------------------------------

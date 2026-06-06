@@ -39,6 +39,17 @@ export type HardwareProfile = {
   hasAVX2: boolean;
   hasAVX512: boolean;
 
+  // --- Compatibility fields for simpler presets (Path B) ---
+  cpuKind?: string;
+  cores?: number;
+  // --- Compatibility for simpler presets (Path B) ---
+multiGPU?: {
+  gpuCount: number;
+  vramPerGPU: number;
+  hasNVLink: boolean;
+};
+
+
   // RAM
   ramGB: number;
   ramType: "DDR4" | "DDR5" | "LPDDR4X" | "LPDDR5" | "Unified";
@@ -55,6 +66,10 @@ export type HardwareProfile = {
   tflopsFP32: number;
   tflopsINT8: number;
 
+  // --- Compatibility fields for simpler presets (Path B) ---
+  gpuKind?: string;
+  bandwidthClass?: "Low" | "Medium" | "High" | "Extreme";
+
   // System
   os: "Windows" | "Linux" | "macOS";
   isLaptop: boolean;
@@ -67,6 +82,7 @@ export type HardwareProfile = {
  */
 export type RuntimeProfile = {
   backend:
+    | "Custom"
     | "ollama"
     | "llamacpp"
     | "vllm"
@@ -77,7 +93,11 @@ export type RuntimeProfile = {
     | "webgpu"
     | "webnn"
     | "mps";
+
+  // --- Compatibility field for simpler presets (Path B) ---
+  deviceType?: "Laptop" | "Desktop" | "Server" | "MiniPC" | "Phone" | "Tablet";
 };
+
 
 /**
  * Final performance result returned by computePerf().
