@@ -3,8 +3,17 @@
 //  BENCHMARK ENGINE (STRICT TYPESCRIPT)
 // ======================================================
 
-import { computePerf, defaultRuntimeProfile } from "./hardwareEngine";
-import { DEVICE_PRESETS, MODEL_PRESETS, BACKEND_PRESETS } from "./presets";
+import {
+  computePerf,
+  defaultRuntimeProfile,
+  type RuntimeProfile,
+} from "./hardwareEngine";
+
+import {
+  DEVICE_PRESETS,
+  MODEL_PRESETS,
+  BACKEND_PRESETS,
+} from "./presets";
 
 export type BenchmarkResult = {
   device: string;
@@ -25,9 +34,6 @@ export type BenchmarkConfig = {
   backendId: string;
 };
 
-/**
- * Runs a full benchmark across all device presets.
- */
 export async function runFullBenchmark(
   config: BenchmarkConfig,
   onProgress?: (fraction: number) => void
@@ -39,7 +45,11 @@ export async function runFullBenchmark(
 
   if (!model || !backend) return results;
 
-  const runtime = { ...defaultRuntimeProfile(), backend: backend.value };
+  // ⭐ FIX: Force correct literal union type
+  const runtime: RuntimeProfile = {
+    ...defaultRuntimeProfile(),
+    backend: backend.value as RuntimeProfile["backend"],
+  };
 
   const total = DEVICE_PRESETS.length;
   let index = 0;
