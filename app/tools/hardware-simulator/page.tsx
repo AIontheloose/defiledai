@@ -6,6 +6,10 @@ import {
   computePerf,
   detectHardwareProfile,
   defaultRuntimeProfile,
+  type Quantization,
+  type PerfResult,
+  type HardwareProfile,
+  type RuntimeProfile,
 } from "./hardwareEngine";
 
 import {
@@ -24,33 +28,26 @@ import { ChartsPanel } from "./ChartsPanel";
 import { ProfileExportImport } from "./ProfileExportImport";
 
 export default function HardwareSimulatorPage() {
-  const [profile, setProfile] = useState(detectHardwareProfile());
-  const [runtime, setRuntime] = useState(defaultRuntimeProfile());
+  const [profile, setProfile] = useState<HardwareProfile>(detectHardwareProfile());
+  const [runtime, setRuntime] = useState<RuntimeProfile>(defaultRuntimeProfile());
 
-  const [modelParamsB, setModelParamsB] = useState(7);
-  const [quant, setQuant] = useState("Q4_K_M");
+  const [modelParamsB, setModelParamsB] = useState<number>(7);
+  const [quant, setQuant] = useState<Quantization>("Q4_K_M");
 
   const [selectedDevice, setSelectedDevice] = useState<string>("");
   const [selectedModel, setSelectedModel] = useState<string>("");
   const [selectedBackend, setSelectedBackend] = useState<string>("ollama");
 
-  const [perf, setPerf] = useState(() =>
-    computePerf(profile, runtime, modelParamsB, quant as any)
+  const [perf, setPerf] = useState<PerfResult>(() =>
+    computePerf(profile, runtime, modelParamsB, quant)
   );
 
   const [slowMotion, setSlowMotion] = useState(false);
-
-  // Reset chat simulation
   const [demoSignal, setDemoSignal] = useState(0);
 
-  // Scroll preservation
   const deviceScrollRef = useRef<HTMLDivElement>(null);
   const modelScrollRef = useRef<HTMLDivElement>(null);
   const backendScrollRef = useRef<HTMLDivElement>(null);
-
-  // -----------------------------
-  // PRESET APPLY FUNCTIONS
-  // -----------------------------
 
   function applyDevicePreset(id: string) {
     const preset = DEVICE_PRESETS.find((p) => p.id === id);
@@ -58,11 +55,11 @@ export default function HardwareSimulatorPage() {
 
     const scrollPos = deviceScrollRef.current?.scrollTop ?? 0;
 
-    const newProfile = preset.apply();
+    const newProfile = preset.profile;
     setProfile(newProfile);
     setSelectedDevice(id);
 
-    setPerf(computePerf(newProfile, runtime, modelParamsB, quant as any));
+    setPerf(computePerf(newProfile, runtime, modelParamsB, quant));
 
     requestAnimationFrame(() => {
       if (deviceScrollRef.current) deviceScrollRef.current.scrollTop = scrollPos;
@@ -92,11 +89,11 @@ export default function HardwareSimulatorPage() {
 
     const scrollPos = backendScrollRef.current?.scrollTop ?? 0;
 
-    const newRuntime = { ...runtime, backend: preset.value };
+    const newRuntime: RuntimeProfile = { ...runtime, backend: preset.value };
     setRuntime(newRuntime);
     setSelectedBackend(id);
 
-    setPerf(computePerf(profile, newRuntime, modelParamsB, quant as any));
+    setPerf(computePerf(profile, newRuntime, modelParamsB, quant));
 
     requestAnimationFrame(() => {
       if (backendScrollRef.current) backendScrollRef.current.scrollTop = scrollPos;
@@ -104,22 +101,14 @@ export default function HardwareSimulatorPage() {
   }
 
   function runSimulation() {
-    setPerf(computePerf(profile, runtime, modelParamsB, quant as any));
-    setDemoSignal((s) => s + 1); // reset chat
+    setPerf(computePerf(profile, runtime, modelParamsB, quant));
+    setDemoSignal((s) => s + 1);
   }
 
-  // -----------------------------
-  // IMPORT PROFILE HANDLER
-  // -----------------------------
-
-  function handleImportProfile(p: typeof profile) {
+  function handleImportProfile(p: HardwareProfile) {
     setProfile(p);
-    setPerf(computePerf(p, runtime, modelParamsB, quant as any));
+    setPerf(computePerf(p, runtime, modelParamsB, quant));
   }
-
-  // -----------------------------
-  // SCROLLABLE SELECTOR
-  // -----------------------------
 
   function ScrollList({
     items,
@@ -161,15 +150,9 @@ export default function HardwareSimulatorPage() {
     );
   }
 
-  // -----------------------------
-  // PAGE LAYOUT (A1)
-  // -----------------------------
-
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <main className="max-w-6xl mx-auto px-6 py-10 space-y-16">
-
-        {/* HEADER */}
         <header>
           <h1 className="text-3xl font-semibold">Hardware LLM Performance Simulator</h1>
           <p className="text-sm text-[var(--muted)]">
@@ -177,7 +160,7 @@ export default function HardwareSimulatorPage() {
           </p>
         </header>
 
-        {/* PRESETS */}
+        {/* Preset selectors */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div>
             <div className="text-xs uppercase tracking-widest text-[var(--muted)] mb-2">
@@ -216,10 +199,9 @@ export default function HardwareSimulatorPage() {
           </div>
         </section>
 
-        {/* MANUAL CONFIG + RESULTS + CHAT SIM */}
+        {/* Simulation + results */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-          {/* MANUAL CONFIG */}
+          {/* Manual config */}
           <div className="border border-[var(--border)] rounded-md p-4 space-y-4">
             <div className="text-xs uppercase tracking-widest text-[var(--muted)]">
               Manual Model Config
@@ -244,17 +226,23 @@ export default function HardwareSimulatorPage() {
                 </label>
                 <select
                   value={quant}
-                  onChange={(e) => setQuant(e.target.value)}
+                  onChange={(e) => setQuant(e.target.value as Quantization)}
                   className="w-full border border-[var(--border)] rounded px-2 py-1 bg-[var(--bg)]"
                 >
-                  <option>F16</option>
-                  <option>Q8_0</option>
-                  <option>Q6_K</option>
-                  <option>Q5_K_M</option>
-                  <option>Q4_K_M</option>
-                  <option>Q4_K_S</option>
-                  <option>Q3_K_M</option>
-                  <option>A3B</option>
+                  <option value="F16">F16</option>
+                  <option value="BF16">BF16</option>
+                  <option value="FP8">FP8</option>
+                  <option value="Q8_0">Q8_0</option>
+                  <option value="Q6_K">Q6_K</option>
+                  <option value="Q5_K_M">Q5_K_M</option>
+                  <option value="Q5_K_S">Q5_K_S</option>
+                  <option value="Q4_K_M">Q4_K_M</option>
+                  <option value="Q4_K_S">Q4_K_S</option>
+                  <option value="Q3_K_M">Q3_K_M</option>
+                  <option value="Q3_K_S">Q3_K_S</option>
+                  <option value="A8">A8</option>
+                  <option value="A4">A4</option>
+                  <option value="A3B">A3B</option>
                 </select>
               </div>
             </div>
@@ -267,7 +255,7 @@ export default function HardwareSimulatorPage() {
             </button>
           </div>
 
-          {/* RESULTS */}
+          {/* Results */}
           <div className="border border-[var(--border)] rounded-md p-4 space-y-4">
             <div className="text-xs uppercase tracking-widest text-[var(--muted)]">
               Simulation Results
@@ -290,13 +278,13 @@ export default function HardwareSimulatorPage() {
               <div>{perf.mode}</div>
 
               <div>Decode speed</div>
-              <div>{perf.decodeTokPerSec?.toFixed(1)} tok/s</div>
+              <div>{perf.decodeTokPerSec.toFixed(1)} tok/s</div>
 
               <div>Prefill speed</div>
-              <div>{perf.prefillTokPerSec?.toFixed(1)} tok/s</div>
+              <div>{perf.prefillTokPerSec.toFixed(1)} tok/s</div>
 
               <div>TTFT</div>
-              <div>{perf.ttftSeconds?.toFixed(2)} s</div>
+              <div>{perf.ttftSeconds.toFixed(2)} s</div>
 
               <div>Max context</div>
               <div>{perf.maxContextTokens}</div>
@@ -316,7 +304,7 @@ export default function HardwareSimulatorPage() {
             />
           </div>
 
-          {/* CHAT SIM */}
+          {/* Live chat simulation */}
           <div className="border border-[var(--border)] rounded-md p-4">
             <div className="text-xs uppercase tracking-widest text-[var(--muted)] mb-2">
               Live Response Simulation
@@ -325,25 +313,24 @@ export default function HardwareSimulatorPage() {
             <ChatTTFTDemo
               ttft={perf.ttftSeconds}
               decodeSpeed={
-                slowMotion ? perf.decodeTokPerSec! / 2 : perf.decodeTokPerSec
+                slowMotion ? perf.decodeTokPerSec / 2 : perf.decodeTokPerSec
               }
               startSignal={demoSignal}
             />
           </div>
         </section>
 
-        {/* COMPARE ANY TWO PRESETS */}
+        {/* Compare */}
         <CompareAnyTwo />
 
-        {/* BENCHMARK ALL PRESETS */}
+        {/* Benchmark */}
         <BenchmarkAll />
 
-        {/* PERFORMANCE CHARTS */}
+        {/* Charts */}
         <ChartsPanel />
 
-        {/* EXPORT / IMPORT PROFILE */}
+        {/* Import / Export */}
         <ProfileExportImport profile={profile} onImport={handleImportProfile} />
-
       </main>
     </div>
   );

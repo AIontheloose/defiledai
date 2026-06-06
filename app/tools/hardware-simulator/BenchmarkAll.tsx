@@ -1,24 +1,32 @@
-// app/tools/hardware-simulator/BenchmarkAll.tsx
 "use client";
 
 import React, { useState } from "react";
-import { runFullBenchmark, type BenchmarkResult } from "./benchmarkEngine";
+import {
+  runFullBenchmark,
+  type BenchmarkResult,
+  type BenchmarkConfig,
+} from "./benchmarkEngine";
+
+import { MODEL_PRESETS, BACKEND_PRESETS } from "./presets";
 
 export function BenchmarkAll() {
   const [running, setRunning] = useState(false);
   const [progress, setProgress] = useState(0);
   const [results, setResults] = useState<BenchmarkResult[]>([]);
 
+  const [modelId, setModelId] = useState(MODEL_PRESETS[0].id);
+  const [backendId, setBackendId] = useState(BACKEND_PRESETS[0].id);
+
   async function handleRun() {
     setRunning(true);
     setProgress(0);
     setResults([]);
 
-    const total = 1; // one batch of device presets
-    const data = await runFullBenchmark();
+    const config: BenchmarkConfig = { modelId, backendId };
+
+    const data = await runFullBenchmark(config, (p) => setProgress(p));
 
     setResults(data);
-    setProgress(1);
     setRunning(false);
   }
 
@@ -27,22 +35,62 @@ export function BenchmarkAll() {
       type: "application/json",
     });
     const url = URL.createObjectURL(blob);
+
     const a = document.createElement("a");
     a.href = url;
     a.download = "benchmark-results.json";
     a.click();
+
     URL.revokeObjectURL(url);
   }
 
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold">Benchmark All Presets</h2>
+        <h2 className="text-xl font-semibold">Benchmark All Devices</h2>
         <p className="text-sm text-[var(--muted)]">
-          Runs a full performance simulation across all device presets.
+          Run a full performance simulation across every hardware preset.
         </p>
       </div>
 
+      {/* Model + backend selection */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <div className="text-xs uppercase tracking-widest text-[var(--muted)] mb-1">
+            Model
+          </div>
+          <select
+            value={modelId}
+            onChange={(e) => setModelId(e.target.value)}
+            className="w-full border border-[var(--border)] rounded px-2 py-1 bg-[var(--bg)]"
+          >
+            {MODEL_PRESETS.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <div className="text-xs uppercase tracking-widest text-[var(--muted)] mb-1">
+            Backend
+          </div>
+          <select
+            value={backendId}
+            onChange={(e) => setBackendId(e.target.value)}
+            className="w-full border border-[var(--border)] rounded px-2 py-1 bg-[var(--bg)]"
+          >
+            {BACKEND_PRESETS.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Run button */}
       <button
         onClick={handleRun}
         disabled={running}
@@ -51,6 +99,7 @@ export function BenchmarkAll() {
         {running ? "Running…" : "Run Benchmark"}
       </button>
 
+      {/* Progress bar */}
       {running && (
         <div className="w-full h-2 bg-[var(--border)] rounded">
           <div
@@ -60,6 +109,7 @@ export function BenchmarkAll() {
         </div>
       )}
 
+      {/* Results table */}
       {results.length > 0 && (
         <div className="space-y-4">
           <button
@@ -82,6 +132,7 @@ export function BenchmarkAll() {
                   <th>Context</th>
                 </tr>
               </thead>
+
               <tbody>
                 {results.map((r, i) => (
                   <tr

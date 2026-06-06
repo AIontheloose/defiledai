@@ -1,7 +1,7 @@
-// app/tools/hardware-simulator/ChartsPanel.tsx
 "use client";
 
 import React, { useState } from "react";
+
 import {
   generateDecodeVsParams,
   generateVramVsContext,
@@ -41,7 +41,7 @@ export function ChartsPanel() {
         </p>
       </div>
 
-      {/* SELECTORS */}
+      {/* Device + model selectors */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <select
           value={deviceId}
@@ -68,11 +68,11 @@ export function ChartsPanel() {
         </select>
       </div>
 
-      {/* DECODE VS PARAMS */}
+      {/* Decode vs Params */}
       <div>
         <h3 className="text-sm font-medium mb-2">Decode Speed vs Model Size</h3>
         <div className="h-64 min-w-0 min-h-0 block">
-          <ResponsiveContainer>
+          <ResponsiveContainer width="100%" height="100%">
             <LineChart data={decodeData}>
               <XAxis dataKey="params" stroke="var(--muted)" />
               <YAxis stroke="var(--muted)" />
@@ -89,11 +89,11 @@ export function ChartsPanel() {
         </div>
       </div>
 
-      {/* VRAM VS CONTEXT */}
+      {/* VRAM vs Context */}
       <div>
         <h3 className="text-sm font-medium mb-2">VRAM vs Max Context</h3>
         <div className="h-64 min-w-0 min-h-0 block">
-          <ResponsiveContainer>
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart data={vramData}>
               <XAxis dataKey="vram" stroke="var(--muted)" />
               <YAxis stroke="var(--muted)" />
@@ -105,11 +105,11 @@ export function ChartsPanel() {
         </div>
       </div>
 
-      {/* TTFT VS PARAMS */}
+      {/* TTFT vs Params */}
       <div>
         <h3 className="text-sm font-medium mb-2">TTFT vs Model Size</h3>
         <div className="h-64 min-w-0 min-h-0 block">
-          <ResponsiveContainer>
+          <ResponsiveContainer width="100%" height="100%">
             <LineChart data={ttftData}>
               <XAxis dataKey="params" stroke="var(--muted)" />
               <YAxis stroke="var(--muted)" />
@@ -126,11 +126,11 @@ export function ChartsPanel() {
         </div>
       </div>
 
-      {/* BACKEND COMPARISON */}
+      {/* Backend comparison */}
       <div>
         <h3 className="text-sm font-medium mb-2">Backend Comparison</h3>
         <div className="h-64 min-w-0 min-h-0 block">
-          <ResponsiveContainer>
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart data={backendData}>
               <XAxis dataKey="name" stroke="var(--muted)" />
               <YAxis stroke="var(--muted)" />

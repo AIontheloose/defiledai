@@ -1,4 +1,8 @@
 // app/tools/hardware-simulator/chartData.ts
+// ======================================================
+//  CHART DATA GENERATION (STRICT TYPESCRIPT)
+// ======================================================
+
 import { computePerf, defaultRuntimeProfile } from "./hardwareEngine";
 import { DEVICE_PRESETS, MODEL_PRESETS, BACKEND_PRESETS } from "./presets";
 
@@ -6,7 +10,7 @@ export function generateDecodeVsParams(deviceId: string) {
   const device = DEVICE_PRESETS.find((d) => d.id === deviceId);
   if (!device) return [];
 
-  const profile = device.apply();
+  const profile = device.profile;
   const runtime = defaultRuntimeProfile();
 
   return MODEL_PRESETS.map((m) => {
@@ -23,7 +27,7 @@ export function generateVramVsContext(deviceId: string) {
   const device = DEVICE_PRESETS.find((d) => d.id === deviceId);
   if (!device) return [];
 
-  const profile = device.apply();
+  const profile = device.profile;
   const runtime = defaultRuntimeProfile();
 
   return MODEL_PRESETS.map((m) => {
@@ -40,7 +44,7 @@ export function generateTtftVsParams(deviceId: string) {
   const device = DEVICE_PRESETS.find((d) => d.id === deviceId);
   if (!device) return [];
 
-  const profile = device.apply();
+  const profile = device.profile;
   const runtime = defaultRuntimeProfile();
 
   return MODEL_PRESETS.map((m) => {
@@ -58,7 +62,7 @@ export function generateBackendComparison(deviceId: string, modelId: string) {
   const model = MODEL_PRESETS.find((m) => m.id === modelId);
   if (!device || !model) return [];
 
-  const profile = device.apply();
+  const profile = device.profile;
 
   return BACKEND_PRESETS.map((b) => {
     const runtime = { ...defaultRuntimeProfile(), backend: b.value };

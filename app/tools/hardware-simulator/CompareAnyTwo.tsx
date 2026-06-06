@@ -1,248 +1,190 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import ChatTTFTDemo from "./ChatTTFTDemo";
+import React, { useState } from "react";
 import {
   computePerf,
   defaultRuntimeProfile,
-  type HardwareProfile,
+  type Quantization,
 } from "./hardwareEngine";
-import { DEVICE_PRESETS, MODEL_PRESETS, BACKEND_PRESETS } from "./presets";
 
-type PresetOption = { id: string; label: string; description?: string };
-
-function ScrollList({
-  items,
-  selected,
-  onSelect,
-  scrollRef,
-}: {
-  items: PresetOption[];
-  selected: string;
-  onSelect: (id: string) => void;
-  scrollRef: React.RefObject<HTMLDivElement>;
-}) {
-  return (
-    <div className="border border-[var(--border)] rounded-md p-3 space-y-2">
-      <div
-        ref={scrollRef}
-        className="max-h-48 overflow-y-auto space-y-2 pr-1"
-      >
-        {items.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => onSelect(item.id)}
-            className={`w-full text-left border rounded px-3 py-2 transition ${
-              selected === item.id
-                ? "border-[var(--accent)] bg-[var(--accent-bg)]"
-                : "border-[var(--border)] hover:border-[var(--accent)]"
-            }`}
-          >
-            <div className="font-medium">{item.label}</div>
-            {item.description && (
-              <div className="text-xs text-[var(--muted)]">
-                {item.description}
-              </div>
-            )}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
+import {
+  DEVICE_PRESETS,
+  MODEL_PRESETS,
+  BACKEND_PRESETS,
+} from "./presets";
 
 export function CompareAnyTwo() {
-  const [runtime] = useState(defaultRuntimeProfile());
+  const [leftDevice, setLeftDevice] = useState(DEVICE_PRESETS[0].id);
+  const [rightDevice, setRightDevice] = useState(
+    DEVICE_PRESETS[1]?.id ?? DEVICE_PRESETS[0].id
+  );
 
-  const [leftDeviceId, setLeftDeviceId] = useState<string>("");
-  const [rightDeviceId, setRightDeviceId] = useState<string>("");
+  const [modelId, setModelId] = useState(MODEL_PRESETS[0].id);
+  const [backendId, setBackendId] = useState(BACKEND_PRESETS[0].id);
 
-  const [leftModelId, setLeftModelId] = useState<string>("");
-  const [rightModelId, setRightModelId] = useState<string>("");
+  const model = MODEL_PRESETS.find((m) => m.id === modelId)!;
+  const backend = BACKEND_PRESETS.find((b) => b.id === backendId)!;
 
-  const [leftBackendId, setLeftBackendId] = useState<string>("ollama");
-  const [rightBackendId, setRightBackendId] = useState<string>("ollama");
+  const runtime = { ...defaultRuntimeProfile(), backend: backend.value };
 
-  const [leftPerf, setLeftPerf] = useState<ReturnType<typeof computePerf> | null>(null);
-  const [rightPerf, setRightPerf] = useState<ReturnType<typeof computePerf> | null>(null);
+  const leftProfile = DEVICE_PRESETS.find((d) => d.id === leftDevice)!.profile;
+  const rightProfile = DEVICE_PRESETS.find((d) => d.id === rightDevice)!.profile;
 
-  const [startSignal, setStartSignal] = useState(0);
+  const leftPerf = computePerf(
+    leftProfile,
+    runtime,
+    model.paramsB,
+    model.quant as Quantization
+  );
 
-  const leftDeviceScrollRef = useRef<HTMLDivElement>(null);
-  const rightDeviceScrollRef = useRef<HTMLDivElement>(null);
-  const leftModelScrollRef = useRef<HTMLDivElement>(null);
-  const rightModelScrollRef = useRef<HTMLDivElement>(null);
-  const leftBackendScrollRef = useRef<HTMLDivElement>(null);
-  const rightBackendScrollRef = useRef<HTMLDivElement>(null);
-
-  function getDeviceProfile(id: string): HardwareProfile | null {
-    const preset = DEVICE_PRESETS.find((p) => p.id === id);
-    if (!preset) return null;
-    return preset.apply();
-  }
-
-  function getModelParams(id: string) {
-    const preset = MODEL_PRESETS.find((p) => p.id === id);
-    if (!preset) return null;
-    return { paramsB: preset.paramsB, quant: preset.quant };
-  }
-
-  function getBackendRuntime(id: string) {
-    const preset = BACKEND_PRESETS.find((p) => p.id === id);
-    if (!preset) return runtime;
-    return { ...runtime, backend: preset.value };
-  }
-
-  function handleStartCompare() {
-    const leftProfile = getDeviceProfile(leftDeviceId);
-    const rightProfile = getDeviceProfile(rightDeviceId);
-    const leftModel = getModelParams(leftModelId);
-    const rightModel = getModelParams(rightModelId);
-    const leftRuntime = getBackendRuntime(leftBackendId);
-    const rightRuntime = getBackendRuntime(rightBackendId);
-
-    if (!leftProfile || !rightProfile || !leftModel || !rightModel) return;
-
-    const left = computePerf(
-      leftProfile,
-      leftRuntime,
-      leftModel.paramsB,
-      leftModel.quant
-    );
-    const right = computePerf(
-      rightProfile,
-      rightRuntime,
-      rightModel.paramsB,
-      rightModel.quant
-    );
-
-    setLeftPerf(left);
-    setRightPerf(right);
-    setStartSignal((s) => s + 1);
-  }
+  const rightPerf = computePerf(
+    rightProfile,
+    runtime,
+    model.paramsB,
+    model.quant as Quantization
+  );
 
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold">Compare Any Two Presets</h2>
+        <h2 className="text-xl font-semibold">Compare Any Two Devices</h2>
         <p className="text-sm text-[var(--muted)]">
-          Pick two device + model + backend combinations and see how their responses feel side by side.
+          Select two hardware presets and compare their performance for the same
+          model and backend.
         </p>
       </div>
 
-      {/* SELECTORS */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* LEFT SIDE */}
-        <div className="space-y-4 border border-[var(--border)] rounded-md p-4">
-          <div className="text-xs uppercase tracking-widest text-[var(--muted)] mb-1">
-            Left configuration
+      {/* Selection controls */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Left device */}
+        <div className="space-y-2">
+          <div className="text-xs uppercase tracking-widest text-[var(--muted)]">
+            Left device
           </div>
+          <select
+            value={leftDevice}
+            onChange={(e) => setLeftDevice(e.target.value)}
+            className="w-full border border-[var(--border)] rounded px-2 py-1 bg-[var(--bg)]"
+          >
+            {DEVICE_PRESETS.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.label}
+              </option>
+            ))}
+          </select>
+        </div>
 
-          <div className="space-y-3 text-sm">
-            <div>
-              <div className="mb-1 text-[var(--muted)]">Device preset</div>
-              <ScrollList
-                items={DEVICE_PRESETS}
-                selected={leftDeviceId}
-                onSelect={setLeftDeviceId}
-                scrollRef={leftDeviceScrollRef}
-              />
-            </div>
+        {/* Model + backend */}
+        <div className="space-y-2">
+          <div className="text-xs uppercase tracking-widest text-[var(--muted)]">
+            Model + backend
+          </div>
+          <div className="flex flex-col gap-2">
+            <select
+              value={modelId}
+              onChange={(e) => setModelId(e.target.value)}
+              className="w-full border border-[var(--border)] rounded px-2 py-1 bg-[var(--bg)]"
+            >
+              {MODEL_PRESETS.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
 
-            <div>
-              <div className="mb-1 text-[var(--muted)]">Model preset</div>
-              <ScrollList
-                items={MODEL_PRESETS}
-                selected={leftModelId}
-                onSelect={setLeftModelId}
-                scrollRef={leftModelScrollRef}
-              />
-            </div>
-
-            <div>
-              <div className="mb-1 text-[var(--muted)]">Backend</div>
-              <ScrollList
-                items={BACKEND_PRESETS}
-                selected={leftBackendId}
-                onSelect={setLeftBackendId}
-                scrollRef={leftBackendScrollRef}
-              />
-            </div>
+            <select
+              value={backendId}
+              onChange={(e) => setBackendId(e.target.value)}
+              className="w-full border border-[var(--border)] rounded px-2 py-1 bg-[var(--bg)]"
+            >
+              {BACKEND_PRESETS.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.label}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
-        {/* RIGHT SIDE */}
-        <div className="space-y-4 border border-[var(--border)] rounded-md p-4">
-          <div className="text-xs uppercase tracking-widest text-[var(--muted)] mb-1">
-            Right configuration
+        {/* Right device */}
+        <div className="space-y-2">
+          <div className="text-xs uppercase tracking-widest text-[var(--muted)]">
+            Right device
           </div>
-
-          <div className="space-y-3 text-sm">
-            <div>
-              <div className="mb-1 text-[var(--muted)]">Device preset</div>
-              <ScrollList
-                items={DEVICE_PRESETS}
-                selected={rightDeviceId}
-                onSelect={setRightDeviceId}
-                scrollRef={rightDeviceScrollRef}
-              />
-            </div>
-
-            <div>
-              <div className="mb-1 text-[var(--muted)]">Model preset</div>
-              <ScrollList
-                items={MODEL_PRESETS}
-                selected={rightModelId}
-                onSelect={setRightModelId}
-                scrollRef={rightModelScrollRef}
-              />
-            </div>
-
-            <div>
-              <div className="mb-1 text-[var(--muted)]">Backend</div>
-              <ScrollList
-                items={BACKEND_PRESETS}
-                selected={rightBackendId}
-                onSelect={setRightBackendId}
-                scrollRef={rightBackendScrollRef}
-              />
-            </div>
-          </div>
+          <select
+            value={rightDevice}
+            onChange={(e) => setRightDevice(e.target.value)}
+            className="w-full border border-[var(--border)] rounded px-2 py-1 bg-[var(--bg)]"
+          >
+            {DEVICE_PRESETS.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      {/* START BUTTON */}
-      <div>
-        <button
-          onClick={handleStartCompare}
-          className="px-4 py-2 border border-[var(--border)] rounded text-sm hover:border-[var(--accent)] transition"
-        >
-          Start Comparison
-        </button>
-      </div>
-
-      {/* SIDE-BY-SIDE CHAT */}
-      {leftPerf && rightPerf && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="border border-[var(--border)] rounded-md p-4 space-y-2">
-            <div className="text-sm font-medium mb-1">Left preset</div>
-            <ChatTTFTDemo
-              ttft={leftPerf.ttftSeconds}
-              decodeSpeed={leftPerf.decodeTokPerSec}
-              startSignal={startSignal}
-            />
+      {/* Comparison results */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        {/* Left */}
+        <div className="border border-[var(--border)] rounded-md p-4 space-y-2">
+          <div className="font-medium">
+            {DEVICE_PRESETS.find((d) => d.id === leftDevice)?.label}
           </div>
+          <div className="grid grid-cols-2 gap-1">
+            <span>TTFT</span>
+            <span>{leftPerf.ttftSeconds.toFixed(2)} s</span>
 
-          <div className="border border-[var(--border)] rounded-md p-4 space-y-2">
-            <div className="text-sm font-medium mb-1">Right preset</div>
-            <ChatTTFTDemo
-              ttft={rightPerf.ttftSeconds}
-              decodeSpeed={rightPerf.decodeTokPerSec}
-              startSignal={startSignal}
-            />
+            <span>Decode</span>
+            <span>{leftPerf.decodeTokPerSec.toFixed(1)} tok/s</span>
+
+            <span>Prefill</span>
+            <span>{leftPerf.prefillTokPerSec.toFixed(1)} tok/s</span>
+
+            <span>Fits VRAM</span>
+            <span>{leftPerf.fitsInVram ? "✔" : "✘"}</span>
+
+            <span>Fits RAM</span>
+            <span>{leftPerf.fitsInRam ? "✔" : "✘"}</span>
+
+            <span>Mode</span>
+            <span>{leftPerf.mode}</span>
+
+            <span>Context</span>
+            <span>{leftPerf.maxContextTokens}</span>
           </div>
         </div>
-      )}
+
+        {/* Right */}
+        <div className="border border-[var(--border)] rounded-md p-4 space-y-2">
+          <div className="font-medium">
+            {DEVICE_PRESETS.find((d) => d.id === rightDevice)?.label}
+          </div>
+          <div className="grid grid-cols-2 gap-1">
+            <span>TTFT</span>
+            <span>{rightPerf.ttftSeconds.toFixed(2)} s</span>
+
+            <span>Decode</span>
+            <span>{rightPerf.decodeTokPerSec.toFixed(1)} tok/s</span>
+
+            <span>Prefill</span>
+            <span>{rightPerf.prefillTokPerSec.toFixed(1)} tok/s</span>
+
+            <span>Fits VRAM</span>
+            <span>{rightPerf.fitsInVram ? "✔" : "✘"}</span>
+
+            <span>Fits RAM</span>
+            <span>{rightPerf.fitsInRam ? "✔" : "✘"}</span>
+
+            <span>Mode</span>
+            <span>{rightPerf.mode}</span>
+
+            <span>Context</span>
+            <span>{rightPerf.maxContextTokens}</span>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }

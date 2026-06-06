@@ -1,4 +1,6 @@
 // app/tools/hardware-simulator/SlowMotionToggle.tsx
+"use client";
+
 import React from "react";
 
 export function SlowMotionToggle({
@@ -14,8 +16,9 @@ export function SlowMotionToggle({
         type="checkbox"
         checked={slowMotion}
         onChange={(e) => setSlowMotion(e.target.checked)}
+        className="h-3 w-3"
       />
-      <span>Slow‑motion mode (2× slower streaming)</span>
+      Slow‑motion stream (for demo)
     </label>
   );
 }

@@ -1,9 +1,11 @@
-// app/tools/hardware-simulator/ProfileExportImport.tsx
 "use client";
 
 import React, { useRef, useState } from "react";
 import type { HardwareProfile } from "./hardwareEngine";
-import { serializeProfile, deserializeProfile } from "./profileSerializer";
+import {
+  serializeProfile,
+  deserializeProfile,
+} from "./profileSerializer";
 
 export function ProfileExportImport({
   profile,
@@ -19,10 +21,12 @@ export function ProfileExportImport({
     const json = serializeProfile(profile);
     const blob = new Blob([json], { type: "application/json" });
     const url = URL.createObjectURL(blob);
+
     const a = document.createElement("a");
     a.href = url;
     a.download = "hardware-profile.json";
     a.click();
+
     URL.revokeObjectURL(url);
   }
 
@@ -39,7 +43,7 @@ export function ProfileExportImport({
     const parsed = deserializeProfile(text);
 
     if (!parsed) {
-      setError("Invalid profile JSON.");
+      setError("Invalid or incompatible profile JSON.");
       return;
     }
 
@@ -50,9 +54,9 @@ export function ProfileExportImport({
   return (
     <section className="space-y-4">
       <div>
-        <h2 className="text-xl font-semibold">Export / Import Hardware Profile</h2>
+        <h2 className="text-xl font-semibold">Export / Import Profile</h2>
         <p className="text-sm text-[var(--muted)]">
-          Save your current hardware profile as JSON or load a custom profile.
+          Save your current hardware profile or load a custom one.
         </p>
       </div>
 
@@ -80,11 +84,7 @@ export function ProfileExportImport({
         />
       </div>
 
-      {error && (
-        <div className="text-xs text-red-500">
-          {error}
-        </div>
-      )}
+      {error && <div className="text-xs text-red-500">{error}</div>}
 
       <div className="text-xs text-[var(--muted)]">
         Current profile snapshot:
