@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import type { PerfComputation } from "./hardwareEngine";
+import type { PerfResult } from "./hardwareEngine";
 import { Speedometer } from "./Speedometer";
 import { SlowMotionToggle } from "./SlowMotionToggle";
 
@@ -10,7 +10,7 @@ export function SimulatorPanel({
   slowMotion,
   setSlowMotion,
 }: {
-  perf: PerfComputation;
+  perf: PerfResult;
   slowMotion: boolean;
   setSlowMotion: (v: boolean) => void;
 }) {
@@ -37,13 +37,13 @@ export function SimulatorPanel({
         <div>{perf.mode}</div>
 
         <div>Decode speed</div>
-        <div>{perf.decodeTokPerSec?.toFixed(1)} tok/s</div>
+        <div>{perf.decodeTokPerSec.toFixed(1)} tok/s</div>
 
         <div>Prefill speed</div>
-        <div>{perf.prefillTokPerSec?.toFixed(1)} tok/s</div>
+        <div>{perf.prefillTokPerSec.toFixed(1)} tok/s</div>
 
         <div>TTFT</div>
-        <div>{perf.ttftSeconds?.toFixed(2)} s</div>
+        <div>{perf.ttftSeconds.toFixed(2)} s</div>
 
         <div>Max context</div>
         <div>{perf.maxContextTokens}</div>
