@@ -5,6 +5,7 @@ import {
   computePerf,
   defaultRuntimeProfile,
   type Quantization,
+  type RuntimeProfile,
 } from "./hardwareEngine";
 
 import {
@@ -25,7 +26,10 @@ export function CompareAnyTwo() {
   const model = MODEL_PRESETS.find((m) => m.id === modelId)!;
   const backend = BACKEND_PRESETS.find((b) => b.id === backendId)!;
 
-  const runtime = { ...defaultRuntimeProfile(), backend: backend.value };
+  const runtime: RuntimeProfile = {
+    ...defaultRuntimeProfile(),
+    backend: backend.value as RuntimeProfile["backend"],
+  };
 
   const leftProfile = DEVICE_PRESETS.find((d) => d.id === leftDevice)!.profile;
   const rightProfile = DEVICE_PRESETS.find((d) => d.id === rightDevice)!.profile;
@@ -54,9 +58,7 @@ export function CompareAnyTwo() {
         </p>
       </div>
 
-      {/* Selection controls */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Left device */}
         <div className="space-y-2">
           <div className="text-xs uppercase tracking-widest text-[var(--muted)]">
             Left device
@@ -74,7 +76,6 @@ export function CompareAnyTwo() {
           </select>
         </div>
 
-        {/* Model + backend */}
         <div className="space-y-2">
           <div className="text-xs uppercase tracking-widest text-[var(--muted)]">
             Model + backend
@@ -106,7 +107,6 @@ export function CompareAnyTwo() {
           </div>
         </div>
 
-        {/* Right device */}
         <div className="space-y-2">
           <div className="text-xs uppercase tracking-widest text-[var(--muted)]">
             Right device
@@ -125,9 +125,7 @@ export function CompareAnyTwo() {
         </div>
       </div>
 
-      {/* Comparison results */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-        {/* Left */}
         <div className="border border-[var(--border)] rounded-md p-4 space-y-2">
           <div className="font-medium">
             {DEVICE_PRESETS.find((d) => d.id === leftDevice)?.label}
@@ -156,7 +154,6 @@ export function CompareAnyTwo() {
           </div>
         </div>
 
-        {/* Right */}
         <div className="border border-[var(--border)] rounded-md p-4 space-y-2">
           <div className="font-medium">
             {DEVICE_PRESETS.find((d) => d.id === rightDevice)?.label}

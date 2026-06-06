@@ -27,7 +27,6 @@ export type BenchmarkConfig = {
 
 /**
  * Runs a full benchmark across all device presets.
- * Returns an array of BenchmarkResult objects.
  */
 export async function runFullBenchmark(
   config: BenchmarkConfig,
@@ -46,9 +45,12 @@ export async function runFullBenchmark(
   let index = 0;
 
   for (const preset of DEVICE_PRESETS) {
-    const profile = preset.profile;
-
-    const perf = computePerf(profile, runtime, model.paramsB, model.quant);
+    const perf = computePerf(
+      preset.profile,
+      runtime,
+      model.paramsB,
+      model.quant
+    );
 
     results.push({
       device: preset.label,
@@ -67,7 +69,6 @@ export async function runFullBenchmark(
     index++;
     if (onProgress) onProgress(index / total);
 
-    // Simulate async work
     await new Promise((r) => setTimeout(r, 40));
   }
 
