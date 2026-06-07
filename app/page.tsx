@@ -322,7 +322,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
             <div>
               <div className="font-black font-mono text-lg mb-1">
-                <span className="text-[var(--fg)]">Defiled</span><span className="text-cyan-400">AI</span>
+                <span className="text-[var(--fg)]">Forsaken</span><span className="text-cyan-400">AI</span>
               </div>
               <div className="text-xs text-[var(--muted)] max-w-xs leading-relaxed">
                 Open-weight AI research hub. Uncensored model database, community benchmarks, and local inference tools.
@@ -345,7 +345,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-[var(--border)] mt-8 pt-6 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-[var(--muted)]">
-            <span>© {new Date().getFullYear()} DefiledAI — Open-Weight AI Research</span>
+            <span>© {new Date().getFullYear()} ForsakenAI — Open-Weight AI Research</span>
             <span>Updated hourly by automated pipeline</span>
           </div>
         </div>

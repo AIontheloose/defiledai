@@ -38,7 +38,7 @@ export default function Navbar() {
             href="/"
             className="text-xl font-bold tracking-tight text-white"
           >
-            Defiled<span className="text-cyan-400">AI</span>
+            Forsaken<span className="text-cyan-400">AI</span>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-6 text-sm text-zinc-400">

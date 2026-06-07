@@ -33,7 +33,7 @@ export function ChartsPanel() {
   const backendData = generateBackendComparison(deviceId, modelId);
 
   return (
-    <section className="space-y-10">
+    <section className="space-y-10 min-w-0">
       <div>
         <h2 className="text-xl font-semibold">Performance Charts</h2>
         <p className="text-sm text-[var(--muted)]">
@@ -42,7 +42,7 @@ export function ChartsPanel() {
       </div>
 
       {/* Device + model selectors */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
         <select
           value={deviceId}
           onChange={(e) => setDeviceId(e.target.value)}
@@ -71,7 +71,7 @@ export function ChartsPanel() {
       {/* Decode vs Params */}
       <div>
         <h3 className="text-sm font-medium mb-2">Decode Speed vs Model Size</h3>
-        <div className="h-64 min-w-0 min-h-0 block">
+        <div className="h-64 w-full min-w-0 min-h-0">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={decodeData}>
               <XAxis dataKey="params" stroke="var(--muted)" />
@@ -92,7 +92,7 @@ export function ChartsPanel() {
       {/* VRAM vs Context */}
       <div>
         <h3 className="text-sm font-medium mb-2">VRAM vs Max Context</h3>
-        <div className="h-64 min-w-0 min-h-0 block">
+        <div className="h-64 w-full min-w-0 min-h-0">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={vramData}>
               <XAxis dataKey="vram" stroke="var(--muted)" />
@@ -108,7 +108,7 @@ export function ChartsPanel() {
       {/* TTFT vs Params */}
       <div>
         <h3 className="text-sm font-medium mb-2">TTFT vs Model Size</h3>
-        <div className="h-64 min-w-0 min-h-0 block">
+        <div className="h-64 w-full min-w-0 min-h-0">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={ttftData}>
               <XAxis dataKey="params" stroke="var(--muted)" />
@@ -129,7 +129,7 @@ export function ChartsPanel() {
       {/* Backend comparison */}
       <div>
         <h3 className="text-sm font-medium mb-2">Backend Comparison</h3>
-        <div className="h-64 min-w-0 min-h-0 block">
+        <div className="h-64 w-full min-w-0 min-h-0">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={backendData}>
               <XAxis dataKey="name" stroke="var(--muted)" />
