@@ -226,7 +226,7 @@ export default function AbliterationTestSuitePage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-5xl mx-auto px-6 py-16">
         <div className="mb-10">
-          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">DefiledAI Tools</div>
+          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">ForsakenAI Tools</div>
           <h1 className="text-4xl font-black font-mono mb-4">ABLITERATION TEST SUITE</h1>
           <p className="text-[var(--muted)] max-w-3xl leading-relaxed">
             Standardized probe battery for local models. Tests hard refusal removal, soft hedging,
@@ -289,7 +289,7 @@ export default function AbliterationTestSuitePage() {
                 <div className="ml-auto">
                   <button
                     onClick={() => {
-                      const text = `DefiledAI Abliteration Score\nModel: ${modelName}\nScore: ${scorePercent}/100 — ${rating.label}\nPass: ${passCount} | Partial: ${partialCount} | Fail: ${failCount}\nTest your model: https://defiledai.com/tools/abliteration-test-suite`;
+                      const text = `ForsakenAI Abliteration Score\nModel: ${modelName}\nScore: ${scorePercent}/100 — ${rating.label}\nPass: ${passCount} | Partial: ${partialCount} | Fail: ${failCount}\nTest your model: https://forsakenai.com/tools/abliteration-test-suite`;
                       navigator.clipboard.writeText(text);
                     }}
                     className="text-xs border border-[var(--border)] px-4 py-2 font-mono hover:border-[var(--accent)] transition-colors"

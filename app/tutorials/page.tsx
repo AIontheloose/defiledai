@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Tutorials — DefiledAI",
+  title: "Tutorials — ForsakenAI",
   description: "Local AI tutorials from complete beginner to expert. Install guides, optimization, MoE pipelines, and advanced inference.",
 };
 
@@ -55,7 +55,7 @@ export default function TutorialsPage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-5xl mx-auto px-6 py-16">
         <div className="mb-12">
-          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">DefiledAI</div>
+          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">ForsakenAI</div>
           <h1 className="text-4xl font-black font-mono mb-4">TUTORIALS</h1>
           <p className="text-[var(--muted)] max-w-2xl">
             From first install to production MoE pipelines. Every tutorial is specific, tested, and written for people who actually run local AI.

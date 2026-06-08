@@ -111,7 +111,7 @@ export default function InferenceProfilerPage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-5xl mx-auto px-6 py-16">
         <div className="mb-10">
-          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">DefiledAI Tools</div>
+          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">ForsakenAI Tools</div>
           <div className="flex items-center justify-between flex-wrap gap-4">
             <h1 className="text-4xl font-black font-mono">INFERENCE PROFILER</h1>
             <button onClick={() => setCompareMode(!compareMode)}

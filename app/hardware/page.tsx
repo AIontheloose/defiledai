@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Hardware — DefiledAI",
+  title: "Hardware — ForsakenAI",
   description: "GPU configs, workstation builds, and inference hardware guides for local AI.",
 };
 
@@ -75,7 +75,7 @@ export default function HardwarePage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="mb-12">
-          <div className="text-cyan-400 text-xs uppercase tracking-widest mb-3">DefiledAI Research</div>
+          <div className="text-cyan-400 text-xs uppercase tracking-widest mb-3">ForsakenAI Research</div>
           <h1 className="text-4xl font-black font-mono mb-4">HARDWARE CONFIGS</h1>
           <p className="text-[var(--muted2)] max-w-2xl leading-relaxed">
             Curated build recommendations for local AI inference at every budget tier,

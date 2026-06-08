@@ -88,7 +88,7 @@ export default async function ArticlePage({
             <span className="w-1 h-1 rounded-full bg-[var(--muted)]" />
             <span>{mins} min read</span>
             <span className="w-1 h-1 rounded-full bg-[var(--muted)]" />
-            <span>DefiledAI Research</span>
+            <span>ForsakenAI Research</span>
           </div>
 
           {/* Tags */}

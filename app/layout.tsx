@@ -123,7 +123,7 @@ const MEGA_MENU = [
       {
         heading: "About & Updates",
         links: [
-          { href: "/about", label: "About DefiledAI", desc: "What we build and why" },
+          { href: "/about", label: "About ForsakenAI", desc: "What we build and why" },
           { href: "/weekly", label: "Weekly Digest", desc: "What dropped this week" },
           { href: "/tools/hf-tracker", label: "HF Tracker", desc: "New model uploads" },
           { href: "/feed.xml", label: "RSS Feed", desc: "Subscribe to updates" },
@@ -205,7 +205,7 @@ function Nav() {
         }}>
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
           <Link href="/" className="font-black tracking-tighter text-lg font-mono shrink-0 flex items-center gap-0" onClick={() => setActiveMenu(null)}>
-            <span className="text-[var(--fg)]">Defiled</span>
+            <span className="text-[var(--fg)]">Forsaken</span>
             <span className="text-cyan-400">AI</span>
           </Link>
 
@@ -312,18 +312,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" data-theme="dark">
       <head>
-        <title>DefiledAI — Unrestricted Local AI Research</title>
+        <title>ForsakenAI — Unrestricted Local AI Research</title>
         <meta name="description" content="The research hub for open-weight, abliterated, and uncensored AI models. 20+ tools, tutorials, community leaderboard, MoE builder." />
-        <meta property="og:title" content="DefiledAI — Unrestricted Local AI Research" />
+        <meta property="og:title" content="ForsakenAI — Unrestricted Local AI Research" />
         <meta property="og:description" content="20+ tools, tutorials from beginner to expert, uncensored model database, MoE pipeline builder." />
-        <meta property="og:url" content="https://defiledai.com" />
+        <meta property="og:url" content="https://forsakenai.com" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://defiledai.com/og.png" />
+        <meta property="og:image" content="https://forsakenai.com/og.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="DefiledAI — Unrestricted Local AI" />
-        <meta name="twitter:image" content="https://defiledai.com/og.png" />
+        <meta name="twitter:title" content="ForsakenAI — Unrestricted Local AI" />
+        <meta name="twitter:image" content="https://forsakenai.com/og.png" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="alternate" type="application/rss+xml" title="DefiledAI Articles" href="/feed.xml" />
+        <link rel="alternate" type="application/rss+xml" title="ForsakenAI Articles" href="/feed.xml" />
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-HTL8W4GT7L"></script>
         <script dangerouslySetInnerHTML={{ __html: `
           window.dataLayer = window.dataLayer || [];

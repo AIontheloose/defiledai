@@ -4,7 +4,7 @@ import matter from "gray-matter";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Weekly Digest — DefiledAI",
+  title: "Weekly Digest — ForsakenAI",
   description: "Weekly roundup of new uncensored model drops, community benchmarks, and local AI news.",
 };
 
@@ -90,7 +90,7 @@ export default function WeeklyDigestPage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-5xl mx-auto px-6 py-16">
         <div className="mb-12">
-          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">DefiledAI</div>
+          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">ForsakenAI</div>
           <h1 className="text-4xl font-black font-mono mb-4">WEEKLY DIGEST</h1>
           <p className="text-[var(--muted)] max-w-2xl">
             New model drops, recent articles, tutorial updates, and backend news.

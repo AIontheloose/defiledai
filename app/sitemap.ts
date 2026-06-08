@@ -13,7 +13,7 @@ function getSlugs(dir: string): string[] {
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://defiledai.com";
+  const base = "https://forsakenai.com";
   const now = new Date();
 
   const staticPages: MetadataRoute.Sitemap = [

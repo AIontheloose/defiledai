@@ -1,5 +1,5 @@
 {
-  "name": "defiledai",
+  "name": "forsakenai",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -15,6 +15,7 @@
     "@next/mdx": "^16.2.6",
     "@tailwindcss/typography": "^0.5.19",
     "@types/mdx": "^2.0.13",
+    "archiver": "^8.0.0",
     "gray-matter": "^4.0.3",
     "lucide-react": "^0.525.0",
     "next": "^15.5.2",

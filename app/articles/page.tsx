@@ -4,7 +4,7 @@ import matter from "gray-matter";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Articles — DefiledAI",
+  title: "Articles — ForsakenAI",
   description: "Research articles on local AI, quantization, benchmarks, and open-weight models.",
 };
 
@@ -35,7 +35,7 @@ export default function ArticlesPage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="mb-12">
-          <div className="text-cyan-400 text-xs uppercase tracking-widest mb-3">DefiledAI Research</div>
+          <div className="text-cyan-400 text-xs uppercase tracking-widest mb-3">ForsakenAI Research</div>
           <h1 className="text-4xl font-black font-mono mb-4">RESEARCH ARCHIVE</h1>
           <p className="text-[var(--muted2)] max-w-2xl">
             In-depth analysis on open-weight models, quantization, inference infrastructure,

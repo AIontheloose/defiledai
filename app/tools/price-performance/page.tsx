@@ -68,7 +68,7 @@ export default function PricePerformancePage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-5xl mx-auto px-6 py-16">
         <div className="mb-10">
-          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">DefiledAI Tools</div>
+          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">ForsakenAI Tools</div>
           <h1 className="text-4xl font-black font-mono mb-4">GPU PRICE/PERFORMANCE</h1>
           <p className="text-[var(--muted)] max-w-2xl">Current GPU rankings by inference value. Prices updated {updatedDate}. Sorted by tokens per second per dollar by default.</p>
         </div>

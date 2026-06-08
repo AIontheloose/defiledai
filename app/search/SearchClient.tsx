@@ -59,7 +59,7 @@ export default function SearchClient({ index }: { index: IndexItem[] }) {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-3xl mx-auto px-6 py-16">
         <div className="mb-10">
-          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">DefiledAI</div>
+          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">ForsakenAI</div>
           <h1 className="text-4xl font-black font-mono mb-8">SEARCH</h1>
 
           <div className="relative mb-4">

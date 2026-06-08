@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Resources — DefiledAI",
+  title: "Resources — ForsakenAI",
   description: "Guides, tools, and references for local AI inference and deployment.",
 };
 
@@ -116,7 +116,7 @@ export default function ResourcesPage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="mb-12">
-          <div className="text-cyan-400 text-xs uppercase tracking-widest mb-3">DefiledAI</div>
+          <div className="text-cyan-400 text-xs uppercase tracking-widest mb-3">ForsakenAI</div>
           <h1 className="text-4xl font-black font-mono mb-4">RESOURCES</h1>
           <p className="text-[var(--muted2)] max-w-2xl">
             Guides, references, and tools for running AI locally. From first setup to multi-GPU

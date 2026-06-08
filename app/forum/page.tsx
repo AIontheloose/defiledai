@@ -64,7 +64,7 @@ export default function ForumPage() {
 
         {/* Header */}
         <div className="mb-10">
-          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">DefiledAI Community</div>
+          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">ForsakenAI Community</div>
           <h1 className="text-4xl font-black font-mono mb-3">COMMUNITY</h1>
           <p className="text-[var(--muted)] max-w-2xl">
             Discussion, benchmarks, model drops, and build advice. Powered by Discord — click any channel to jump straight in.
@@ -143,7 +143,7 @@ export default function ForumPage() {
 
             {/* Contribute */}
             <div>
-              <div className="text-xs uppercase tracking-widest text-[var(--muted)] font-mono mb-4">Contribute to DefiledAI</div>
+              <div className="text-xs uppercase tracking-widest text-[var(--muted)] font-mono mb-4">Contribute to ForsakenAI</div>
               <div className="border border-[var(--border)] bg-[var(--card-bg)] divide-y divide-[var(--border)]/50">
                 {CONTRIBUTE.map(l => (
                   <Link key={l.href} href={l.href}
@@ -174,7 +174,7 @@ export default function ForumPage() {
                     </svg>
                   </div>
                   <div>
-                    <div className="font-mono font-black text-[var(--fg)] text-sm">DefiledAI</div>
+                    <div className="font-mono font-black text-[var(--fg)] text-sm">ForsakenAI</div>
                     <div className="text-xs text-[var(--muted)]">Local AI Community</div>
                   </div>
                 </div>

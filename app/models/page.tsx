@@ -69,7 +69,7 @@ export default function ModelsPage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="mb-12">
-          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">DefiledAI Research</div>
+          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">ForsakenAI Research</div>
           <h1 className="text-4xl font-black font-mono mb-4">MODEL DATABASE</h1>
           <p className="text-[var(--muted)] max-w-2xl">
             Open-weight models with quantization options, VRAM requirements, and abliterated variant availability.

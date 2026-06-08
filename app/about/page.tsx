@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "About — DefiledAI",
-  description: "DefiledAI is a community research hub for open-weight, abliterated, and uncensored local AI models.",
+  title: "About — ForsakenAI",
+  description: "ForsakenAI is a community research hub for open-weight, abliterated, and uncensored local AI models.",
 };
 
 export default function AboutPage() {
@@ -10,7 +10,7 @@ export default function AboutPage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-3xl mx-auto px-6 py-16">
         <div className="mb-12">
-          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">DefiledAI</div>
+          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">ForsakenAI</div>
           <h1 className="text-4xl font-black font-mono mb-6">ABOUT</h1>
         </div>
 
@@ -18,7 +18,7 @@ export default function AboutPage() {
 
           <div className="border-l-2 border-cyan-500 pl-6">
             <p className="text-xl text-[var(--fg)] leading-relaxed">
-              DefiledAI is a community research hub for open-weight, abliterated, and uncensored local AI models. We build tools, publish benchmarks, and document the techniques that let people run powerful AI on their own hardware — without restrictions, without cloud dependency, and without per-query cost.
+              ForsakenAI is a community research hub for open-weight, abliterated, and uncensored local AI models. We build tools, publish benchmarks, and document the techniques that let people run powerful AI on their own hardware — without restrictions, without cloud dependency, and without per-query cost.
             </p>
           </div>
 

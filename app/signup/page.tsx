@@ -86,7 +86,7 @@ export default function SignupPage() {
         {/* Header */}
         <div className="text-center mb-10">
           <Link href="/" className="font-black font-mono text-2xl inline-block mb-6">
-            <span className="text-[var(--fg)]">Defiled</span>
+            <span className="text-[var(--fg)]">Forsaken</span>
             <span className="text-cyan-400">AI</span>
           </Link>
           <h1 className="text-3xl font-black font-mono mb-3">STAY IN THE LOOP</h1>

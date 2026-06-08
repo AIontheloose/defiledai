@@ -12,7 +12,7 @@ import {
 } from "../../../components/stackforge";
 
 export const metadata = {
-  title: "StackForge - Local AI Architect | DefiledAI",
+  title: "StackForge - Local AI Architect | ForsakenAI",
   description:
     "Discover which AI models, quants, and backends fit your hardware. Compare performance, capability, upgrades, and community benchmarks.",
 };
@@ -120,7 +120,7 @@ export default function StackForgePage() {
             </h2>
 
             <p className="text-sm text-muted-foreground">
-              Real-world benchmark submissions from the DefiledAI community.
+              Real-world benchmark submissions from the ForsakenAI community.
             </p>
           </div>
 

@@ -94,7 +94,7 @@ export default function SubmitBenchmarkPage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="mb-10">
-          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">DefiledAI Community</div>
+          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">ForsakenAI Community</div>
           <h1 className="text-4xl font-black font-mono mb-4">BENCHMARK SUBMISSIONS</h1>
           <p className="text-[var(--muted)] max-w-2xl">
             Submit your real-world inference results. Results are stored locally in your browser and displayed below.

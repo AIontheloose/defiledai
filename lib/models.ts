@@ -1,7 +1,7 @@
 /**
  * lib/models.ts
  * ─────────────────────────────────────────────────────────────
- * SINGLE SOURCE OF TRUTH for all model data across DefiledAI.
+ * SINGLE SOURCE OF TRUTH for all model data across ForsakenAI.
  *
  * To add a new model: add one entry to MODELS below.
  * Every tool (compatibility checker, can-i-run-it, speed estimator,

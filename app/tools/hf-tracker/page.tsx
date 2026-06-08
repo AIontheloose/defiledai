@@ -5,7 +5,7 @@ export const dynamic = "force-static";
 export const revalidate = 3600; // rebuild hourly
 
 export const metadata = {
-  title: "HuggingFace Tracker — DefiledAI",
+  title: "HuggingFace Tracker — ForsakenAI",
   description: "Latest abliterated and uncensored model uploads on HuggingFace, curated and updated automatically.",
 };
 
@@ -85,7 +85,7 @@ export default async function HFTrackerPage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-5xl mx-auto px-6 py-16">
         <div className="mb-12">
-          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">DefiledAI</div>
+          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">ForsakenAI</div>
           <h1 className="text-4xl font-black font-mono mb-4">HUGGINGFACE TRACKER</h1>
           <p className="text-[var(--muted)] max-w-2xl">
             Latest abliterated, uncensored, and Dolphin model uploads. Live data from HuggingFace API — updated every hour.
@@ -142,7 +142,7 @@ export default async function HFTrackerPage() {
           </div>
         )}
 
-        {/* Recently added to DefiledAI database */}
+        {/* Recently added to ForsakenAI database */}
         <div className="mb-10">
           <div className="flex items-center gap-4 mb-5">
             <span className="text-xs uppercase tracking-widest text-[var(--muted)] font-mono">Recently Added to Database</span>

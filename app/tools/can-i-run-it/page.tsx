@@ -94,7 +94,7 @@ export default function CanIRunItPage() {
     });
 
   const fitsCount = results.filter((r) => r.fits).length;
-  const embedCode = `<iframe src="https://defiledai.com/tools/can-i-run-it" width="100%" height="600" frameborder="0"></iframe>`;
+  const embedCode = `<iframe src="https://forsakenai.com/tools/can-i-run-it" width="100%" height="600" frameborder="0"></iframe>`;
 
   const copyEmbed = () => {
     navigator.clipboard.writeText(embedCode);
@@ -106,7 +106,7 @@ export default function CanIRunItPage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
       <div className="max-w-5xl mx-auto px-6 py-16">
         <div className="mb-10">
-          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">DefiledAI Tools</div>
+          <div className="text-[var(--accent)] text-xs uppercase tracking-widest mb-3">ForsakenAI Tools</div>
           <h1 className="text-4xl font-black font-mono mb-4">CAN I RUN IT?</h1>
           <p className="text-[var(--muted)] max-w-2xl">Select your GPU and instantly see which uncensored and abliterated models run on your hardware. Shareable and embeddable.</p>
         </div>

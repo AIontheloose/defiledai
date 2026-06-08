@@ -1,4 +1,4 @@
-export const metadata = { title: "Login — DefiledAI" };
+export const metadata = { title: "Login — ForsakenAI" };
 
 export default function LoginPage() {
   return (
@@ -6,7 +6,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="font-black font-mono text-2xl mb-1">
-            <span className="text-white">Defiled</span><span className="text-cyan-400">AI</span>
+            <span className="text-white">Forsaken</span><span className="text-cyan-400">AI</span>
           </div>
           <div className="text-zinc-500 text-sm">Research Network Login</div>
         </div>
