@@ -1,9 +1,11 @@
- "use client";
+"use client";
+
+import { Card } from "@/components/ui/card";
 
 export default function RecommendationCards() {
   return (
-    <div className="p-4 border rounded-lg">
-      RecommendationCards (stub)
-    </div>
+    <Card className="p-4">
+      Recommended Models (coming soon)
+    </Card>
   );
 }

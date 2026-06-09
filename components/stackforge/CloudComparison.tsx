@@ -1,9 +1,11 @@
- "use client";
+"use client";
 
-export default function CloudComparison() {
+import { Card } from "@/components/ui/card";
+
+export default function UpgradeAdvisor() {
   return (
-    <div className="p-4 border rounded-lg">
-      CloudComparison (stub)
-    </div>
+    <Card className="p-4">
+      Upgrade Advisor (coming soon)
+    </Card>
   );
 }

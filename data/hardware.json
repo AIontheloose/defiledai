@@ -1,0 +1,72 @@
+[
+  {
+    "id": "rtx3060-12gb",
+    "name": "RTX 3060 12GB",
+    "vram": 12,
+    "bandwidth": 360,
+    "tier": "entry"
+  },
+  {
+    "id": "rtx3080-10gb",
+    "name": "RTX 3080 10GB",
+    "vram": 10,
+    "bandwidth": 760,
+    "tier": "high-end"
+  },
+  {
+    "id": "rtx3090",
+    "name": "RTX 3090",
+    "vram": 24,
+    "bandwidth": 936,
+    "tier": "enthusiast"
+  },
+  {
+    "id": "rtx4090",
+    "name": "RTX 4090",
+    "vram": 24,
+    "bandwidth": 1008,
+    "tier": "flagship"
+  },
+  {
+    "id": "rtx5090",
+    "name": "RTX 5090",
+    "vram": 32,
+    "bandwidth": 1792,
+    "tier": "flagship"
+  },
+  {
+    "id": "7900xtx",
+    "name": "RX 7900 XTX",
+    "vram": 24,
+    "bandwidth": 960,
+    "tier": "enthusiast"
+  },
+  {
+    "id": "a6000",
+    "name": "RTX A6000",
+    "vram": 48,
+    "bandwidth": 768,
+    "tier": "workstation"
+  },
+  {
+    "id": "a100-80gb",
+    "name": "A100 80GB",
+    "vram": 80,
+    "bandwidth": 2039,
+    "tier": "datacenter"
+  },
+  {
+    "id": "h100",
+    "name": "H100",
+    "vram": 80,
+    "bandwidth": 3350,
+    "tier": "datacenter"
+  },
+  {
+    "id": "m4-max",
+    "name": "Apple M4 Max",
+    "vram": 36,
+    "bandwidth": 546,
+    "tier": "apple"
+  }
+]

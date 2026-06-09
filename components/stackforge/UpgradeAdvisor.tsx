@@ -1,9 +1,11 @@
- "use client";
+"use client";
+
+import { Card } from "@/components/ui/card";
 
 export default function UpgradeAdvisor() {
   return (
-    <div className="p-4 border rounded-lg">
-      UpgradeAdvisor (stub)
-    </div>
+    <Card className="p-4">
+      Upgrade Advisor (coming soon)
+    </Card>
   );
 }

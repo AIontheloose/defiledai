@@ -1,9 +1,11 @@
- "use client";
+"use client";
+
+import { Card } from "@/components/ui/card";
 
 export default function PerformancePrediction() {
   return (
-    <div className="p-4 border rounded-lg">
-      PerformancePrediction (stub)
-    </div>
+    <Card className="p-4">
+      Performance Prediction Engine (coming soon)
+    </Card>
   );
 }

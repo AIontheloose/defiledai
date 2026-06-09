@@ -1,8 +1,18 @@
 import React from "react";
 
-export function Card({ className = "", children }: any) {
+type CardProps = {
+  children: React.ReactNode;
+  className?: string;
+};
+
+export function Card({
+  children,
+  className = "",
+}: CardProps) {
   return (
-    <div className={`rounded-xl border bg-white shadow-sm ${className}`}>
+    <div
+      className={`rounded-xl border bg-background ${className}`}
+    >
       {children}
     </div>
   );

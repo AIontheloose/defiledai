@@ -1,9 +1,11 @@
- "use client";
+"use client";
+
+import { Card } from "@/components/ui/card";
 
 export default function CommunityStats() {
   return (
-    <div className="p-4 border rounded-lg">
-      CommunityStats (stub)
-    </div>
+    <Card className="p-4">
+      Community Benchmark Stats (coming soon)
+    </Card>
   );
 }

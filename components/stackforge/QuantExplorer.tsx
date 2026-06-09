@@ -1,9 +1,11 @@
- "use client";
+"use client";
+
+import { Card } from "@/components/ui/card";
 
 export default function QuantExplorer() {
   return (
-    <div className="p-4 border rounded-lg">
-      QuantExplorer (stub)
-    </div>
+    <Card className="p-4">
+      Quant Explorer (coming soon)
+    </Card>
   );
 }

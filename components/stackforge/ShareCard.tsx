@@ -1,9 +1,11 @@
- "use client";
+"use client";
+
+import { Card } from "@/components/ui/card";
 
 export default function ShareCard() {
   return (
-    <div className="p-4 border rounded-lg">
-      ShareCard (stub)
-    </div>
+    <Card className="p-4">
+      Shareable Build Card Generator (coming soon)
+    </Card>
   );
 }
