@@ -1,0 +1,47 @@
+[
+  {
+    "gpu_id": "rtx4090-24gb",
+    "model_id": "llama31-8b",
+    "quant": "Q4",
+    "tokens_per_second": 127.7,
+    "ttft_seconds": 0.4,
+    "confidence": "verified_public_benchmark",
+    "runner": "llama.cpp"
+  },
+  {
+    "gpu_id": "rtx3090-24gb",
+    "model_id": "llama31-8b",
+    "quant": "Q4",
+    "tokens_per_second": 111.7,
+    "ttft_seconds": 0.5,
+    "confidence": "verified_public_benchmark",
+    "runner": "llama.cpp"
+  },
+  {
+    "gpu_id": "rtx6000ada-48gb",
+    "model_id": "llama31-70b",
+    "quant": "Q4",
+    "tokens_per_second": 18.4,
+    "ttft_seconds": 2.0,
+    "confidence": "verified_public_benchmark",
+    "runner": "llama.cpp"
+  },
+  {
+    "gpu_id": "h100-80gb",
+    "model_id": "llama31-70b",
+    "quant": "Q4",
+    "tokens_per_second": 25.0,
+    "ttft_seconds": 1.3,
+    "confidence": "verified_public_benchmark",
+    "runner": "llama.cpp"
+  },
+  {
+    "gpu_id": "rtx4090-24gb",
+    "model_id": "qwen25-coder-32b",
+    "quant": "Q4",
+    "tokens_per_second": 24.0,
+    "ttft_seconds": 2.8,
+    "confidence": "community_aggregate",
+    "runner": "ollama"
+  }
+]

@@ -2,6 +2,7 @@ import {
   HardwareSelector,
   CapabilityScore,
   RecommendationCards,
+  ModelFitMatrix,
   PerformancePrediction,
   QuantExplorer,
   BackendRecommendation,
@@ -82,6 +83,7 @@ export default function StackForgePage() {
             </div>
 
             <RecommendationCards />
+            <ModelFitMatrix />
           </section>
 
           {/* Performance */}

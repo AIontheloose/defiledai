@@ -1,0 +1,56 @@
+{
+  "quick-chat": {
+    "label": "Quick chat",
+    "context_tokens": 4096,
+    "output_tokens": 250,
+    "description": "Short back-and-forth. Usually feels responsive on modest hardware."
+  },
+  "coding-assistant": {
+    "label": "Coding assistant",
+    "context_tokens": 8192,
+    "output_tokens": 800,
+    "description": "Code explanations, diffs and implementation help."
+  },
+  "long-document": {
+    "label": "Long document analysis",
+    "context_tokens": 16384,
+    "output_tokens": 1200,
+    "description": "Analyse longer files, logs, documents or specs."
+  },
+  "research-assistant": {
+    "label": "Research assistant",
+    "context_tokens": 32768,
+    "output_tokens": 1800,
+    "description": "Long evidence-heavy responses and larger source context."
+  },
+  "conversation-30m": {
+    "label": "30 minute conversation",
+    "context_tokens": 8192,
+    "output_tokens": 600,
+    "description": "Normal chat history retained for around 30 minutes."
+  },
+  "conversation-1h": {
+    "label": "1 hour conversation",
+    "context_tokens": 16384,
+    "output_tokens": 900,
+    "description": "Long chat context with moderate retention."
+  },
+  "conversation-2h": {
+    "label": "2 hour conversation",
+    "context_tokens": 32768,
+    "output_tokens": 1400,
+    "description": "Multi-hour chat. May need summarisation or larger VRAM."
+  },
+  "project-memory": {
+    "label": "Large project memory",
+    "context_tokens": 65536,
+    "output_tokens": 1800,
+    "description": "Large context/project memory. Heavy KV cache pressure."
+  },
+  "custom": {
+    "label": "Custom tokens",
+    "context_tokens": 8192,
+    "output_tokens": 700,
+    "description": "Use the context input directly."
+  }
+}

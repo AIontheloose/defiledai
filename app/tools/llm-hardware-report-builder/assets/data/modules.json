@@ -1,0 +1,205 @@
+[
+  {
+    "id": "dashboard",
+    "name": "Command Dashboard",
+    "category": "Suite",
+    "tag": "HOME",
+    "desc": "Unified overview, shared state, recommendation, wizard and chat simulator."
+  },
+  {
+    "id": "intake-wizard",
+    "name": "LLM Intake Wizard",
+    "category": "Suite",
+    "tag": "NEW",
+    "desc": "Ask the user model, quant, context/conversation length, target speed and budget."
+  },
+  {
+    "id": "chat-simulator",
+    "name": "Real-Time Chat Feel Simulator",
+    "category": "Suite",
+    "tag": "NEW",
+    "desc": "Simulate TTFT delay and tokens/sec streaming in real time."
+  },
+  {
+    "id": "local-moe-pipeline-builder",
+    "name": "Local MoE Pipeline Builder",
+    "category": "Flagship",
+    "tag": "NEW & UNIQUE",
+    "desc": "Design a macro-scale Mixture-of-Experts pipeline from local models."
+  },
+  {
+    "id": "hardware-simulator",
+    "name": "Hardware Simulator",
+    "category": "Flagship",
+    "tag": "NEW & UNIQUE",
+    "desc": "Multi-GPU and CPU offload estimates beyond a VRAM calculator."
+  },
+  {
+    "id": "abliteration-test-suite",
+    "name": "Abliteration Test Suite",
+    "category": "Flagship",
+    "tag": "NEW & UNIQUE",
+    "desc": "Abliteration score-card and publishable test suite output."
+  },
+  {
+    "id": "multi-model-planner",
+    "name": "Multi-Model Planner",
+    "category": "Flagship",
+    "tag": "NEW & UNIQUE",
+    "desc": "Plan and generate code for multi-model workflows."
+  },
+  {
+    "id": "prompt-tester",
+    "name": "Prompt Tester",
+    "category": "Flagship",
+    "tag": "NEW & UNIQUE",
+    "desc": "Test prompt effectiveness and compare scoring dimensions."
+  },
+  {
+    "id": "quant-quality-estimator",
+    "name": "Quant Quality Estimator",
+    "category": "Flagship",
+    "tag": "NEW & UNIQUE",
+    "desc": "Visual representation of quant quality versus baseline."
+  },
+  {
+    "id": "local-llm-stack-builder",
+    "name": "Local LLM Stack Builder",
+    "category": "Flagship",
+    "tag": "NEW & UNIQUE",
+    "desc": "Build a local LLM software stack based on hardware and use case."
+  },
+  {
+    "id": "model-compatibility-checker",
+    "name": "Model Compatibility Checker",
+    "category": "Hardware & Performance",
+    "tag": "MOST USEFUL",
+    "desc": "Select GPU and see models that fit with estimated tok/s."
+  },
+  {
+    "id": "can-i-run-it",
+    "name": "Can I Run It?",
+    "category": "Hardware & Performance",
+    "tag": "EMBEDDABLE",
+    "desc": "Quick GPU check for models and embeddable summaries."
+  },
+  {
+    "id": "inference-speed-estimator",
+    "name": "Inference Speed Estimator",
+    "category": "Hardware & Performance",
+    "tag": "POPULAR",
+    "desc": "Predict tokens/sec before downloading."
+  },
+  {
+    "id": "inference-profiler",
+    "name": "Inference Profiler",
+    "category": "Hardware & Performance",
+    "tag": "ADVANCED",
+    "desc": "Throughput, TTFT, bandwidth utilisation, CPU offload analysis."
+  },
+  {
+    "id": "gpu-price-performance",
+    "name": "GPU Price / Performance",
+    "category": "Hardware & Performance",
+    "tag": "UPDATED WEEKLY",
+    "desc": "GPU rankings by inference value and tok/s per dollar."
+  },
+  {
+    "id": "benchmark-compare",
+    "name": "Benchmark Compare",
+    "category": "Hardware & Performance",
+    "tag": "VISUAL",
+    "desc": "Side-by-side GPU comparison across model sizes."
+  },
+  {
+    "id": "hardware-advisor",
+    "name": "Hardware Advisor",
+    "category": "Hardware & Performance",
+    "tag": "NEW",
+    "desc": "Budget-aware, use-case-aware build recommendations."
+  },
+  {
+    "id": "vram-calculator",
+    "name": "VRAM Calculator",
+    "category": "Model Selection & Planning",
+    "tag": "PRECISE",
+    "desc": "Model size, quant and context VRAM including KV cache."
+  },
+  {
+    "id": "context-length-calculator",
+    "name": "Context Length Calculator",
+    "category": "Model Selection & Planning",
+    "tag": "UNIQUE",
+    "desc": "Maximum context window given VRAM and KV cache."
+  },
+  {
+    "id": "token-budget-calculator",
+    "name": "Token Budget Calculator",
+    "category": "Model Selection & Planning",
+    "tag": "NEW",
+    "desc": "Plan context, generation time and cloud/local cost."
+  },
+  {
+    "id": "quant-picker",
+    "name": "Quant Picker",
+    "category": "Model Selection & Planning",
+    "tag": "BEGINNER",
+    "desc": "Choose the right quantization format."
+  },
+  {
+    "id": "backend-picker",
+    "name": "Backend Picker",
+    "category": "Model Selection & Planning",
+    "tag": "PRACTICAL",
+    "desc": "Find the right inference backend for GPU, OS and use case."
+  },
+  {
+    "id": "abliteration-quality-scorer",
+    "name": "Abliteration Quality Scorer",
+    "category": "Uncensored & Abliteration",
+    "tag": "UNIQUE",
+    "desc": "Compare base vs abliterated benchmark retention."
+  },
+  {
+    "id": "model-diff",
+    "name": "Model Diff",
+    "category": "Uncensored & Abliteration",
+    "tag": "RESEARCH",
+    "desc": "Side-by-side base vs modified output comparisons."
+  },
+  {
+    "id": "huggingface-tracker",
+    "name": "HuggingFace Tracker",
+    "category": "Uncensored & Abliteration",
+    "tag": "CURATED",
+    "desc": "Curated model upload tracker."
+  },
+  {
+    "id": "ollama-modelfile-generator",
+    "name": "Ollama Modelfile Generator",
+    "category": "Configuration & Prompting",
+    "tag": "SAVES TIME",
+    "desc": "Build Modelfiles with system prompt and sampling params."
+  },
+  {
+    "id": "system-prompt-library",
+    "name": "System Prompt Library",
+    "category": "Configuration & Prompting",
+    "tag": "NEW",
+    "desc": "Production-ready system prompt presets."
+  },
+  {
+    "id": "community-model-reviews",
+    "name": "Community Model Reviews",
+    "category": "Community",
+    "tag": "COMMUNITY",
+    "desc": "Structured reviews with hardware and verdicts."
+  },
+  {
+    "id": "submit-benchmark",
+    "name": "Submit Benchmark",
+    "category": "Community",
+    "tag": "COMMUNITY",
+    "desc": "Share inference results and add to benchmark dataset."
+  }
+]

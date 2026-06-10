@@ -1,6 +1,7 @@
 export { default as HardwareSelector } from "./HardwareSelector";
 export { default as CapabilityScore } from "./CapabilityScore";
 export { default as RecommendationCards } from "./RecommendationCards";
+export { default as ModelFitMatrix } from "./ModelFitMatrix";
 export { default as PerformancePrediction } from "./PerformancePrediction";
 export { default as QuantExplorer } from "./QuantExplorer";
 export { default as BackendRecommendation } from "./BackendRecommendation";

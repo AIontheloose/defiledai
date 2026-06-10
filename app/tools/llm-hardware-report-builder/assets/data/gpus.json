@@ -1,0 +1,58 @@
+[
+  {
+    "id": "rtx3060-12gb",
+    "name": "RTX 3060 12GB",
+    "vram_gb": 12,
+    "bandwidth_gbps": 360,
+    "tdp_w": 170,
+    "price_aud": 450
+  },
+  {
+    "id": "rtx3090-24gb",
+    "name": "RTX 3090 24GB",
+    "vram_gb": 24,
+    "bandwidth_gbps": 936,
+    "tdp_w": 350,
+    "price_aud": 1200
+  },
+  {
+    "id": "rtx4090-24gb",
+    "name": "RTX 4090 24GB",
+    "vram_gb": 24,
+    "bandwidth_gbps": 1008,
+    "tdp_w": 450,
+    "price_aud": 3100
+  },
+  {
+    "id": "rtx5090-32gb",
+    "name": "RTX 5090 32GB",
+    "vram_gb": 32,
+    "bandwidth_gbps": 1792,
+    "tdp_w": 575,
+    "price_aud": 4500
+  },
+  {
+    "id": "rtx6000ada-48gb",
+    "name": "RTX 6000 Ada 48GB",
+    "vram_gb": 48,
+    "bandwidth_gbps": 960,
+    "tdp_w": 300,
+    "price_aud": 11000
+  },
+  {
+    "id": "dual-rtx4090-48gb",
+    "name": "2\u00d7 RTX 4090 aggregate",
+    "vram_gb": 48,
+    "bandwidth_gbps": 2016,
+    "tdp_w": 900,
+    "price_aud": 6500
+  },
+  {
+    "id": "h100-80gb",
+    "name": "H100 80GB",
+    "vram_gb": 80,
+    "bandwidth_gbps": 2040,
+    "tdp_w": 350,
+    "price_aud": 45000
+  }
+]

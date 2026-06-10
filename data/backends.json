@@ -1,0 +1,27 @@
+[
+  {
+    "id": "llamacpp",
+    "name": "llama.cpp",
+    "best_for": "CPU, Apple Silicon, General Use"
+  },
+  {
+    "id": "exllamav2",
+    "name": "ExLlamaV2",
+    "best_for": "RTX GPUs, Fast Quantized Inference"
+  },
+  {
+    "id": "vllm",
+    "name": "vLLM",
+    "best_for": "Multi-user Serving"
+  },
+  {
+    "id": "tensorrt",
+    "name": "TensorRT-LLM",
+    "best_for": "Enterprise NVIDIA Deployments"
+  },
+  {
+    "id": "sglang",
+    "name": "SGLang",
+    "best_for": "Agent Workloads"
+  }
+]

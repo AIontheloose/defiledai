@@ -1,0 +1,30 @@
+[
+  {
+    "id": "q3_k_m",
+    "name": "Q3_K_M",
+    "vram_modifier": 0.75,
+    "speed_modifier": 1.35,
+    "quality_modifier": 0.90
+  },
+  {
+    "id": "q4_k_m",
+    "name": "Q4_K_M",
+    "vram_modifier": 1.00,
+    "speed_modifier": 1.00,
+    "quality_modifier": 1.00
+  },
+  {
+    "id": "q5_k_m",
+    "name": "Q5_K_M",
+    "vram_modifier": 1.15,
+    "speed_modifier": 0.90,
+    "quality_modifier": 1.07
+  },
+  {
+    "id": "q6_k",
+    "name": "Q6_K",
+    "vram_modifier": 1.35,
+    "speed_modifier": 0.80,
+    "quality_modifier": 1.10
+  }
+]

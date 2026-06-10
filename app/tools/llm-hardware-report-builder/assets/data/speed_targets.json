@@ -1,0 +1,27 @@
+{
+  "minimum": {
+    "label": "Minimum usable",
+    "tokens_per_second": 5,
+    "description": "Usable but slow."
+  },
+  "comfortable": {
+    "label": "Comfortable",
+    "tokens_per_second": 12,
+    "description": "Good enough for everyday use."
+  },
+  "fast": {
+    "label": "Fast",
+    "tokens_per_second": 25,
+    "description": "Strong interactive experience."
+  },
+  "instant": {
+    "label": "Instant-feeling",
+    "tokens_per_second": 50,
+    "description": "Very responsive for smaller models."
+  },
+  "custom": {
+    "label": "Custom",
+    "tokens_per_second": 15,
+    "description": "User-defined tokens/sec target."
+  }
+}

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "budget",
+    "name": "Budget Local AI Box",
+    "gpu_id": "rtx3060-12gb",
+    "ram_gb": 64,
+    "price_aud": 2499,
+    "tier": "Budget",
+    "notes": "Good for 7B/8B models."
+  },
+  {
+    "id": "value",
+    "name": "Best Value 24GB Workstation",
+    "gpu_id": "rtx3090-24gb",
+    "ram_gb": 128,
+    "price_aud": 3999,
+    "tier": "Value",
+    "notes": "Strong 24GB local inference."
+  },
+  {
+    "id": "creator",
+    "name": "RTX 4090 Creator Workstation",
+    "gpu_id": "rtx4090-24gb",
+    "ram_gb": 128,
+    "price_aud": 5999,
+    "tier": "Recommended",
+    "notes": "Fast all-round local LLM build."
+  },
+  {
+    "id": "research",
+    "name": "48GB Research Workstation",
+    "gpu_id": "rtx6000ada-48gb",
+    "ram_gb": 256,
+    "price_aud": 16999,
+    "tier": "Research",
+    "notes": "Large models and heavy context."
+  },
+  {
+    "id": "enterprise",
+    "name": "80GB Enterprise AI Server",
+    "gpu_id": "h100-80gb",
+    "ram_gb": 512,
+    "price_aud": 85000,
+    "tier": "Enterprise",
+    "notes": "Enterprise inference and research."
+  }
+]

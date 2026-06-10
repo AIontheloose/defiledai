@@ -1,0 +1,21 @@
+{
+  "name": "forsakenai-unified-suite",
+  "displayName": "ForsakenAI Unified Suite",
+  "version": "4.1.0-workbench-wizard-chat-simulator",
+  "entry": "index.html",
+  "type": "static-web-tool",
+  "requiresBackend": false,
+  "modules": 29,
+  "features": [
+    "LLM intake wizard",
+    "Conversation length presets",
+    "2 hour conversation mode",
+    "Target speed selector",
+    "Hardware required ranking",
+    "Real-time TTFT simulator",
+    "Real-time token streaming simulator",
+    "Shared state across all modules",
+    "Deep linking by mode",
+    "Unified report"
+  ]
+}
