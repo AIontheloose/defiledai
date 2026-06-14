@@ -1,27 +1,127 @@
 [
   {
-    "id": "llamacpp",
-    "name": "llama.cpp",
-    "best_for": "CPU, Apple Silicon, General Use"
-  },
-  {
     "id": "exllamav2",
     "name": "ExLlamaV2",
-    "best_for": "RTX GPUs, Fast Quantized Inference"
+    "vendor": "NVIDIA",
+    "bestFor": [
+      "Single GPU",
+      "Consumer GPUs",
+      "Fast Inference"
+    ],
+    "supportsAMD": false,
+    "supportsApple": false,
+    "supportsMultiGpu": false,
+    "speedScore": 98,
+    "easeOfUse": 85,
+    "recommended": [
+      "RTX 3090",
+      "RTX 4090",
+      "RTX 5090"
+    ],
+    "description": "Highest-performance inference engine for NVIDIA consumer GPUs running quantized GGUF and EXL2 models."
+  },
+  {
+    "id": "llamacpp",
+    "name": "llama.cpp",
+    "vendor": "Universal",
+    "bestFor": [
+      "CPU",
+      "AMD",
+      "Apple",
+      "Compatibility"
+    ],
+    "supportsAMD": true,
+    "supportsApple": true,
+    "supportsMultiGpu": true,
+    "speedScore": 78,
+    "easeOfUse": 98,
+    "recommended": [
+      "RX 7900 XT",
+      "RX 7900 XTX",
+      "Apple M4 Max"
+    ],
+    "description": "Most compatible backend. Supports NVIDIA, AMD, Apple Silicon and CPU inference."
   },
   {
     "id": "vllm",
     "name": "vLLM",
-    "best_for": "Multi-user Serving"
-  },
-  {
-    "id": "tensorrt",
-    "name": "TensorRT-LLM",
-    "best_for": "Enterprise NVIDIA Deployments"
+    "vendor": "NVIDIA",
+    "bestFor": [
+      "Serving",
+      "API Endpoints",
+      "Large Context"
+    ],
+    "supportsAMD": false,
+    "supportsApple": false,
+    "supportsMultiGpu": true,
+    "speedScore": 95,
+    "easeOfUse": 70,
+    "recommended": [
+      "A100 40GB",
+      "A100 80GB",
+      "H100"
+    ],
+    "description": "Production-grade serving engine optimized for throughput and large-scale deployments."
   },
   {
     "id": "sglang",
     "name": "SGLang",
-    "best_for": "Agent Workloads"
+    "vendor": "NVIDIA",
+    "bestFor": [
+      "Agents",
+      "Reasoning Models",
+      "Serving"
+    ],
+    "supportsAMD": false,
+    "supportsApple": false,
+    "supportsMultiGpu": true,
+    "speedScore": 97,
+    "easeOfUse": 72,
+    "recommended": [
+      "RTX 4090",
+      "RTX 5090",
+      "A100",
+      "H100"
+    ],
+    "description": "High-performance serving framework designed for modern agent and reasoning workloads."
+  },
+  {
+    "id": "tensorrtllm",
+    "name": "TensorRT-LLM",
+    "vendor": "NVIDIA",
+    "bestFor": [
+      "Maximum Performance",
+      "Datacenter",
+      "Inference Optimization"
+    ],
+    "supportsAMD": false,
+    "supportsApple": false,
+    "supportsMultiGpu": true,
+    "speedScore": 100,
+    "easeOfUse": 55,
+    "recommended": [
+      "A100",
+      "H100",
+      "RTX 5090"
+    ],
+    "description": "Fastest NVIDIA inference stack but requires additional setup and optimization."
+  },
+  {
+    "id": "mlx",
+    "name": "MLX",
+    "vendor": "Apple",
+    "bestFor": [
+      "Apple Silicon",
+      "Local Development"
+    ],
+    "supportsAMD": false,
+    "supportsApple": true,
+    "supportsMultiGpu": false,
+    "speedScore": 90,
+    "easeOfUse": 92,
+    "recommended": [
+      "Apple M4 Max"
+    ],
+    "description": "Apple's optimized ML framework for running local AI workloads on Apple Silicon."
   }
 ]

@@ -1,30 +1,74 @@
 [
   {
+    "id": "q2_k",
+    "name": "Q2_K",
+    "memoryMultiplier": 0.25,
+    "speedMultiplier": 1.50,
+    "qualityMultiplier": 0.75,
+    "recommended": false,
+    "description": "Extreme compression. Fastest and smallest, significant quality loss."
+  },
+  {
+    "id": "q3_k_s",
+    "name": "Q3_K_S",
+    "memoryMultiplier": 0.35,
+    "speedMultiplier": 1.35,
+    "qualityMultiplier": 0.82,
+    "recommended": false,
+    "description": "Aggressive quantization focused on fitting larger models into limited VRAM."
+  },
+  {
     "id": "q3_k_m",
     "name": "Q3_K_M",
-    "vram_modifier": 0.75,
-    "speed_modifier": 1.35,
-    "quality_modifier": 0.90
+    "memoryMultiplier": 0.40,
+    "speedMultiplier": 1.30,
+    "qualityMultiplier": 0.87,
+    "recommended": false,
+    "description": "Popular balance for running large reasoning models on consumer hardware."
+  },
+  {
+    "id": "q4_k_s",
+    "name": "Q4_K_S",
+    "memoryMultiplier": 0.50,
+    "speedMultiplier": 1.15,
+    "qualityMultiplier": 0.92,
+    "recommended": false,
+    "description": "Good compromise between quality and VRAM consumption."
   },
   {
     "id": "q4_k_m",
     "name": "Q4_K_M",
-    "vram_modifier": 1.00,
-    "speed_modifier": 1.00,
-    "quality_modifier": 1.00
+    "memoryMultiplier": 0.55,
+    "speedMultiplier": 1.00,
+    "qualityMultiplier": 1.00,
+    "recommended": true,
+    "description": "The default recommendation for most local AI users."
   },
   {
     "id": "q5_k_m",
     "name": "Q5_K_M",
-    "vram_modifier": 1.15,
-    "speed_modifier": 0.90,
-    "quality_modifier": 1.07
+    "memoryMultiplier": 0.70,
+    "speedMultiplier": 0.90,
+    "qualityMultiplier": 1.05,
+    "recommended": false,
+    "description": "Higher quality with moderate VRAM increase."
   },
   {
     "id": "q6_k",
     "name": "Q6_K",
-    "vram_modifier": 1.35,
-    "speed_modifier": 0.80,
-    "quality_modifier": 1.10
+    "memoryMultiplier": 0.80,
+    "speedMultiplier": 0.82,
+    "qualityMultiplier": 1.08,
+    "recommended": false,
+    "description": "Near full precision quality for many workloads."
+  },
+  {
+    "id": "q8_0",
+    "name": "Q8_0",
+    "memoryMultiplier": 1.00,
+    "speedMultiplier": 0.65,
+    "qualityMultiplier": 1.10,
+    "recommended": false,
+    "description": "Highest quality quantization before full precision."
   }
 ]

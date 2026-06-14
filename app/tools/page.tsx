@@ -51,13 +51,7 @@ const TOOL_SECTIONS = [
         tag: "NEW & UNIQUE",
         tagColor: "text-cyan-400 border-cyan-400/30",
       },
-      {
-        href: "/tools/local-stack",
-        title: "Local LLM Stack Builder",
-        desc: "Intelligent Local LLM Stack Builder based on your hardware.",
-        tag: "NEW & UNIQUE",
-        tagColor: "text-cyan-400 border-cyan-400/30",
-      },
+      
     ],
   },
   {
@@ -75,7 +69,7 @@ const TOOL_SECTIONS = [
   {
     heading: "Model Selection & Planning",
     tools: [
-      { href: "/tools/vram-calculator", title: "VRAM Calculator", desc: "Exact VRAM for any model size, quant, and context length including KV cache breakdown.", tag: "PRECISE", tagColor: "text-cyan-400 border-cyan-400/30" },
+      { href: "/tools/true-vram-calculator", title: "VRAM Calculator", desc: "Exact VRAM for any model size, quant, and context length including KV cache breakdown.", tag: "PRECISE", tagColor: "text-cyan-400 border-cyan-400/30" },
       { href: "/tools/context-calculator", title: "Context Length Calculator", desc: "Find your maximum context window given VRAM, model, and KV cache quantization.", tag: "UNIQUE", tagColor: "text-orange-400 border-orange-400/30" },
       { href: "/tools/token-budget", title: "Token Budget Calculator", desc: "Plan context usage, generation time, and API cost. Works for local and cloud models.", tag: "NEW", tagColor: "text-cyan-400 border-cyan-400/30" },
       { href: "/tools/quant-picker", title: "Quant Picker", desc: "Answer 3 questions — get the right quantization format with a clear explanation.", tag: "BEGINNER", tagColor: "text-purple-400 border-purple-400/30" },
